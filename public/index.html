@@ -1,0 +1,2022 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Life Admin AI</title>
+
+<style>
+:root{
+  --bg:#f5f7fb;
+  --surface:#ffffff;
+  --surface-2:#f8fafc;
+  --text:#111827;
+  --muted:#6b7280;
+  --border:#e5e7eb;
+  --primary:#635bff;
+  --primary-dark:#5147e8;
+  --danger:#ef4444;
+  --success:#10b981;
+  --shadow:0 10px 35px rgba(15,23,42,.07);
+}
+
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  transition:.25s;
+}
+
+button,
+input{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+}
+
+.app{
+  max-width:1180px;
+  margin:auto;
+  padding:24px;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.header{
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(255,255,255,.18),
+      transparent 35%
+    ),
+    linear-gradient(
+      135deg,
+      #635bff,
+      #7c3aed
+    );
+
+  border-radius:28px;
+  padding:30px;
+  color:white;
+  box-shadow:0 20px 45px rgba(99,91,255,.22);
+  margin-bottom:22px;
+}
+
+.header-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:20px;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+
+.logo{
+  width:52px;
+  height:52px;
+  display:grid;
+  place-items:center;
+  border-radius:16px;
+  background:rgba(255,255,255,.16);
+  backdrop-filter:blur(10px);
+  font-size:25px;
+}
+
+.brand h1{
+  font-size:27px;
+  letter-spacing:-.5px;
+}
+
+.brand p{
+  margin-top:4px;
+  opacity:.82;
+  font-size:14px;
+}
+
+.theme-btn{
+  border:1px solid rgba(255,255,255,.22);
+  background:rgba(255,255,255,.13);
+  color:white;
+  padding:10px 14px;
+  border-radius:12px;
+  transition:.2s;
+}
+
+.theme-btn:hover{
+  background:rgba(255,255,255,.22);
+}
+
+.header-content{
+  margin-top:30px;
+  max-width:700px;
+}
+
+.header-content h2{
+  font-size:35px;
+  line-height:1.15;
+  letter-spacing:-1px;
+}
+
+.header-content p{
+  margin-top:10px;
+  opacity:.86;
+  line-height:1.6;
+}
+
+/* =========================
+   STATS
+========================= */
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+  margin-bottom:22px;
+}
+
+.stat{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:20px;
+  box-shadow:var(--shadow);
+}
+
+.stat-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.stat-icon{
+  width:38px;
+  height:38px;
+  border-radius:12px;
+  display:grid;
+  place-items:center;
+  background:var(--surface-2);
+}
+
+.stat-number{
+  font-size:29px;
+  font-weight:800;
+  margin-top:13px;
+}
+
+.stat-label{
+  color:var(--muted);
+  font-size:13px;
+  margin-top:3px;
+}
+
+/* =========================
+   CARD
+========================= */
+
+.card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:22px;
+  padding:24px;
+  box-shadow:var(--shadow);
+  margin-bottom:22px;
+}
+
+.card-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  margin-bottom:17px;
+}
+
+.card-title{
+  font-size:19px;
+  font-weight:750;
+}
+
+.card-subtitle{
+  color:var(--muted);
+  font-size:13px;
+  margin-top:4px;
+}
+
+/* =========================
+   AI
+========================= */
+
+.ai-box{
+  position:relative;
+}
+
+.ai-input-row{
+  display:flex;
+  gap:10px;
+}
+
+.ai-input{
+  flex:1;
+  min-width:0;
+  border:1px solid var(--border);
+  background:var(--surface-2);
+  color:var(--text);
+  padding:15px 17px;
+  border-radius:15px;
+  outline:none;
+  transition:.2s;
+}
+
+.ai-input:focus{
+  border-color:var(--primary);
+  box-shadow:0 0 0 4px rgba(99,91,255,.1);
+}
+
+.primary-btn{
+  border:0;
+  background:var(--primary);
+  color:white;
+  padding:0 21px;
+  border-radius:15px;
+  font-weight:700;
+  transition:.2s;
+}
+
+.primary-btn:hover{
+  background:var(--primary-dark);
+  transform:translateY(-1px);
+}
+
+.primary-btn:disabled{
+  opacity:.6;
+  cursor:not-allowed;
+  transform:none;
+}
+
+.examples{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:12px;
+}
+
+.example{
+  border:1px solid var(--border);
+  background:var(--surface-2);
+  color:var(--muted);
+  padding:8px 11px;
+  border-radius:999px;
+  font-size:12px;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.example:hover{
+  border-color:var(--primary);
+  color:var(--primary);
+}
+
+.ai-response{
+  display:none;
+  margin-top:16px;
+}
+
+.response{
+  padding:15px 16px;
+  border-radius:15px;
+  background:var(--surface-2);
+  border:1px solid var(--border);
+  line-height:1.5;
+}
+
+.loading{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  color:var(--muted);
+}
+
+.spinner{
+  width:17px;
+  height:17px;
+  border:2px solid var(--border);
+  border-top-color:var(--primary);
+  border-radius:50%;
+  animation:spin .8s linear infinite;
+}
+
+@keyframes spin{
+  to{transform:rotate(360deg)}
+}
+
+/* =========================
+   QUOTA
+========================= */
+
+.quota{
+  padding:20px;
+  border-radius:18px;
+  border:1px solid #fed7aa;
+  background:linear-gradient(
+    135deg,
+    #fff7ed,
+    #fffbeb
+  );
+}
+
+.quota h3{
+  font-size:16px;
+  margin-bottom:6px;
+}
+
+.quota p{
+  color:#6b7280;
+  line-height:1.55;
+  font-size:14px;
+  margin-bottom:15px;
+}
+
+.quota-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:9px;
+}
+
+.retry{
+  border:0;
+  background:var(--primary);
+  color:white;
+  padding:10px 15px;
+  border-radius:11px;
+  font-weight:700;
+}
+
+.upgrade{
+  text-decoration:none;
+  background:#111827;
+  color:white;
+  padding:10px 15px;
+  border-radius:11px;
+  font-weight:700;
+}
+
+/* =========================
+   MANUAL TASK
+========================= */
+
+.manual-grid{
+  display:grid;
+  grid-template-columns:2fr 1fr 1fr auto;
+  gap:10px;
+}
+
+.field{
+  border:1px solid var(--border);
+  background:var(--surface-2);
+  color:var(--text);
+  padding:13px 14px;
+  border-radius:13px;
+  outline:none;
+}
+
+.field:focus{
+  border-color:var(--primary);
+}
+
+.add-btn{
+  border:0;
+  background:#111827;
+  color:white;
+  padding:0 18px;
+  border-radius:13px;
+  font-weight:700;
+}
+
+/* =========================
+   TASK CONTROLS
+========================= */
+
+.controls{
+  display:flex;
+  gap:9px;
+  flex-wrap:wrap;
+  margin-bottom:16px;
+}
+
+.search{
+  flex:1;
+  min-width:190px;
+  border:1px solid var(--border);
+  background:var(--surface-2);
+  color:var(--text);
+  padding:12px 14px;
+  border-radius:12px;
+  outline:none;
+}
+
+.filter{
+  border:1px solid var(--border);
+  background:var(--surface-2);
+  color:var(--muted);
+  padding:10px 13px;
+  border-radius:11px;
+  font-weight:650;
+}
+
+.filter.active{
+  background:var(--primary);
+  border-color:var(--primary);
+  color:white;
+}
+
+.clear-btn{
+  border:1px solid #fecaca;
+  background:#fff1f2;
+  color:#dc2626;
+  padding:10px 13px;
+  border-radius:11px;
+  font-weight:650;
+}
+
+/* =========================
+   TASK
+========================= */
+
+.task-list{
+  min-height:100px;
+}
+
+.task{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+  padding:16px;
+  border:1px solid var(--border);
+  background:var(--surface);
+  border-radius:16px;
+  margin-bottom:10px;
+  transition:.2s;
+  animation:taskIn .25s ease;
+}
+
+@keyframes taskIn{
+  from{
+    opacity:0;
+    transform:translateY(5px);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+
+.task:hover{
+  border-color:#d5d8e1;
+  transform:translateY(-1px);
+}
+
+.task-left{
+  display:flex;
+  align-items:flex-start;
+  gap:13px;
+  min-width:0;
+  flex:1;
+}
+
+.checkbox{
+  width:20px;
+  height:20px;
+  margin-top:2px;
+  accent-color:var(--primary);
+  cursor:pointer;
+}
+
+.task-info{
+  min-width:0;
+}
+
+.task-text{
+  font-size:15px;
+  font-weight:700;
+  word-break:break-word;
+}
+
+.completed .task-text{
+  color:var(--muted);
+  text-decoration:line-through;
+}
+
+.task-meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-top:6px;
+}
+
+.meta{
+  font-size:11px;
+  color:var(--muted);
+  background:var(--surface-2);
+  border:1px solid var(--border);
+  padding:4px 7px;
+  border-radius:7px;
+}
+
+.task-actions{
+  display:flex;
+  gap:6px;
+}
+
+.icon-btn{
+  width:35px;
+  height:35px;
+  border:1px solid var(--border);
+  background:var(--surface-2);
+  color:var(--text);
+  border-radius:10px;
+}
+
+.icon-btn:hover{
+  border-color:#cbd5e1;
+}
+
+.delete:hover{
+  color:var(--danger);
+  border-color:#fecaca;
+}
+
+/* =========================
+   EMPTY
+========================= */
+
+.empty{
+  text-align:center;
+  padding:50px 20px;
+  color:var(--muted);
+}
+
+.empty-icon{
+  width:55px;
+  height:55px;
+  border-radius:18px;
+  background:var(--surface-2);
+  display:grid;
+  place-items:center;
+  margin:0 auto 13px;
+  font-size:24px;
+}
+
+.empty h3{
+  color:var(--text);
+  margin-bottom:5px;
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+.footer{
+  text-align:center;
+  color:var(--muted);
+  font-size:12px;
+  padding:5px 0 20px;
+}
+
+/* =========================
+   DARK MODE
+========================= */
+
+body.dark{
+  --bg:#0b1020;
+  --surface:#111827;
+  --surface-2:#172033;
+  --text:#f9fafb;
+  --muted:#9ca3af;
+  --border:#263247;
+  --shadow:0 10px 35px rgba(0,0,0,.2);
+}
+
+body.dark .quota{
+  background:linear-gradient(
+    135deg,
+    #24190d,
+    #211b0d
+  );
+  border-color:#6b4b1f;
+}
+
+body.dark .quota p{
+  color:#9ca3af;
+}
+
+body.dark .upgrade{
+  background:#f9fafb;
+  color:#111827;
+}
+
+body.dark .clear-btn{
+  background:#29151a;
+  border-color:#5b252d;
+  color:#f87171;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:800px){
+
+  .app{
+    padding:14px;
+  }
+
+  .header{
+    padding:22px;
+    border-radius:22px;
+  }
+
+  .header-content h2{
+    font-size:28px;
+  }
+
+  .stats{
+    grid-template-columns:1fr;
+  }
+
+  .manual-grid{
+    grid-template-columns:1fr;
+  }
+
+  .add-btn{
+    height:47px;
+  }
+
+}
+
+@media(max-width:600px){
+
+  .header-top{
+    align-items:center;
+  }
+
+  .brand h1{
+    font-size:21px;
+  }
+
+  .brand p{
+    font-size:12px;
+  }
+
+  .logo{
+    width:44px;
+    height:44px;
+    font-size:21px;
+  }
+
+  .theme-btn{
+    font-size:12px;
+    padding:9px 11px;
+  }
+
+  .card{
+    padding:18px;
+    border-radius:18px;
+  }
+
+  .ai-input-row{
+    flex-direction:column;
+  }
+
+  .primary-btn{
+    height:47px;
+  }
+
+  .task{
+    align-items:flex-start;
+  }
+
+  .task-actions{
+    flex-shrink:0;
+  }
+
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <!-- HEADER -->
+  <header class="header">
+
+    <div class="header-top">
+
+      <div class="brand">
+
+        <div class="logo">
+          ✦
+        </div>
+
+        <div>
+          <h1>Life Admin AI</h1>
+          <p>Your intelligent personal productivity assistant</p>
+        </div>
+
+      </div>
+
+      <button
+        class="theme-btn"
+        onclick="toggleTheme()"
+        id="themeButton"
+      >
+        🌙 Dark
+      </button>
+
+    </div>
+
+    <div class="header-content">
+
+      <h2>
+        Organize your life.<br>
+        Simply.
+      </h2>
+
+      <p>
+        Tell your assistant what you need to do in natural language.
+        Life Admin AI turns your requests into organized tasks.
+      </p>
+
+    </div>
+
+  </header>
+
+
+  <!-- STATS -->
+  <section class="stats">
+
+    <div class="stat">
+
+      <div class="stat-top">
+        <span class="stat-label">Total tasks</span>
+        <div class="stat-icon">📋</div>
+      </div>
+
+      <div
+        class="stat-number"
+        id="totalTasks"
+      >
+        0
+      </div>
+
+    </div>
+
+
+    <div class="stat">
+
+      <div class="stat-top">
+        <span class="stat-label">Pending</span>
+        <div class="stat-icon">⏳</div>
+      </div>
+
+      <div
+        class="stat-number"
+        id="pendingTasks"
+      >
+        0
+      </div>
+
+    </div>
+
+
+    <div class="stat">
+
+      <div class="stat-top">
+        <span class="stat-label">Completed</span>
+        <div class="stat-icon">✓</div>
+      </div>
+
+      <div
+        class="stat-number"
+        id="completedTasks"
+      >
+        0
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- AI ASSISTANT -->
+  <section class="card">
+
+    <div class="card-header">
+
+      <div>
+        <div class="card-title">
+          AI Assistant
+        </div>
+
+        <div class="card-subtitle">
+          Manage your tasks using natural language
+        </div>
+      </div>
+
+      <span>✨</span>
+
+    </div>
+
+
+    <div class="ai-box">
+
+      <div class="ai-input-row">
+
+        <input
+          id="aiInput"
+          class="ai-input"
+          type="text"
+          placeholder="What would you like to get done?"
+          autocomplete="off"
+          onkeydown="handleEnter(event)"
+        >
+
+        <button
+          class="primary-btn"
+          id="askButton"
+          onclick="askAI()"
+        >
+          Ask AI
+        </button>
+
+      </div>
+
+
+      <div class="examples">
+
+        <span
+          class="example"
+          onclick="useExample('Add a task to call the bank tomorrow')"
+        >
+          Add a task
+        </span>
+
+        <span
+          class="example"
+          onclick="useExample('Show me my tasks')"
+        >
+          Show my tasks
+        </span>
+
+        <span
+          class="example"
+          onclick="useExample('Delete my meeting task')"
+        >
+          Delete a task
+        </span>
+
+        <span
+          class="example"
+          onclick="useExample('Change my task time to 6 PM')"
+        >
+          Edit a task
+        </span>
+
+      </div>
+
+
+      <div
+        id="aiResponse"
+        class="ai-response"
+      ></div>
+
+    </div>
+
+  </section>
+
+
+  <!-- MANUAL TASK -->
+  <section class="card">
+
+    <div class="card-header">
+
+      <div>
+        <div class="card-title">
+          Add a task
+        </div>
+
+        <div class="card-subtitle">
+          Create a task manually
+        </div>
+      </div>
+
+      <span>＋</span>
+
+    </div>
+
+
+    <div class="manual-grid">
+
+      <input
+        id="taskText"
+        class="field"
+        type="text"
+        placeholder="Task name"
+      >
+
+      <input
+        id="taskDate"
+        class="field"
+        type="date"
+      >
+
+      <input
+        id="taskTime"
+        class="field"
+        type="time"
+      >
+
+      <button
+        class="add-btn"
+        onclick="addManualTask()"
+      >
+        Add Task
+      </button>
+
+    </div>
+
+  </section>
+
+
+  <!-- TASKS -->
+  <section class="card">
+
+    <div class="card-header">
+
+      <div>
+        <div class="card-title">
+          Your tasks
+        </div>
+
+        <div class="card-subtitle">
+          Stay on top of everything that matters
+        </div>
+      </div>
+
+    </div>
+
+
+    <div class="controls">
+
+      <input
+        id="searchInput"
+        class="search"
+        type="text"
+        placeholder="Search tasks..."
+        oninput="renderTasks()"
+      >
+
+
+      <button
+        id="allBtn"
+        class="filter active"
+        onclick="setFilter('all')"
+      >
+        All
+      </button>
+
+
+      <button
+        id="pendingBtn"
+        class="filter"
+        onclick="setFilter('pending')"
+      >
+        Pending
+      </button>
+
+
+      <button
+        id="completedBtn"
+        class="filter"
+        onclick="setFilter('completed')"
+      >
+        Completed
+      </button>
+
+
+      <button
+        class="clear-btn"
+        onclick="clearCompleted()"
+      >
+        Clear completed
+      </button>
+
+    </div>
+
+
+    <div
+      id="taskList"
+      class="task-list"
+    ></div>
+
+  </section>
+
+
+  <div class="footer">
+    Life Admin AI · Your productivity, simplified.
+  </div>
+
+</div>
+
+
+<script>
+
+/* ==========================================
+   STORAGE
+========================================== */
+
+let tasks = [];
+
+try{
+
+  tasks =
+    JSON.parse(
+      localStorage.getItem("lifeAdminTasks")
+    ) || [];
+
+}catch(error){
+
+  tasks = [];
+
+}
+
+
+let currentFilter = "all";
+
+
+/* ==========================================
+   SAVE
+========================================== */
+
+function saveTasks(){
+
+  localStorage.setItem(
+    "lifeAdminTasks",
+    JSON.stringify(tasks)
+  );
+
+}
+
+
+/* ==========================================
+   STATS
+========================================== */
+
+function updateStats(){
+
+  const total =
+    tasks.length;
+
+  const completed =
+    tasks.filter(
+      task => task.completed
+    ).length;
+
+  const pending =
+    total - completed;
+
+
+  document.getElementById(
+    "totalTasks"
+  ).textContent = total;
+
+  document.getElementById(
+    "pendingTasks"
+  ).textContent = pending;
+
+  document.getElementById(
+    "completedTasks"
+  ).textContent = completed;
+
+}
+
+
+/* ==========================================
+   ESCAPE HTML
+========================================== */
+
+function escapeHTML(value){
+
+  const div =
+    document.createElement("div");
+
+  div.textContent =
+    String(value ?? "");
+
+  return div.innerHTML;
+
+}
+
+
+/* ==========================================
+   RENDER
+========================================== */
+
+function renderTasks(){
+
+  const list =
+    document.getElementById(
+      "taskList"
+    );
+
+
+  const search =
+    document.getElementById(
+      "searchInput"
+    ).value
+      .toLowerCase()
+      .trim();
+
+
+  const filtered =
+    tasks.filter(
+      task => {
+
+        const matchesSearch =
+          String(task.text || "")
+            .toLowerCase()
+            .includes(search);
+
+
+        if(!matchesSearch){
+          return false;
+        }
+
+
+        if(
+          currentFilter ===
+          "pending"
+        ){
+          return !task.completed;
+        }
+
+
+        if(
+          currentFilter ===
+          "completed"
+        ){
+          return task.completed;
+        }
+
+
+        return true;
+
+      }
+    );
+
+
+  if(filtered.length === 0){
+
+    list.innerHTML = `
+
+      <div class="empty">
+
+        <div class="empty-icon">
+          ${search ? "🔎" : "✓"}
+        </div>
+
+        <h3>
+          ${
+            search
+              ? "No matching tasks"
+              : "You're all set"
+          }
+        </h3>
+
+        <p>
+          ${
+            search
+              ? "Try another search."
+              : "Add your first task to get started."
+          }
+        </p>
+
+      </div>
+
+    `;
+
+    updateStats();
+
+    return;
+
+  }
+
+
+  list.innerHTML =
+    filtered
+      .map(task => {
+
+        const index =
+          tasks.indexOf(task);
+
+
+        let meta = "";
+
+
+        if(task.date){
+
+          meta += `
+            <span class="meta">
+              📅 ${escapeHTML(task.date)}
+            </span>
+          `;
+
+        }
+
+
+        if(task.time){
+
+          meta += `
+            <span class="meta">
+              ⏰ ${escapeHTML(task.time)}
+            </span>
+          `;
+
+        }
+
+
+        return `
+
+          <div
+            class="task ${
+              task.completed
+                ? "completed"
+                : ""
+            }"
+          >
+
+            <div class="task-left">
+
+              <input
+                class="checkbox"
+                type="checkbox"
+                ${
+                  task.completed
+                    ? "checked"
+                    : ""
+                }
+                onchange="toggleTask(${index})"
+              >
+
+
+              <div class="task-info">
+
+                <div class="task-text">
+                  ${escapeHTML(task.text)}
+                </div>
+
+
+                ${
+                  meta
+                    ? `
+                      <div class="task-meta">
+                        ${meta}
+                      </div>
+                    `
+                    : ""
+                }
+
+              </div>
+
+            </div>
+
+
+            <div class="task-actions">
+
+              <button
+                class="icon-btn delete"
+                title="Delete task"
+                onclick="deleteTask(${index})"
+              >
+                🗑
+              </button>
+
+            </div>
+
+          </div>
+
+        `;
+
+      })
+      .join("");
+
+
+  updateStats();
+
+}
+
+
+/* ==========================================
+   ADD MANUAL
+========================================== */
+
+function addManualTask(){
+
+  const text =
+    document.getElementById(
+      "taskText"
+    ).value.trim();
+
+
+  const date =
+    document.getElementById(
+      "taskDate"
+    ).value || null;
+
+
+  const time =
+    document.getElementById(
+      "taskTime"
+    ).value || null;
+
+
+  if(!text){
+
+    showAIResponse(`
+      <div class="response">
+        Please enter a task name.
+      </div>
+    `);
+
+    return;
+
+  }
+
+
+  tasks.push({
+
+    text:text,
+
+    date:date,
+
+    time:time,
+
+    completed:false
+
+  });
+
+
+  saveTasks();
+
+  renderTasks();
+
+
+  document.getElementById(
+    "taskText"
+  ).value = "";
+
+  document.getElementById(
+    "taskDate"
+  ).value = "";
+
+  document.getElementById(
+    "taskTime"
+  ).value = "";
+
+}
+
+
+/* ==========================================
+   TOGGLE
+========================================== */
+
+function toggleTask(index){
+
+  if(!tasks[index]){
+    return;
+  }
+
+
+  tasks[index].completed =
+    !tasks[index].completed;
+
+
+  saveTasks();
+
+  renderTasks();
+
+}
+
+
+/* ==========================================
+   DELETE
+========================================== */
+
+function deleteTask(index){
+
+  if(!tasks[index]){
+    return;
+  }
+
+
+  tasks.splice(
+    index,
+    1
+  );
+
+
+  saveTasks();
+
+  renderTasks();
+
+}
+
+
+/* ==========================================
+   CLEAR COMPLETED
+========================================== */
+
+function clearCompleted(){
+
+  tasks =
+    tasks.filter(
+      task =>
+        !task.completed
+    );
+
+
+  saveTasks();
+
+  renderTasks();
+
+}
+
+
+/* ==========================================
+   FILTER
+========================================== */
+
+function setFilter(filter){
+
+  currentFilter =
+    filter;
+
+
+  document
+    .querySelectorAll(".filter")
+    .forEach(
+      button =>
+        button.classList.remove(
+          "active"
+        )
+    );
+
+
+  if(filter === "all"){
+
+    document
+      .getElementById("allBtn")
+      .classList.add("active");
+
+  }
+
+
+  if(filter === "pending"){
+
+    document
+      .getElementById("pendingBtn")
+      .classList.add("active");
+
+  }
+
+
+  if(filter === "completed"){
+
+    document
+      .getElementById("completedBtn")
+      .classList.add("active");
+
+  }
+
+
+  renderTasks();
+
+}
+
+
+/* ==========================================
+   EXAMPLES
+========================================== */
+
+function useExample(text){
+
+  const input =
+    document.getElementById(
+      "aiInput"
+    );
+
+
+  input.value =
+    text;
+
+  input.focus();
+
+}
+
+
+/* ==========================================
+   ENTER
+========================================== */
+
+function handleEnter(event){
+
+  if(
+    event.key ===
+    "Enter"
+  ){
+
+    askAI();
+
+  }
+
+}
+
+
+/* ==========================================
+   RESPONSE
+========================================== */
+
+function showAIResponse(html){
+
+  const box =
+    document.getElementById(
+      "aiResponse"
+    );
+
+
+  box.style.display =
+    "block";
+
+  box.innerHTML =
+    html;
+
+}
+
+
+/* ==========================================
+   ASK AI
+========================================== */
+
+async function askAI(){
+
+  const input =
+    document.getElementById(
+      "aiInput"
+    );
+
+
+  const button =
+    document.getElementById(
+      "askButton"
+    );
+
+
+  const message =
+    input.value.trim();
+
+
+  if(!message){
+
+    showAIResponse(`
+      <div class="response">
+        Tell me what you'd like to do.
+      </div>
+    `);
+
+    return;
+
+  }
+
+
+  button.disabled =
+    true;
+
+
+  button.textContent =
+    "Thinking...";
+
+
+  showAIResponse(`
+
+    <div class="response">
+
+      <div class="loading">
+
+        <span class="spinner"></span>
+
+        <span>
+          Life Admin AI is thinking...
+        </span>
+
+      </div>
+
+    </div>
+
+  `);
+
+
+  try{
+
+    const response =
+      await fetch(
+        "/api/ai",
+        {
+
+          method:"POST",
+
+          headers:{
+            "Content-Type":
+              "application/json"
+          },
+
+          body:JSON.stringify({
+
+            message:message,
+
+            tasks:tasks
+
+          })
+
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    /* ==============================
+       QUOTA
+    ============================== */
+
+    if(
+      response.status === 429 ||
+      data.type === "quota"
+    ){
+
+      showAIResponse(`
+
+        <div class="quota">
+
+          <h3>
+            AI is temporarily unavailable
+          </h3>
+
+          <p>
+            The AI service has temporarily
+            reached its usage limit.
+            Please try again shortly.
+          </p>
+
+
+          <div class="quota-actions">
+
+            <button
+              class="retry"
+              onclick="askAI()"
+            >
+              Try Again
+            </button>
+
+
+            <a
+              class="upgrade"
+              href="${
+                data.upgradeUrl ||
+                "https://ai.google.dev/gemini-api/docs/billing"
+              }"
+              target="_blank"
+              rel="noopener"
+            >
+              Upgrade / Billing
+            </a>
+
+          </div>
+
+        </div>
+
+      `);
+
+      return;
+
+    }
+
+
+    /* ==============================
+       OTHER ERROR
+    ============================== */
+
+    if(!response.ok){
+
+      showAIResponse(`
+
+        <div class="response">
+
+          AI couldn't complete that request
+          right now. Please try again.
+
+        </div>
+
+      `);
+
+      return;
+
+    }
+
+
+    /* ==============================
+       ADD
+    ============================== */
+
+    if(
+      data.action ===
+      "add_task" &&
+      data.task
+    ){
+
+      addAITask(
+        data.task
+      );
+
+    }
+
+
+    /* ==============================
+       EDIT
+    ============================== */
+
+    if(
+      data.action ===
+      "edit_task" &&
+      data.task &&
+      typeof data.taskIndex ===
+      "number"
+    ){
+
+      if(
+        tasks[data.taskIndex]
+      ){
+
+        tasks[data.taskIndex] = {
+
+          ...tasks[data.taskIndex],
+
+          text:
+            data.task.text ||
+            tasks[data.taskIndex].text,
+
+          date:
+            data.task.date ??
+            null,
+
+          time:
+            data.task.time ??
+            null
+
+        };
+
+
+        saveTasks();
+
+        renderTasks();
+
+      }
+
+    }
+
+
+    /* ==============================
+       DELETE
+    ============================== */
+
+    if(
+      data.action ===
+      "delete_task" &&
+      typeof data.taskIndex ===
+      "number"
+    ){
+
+      if(
+        tasks[data.taskIndex]
+      ){
+
+        tasks.splice(
+          data.taskIndex,
+          1
+        );
+
+
+        saveTasks();
+
+        renderTasks();
+
+      }
+
+    }
+
+
+    /* ==============================
+       RESPONSE
+    ============================== */
+
+    showAIResponse(`
+
+      <div class="response">
+
+        🤖 ${escapeHTML(
+          data.reply ||
+          "Done."
+        )}
+
+      </div>
+
+    `);
+
+
+    input.value = "";
+
+
+  }catch(error){
+
+    console.error(
+      "AI request failed:",
+      error
+    );
+
+
+    showAIResponse(`
+
+      <div class="response">
+
+        Unable to connect to the AI right now.
+        Please check that the server is running
+        and try again.
+
+      </div>
+
+    `);
+
+  }finally{
+
+    button.disabled =
+      false;
+
+    button.textContent =
+      "Ask AI";
+
+  }
+
+}
+
+
+/* ==========================================
+   AI ADD
+========================================== */
+
+function addAITask(task){
+
+  tasks.push({
+
+    text:
+      task.text ||
+      "New task",
+
+    date:
+      task.date ||
+      null,
+
+    time:
+      task.time ||
+      null,
+
+    completed:false
+
+  });
+
+
+  saveTasks();
+
+  renderTasks();
+
+}
+
+
+/* ==========================================
+   THEME
+========================================== */
+
+function toggleTheme(){
+
+  const isDark =
+    document.body.classList.toggle(
+      "dark"
+    );
+
+
+  localStorage.setItem(
+    "lifeAdminTheme",
+    isDark
+      ? "dark"
+      : "light"
+  );
+
+
+  updateThemeButton();
+
+}
+
+
+/* ==========================================
+   THEME BUTTON
+========================================== */
+
+function updateThemeButton(){
+
+  const button =
+    document.getElementById(
+      "themeButton"
+    );
+
+
+  const isDark =
+    document.body.classList.contains(
+      "dark"
+    );
+
+
+  button.textContent =
+    isDark
+      ? "☀️ Light"
+      : "🌙 Dark";
+
+}
+
+
+/* ==========================================
+   LOAD THEME
+========================================== */
+
+if(
+  localStorage.getItem(
+    "lifeAdminTheme"
+  ) === "dark"
+){
+
+  document.body.classList.add(
+    "dark"
+  );
+
+}
+
+updateThemeButton();
+
+
+/* ==========================================
+   INITIAL LOAD
+========================================== */
+
+renderTasks();
+
+</script>
+
+</body>
+</html>
