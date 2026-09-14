@@ -6,24 +6,12 @@ const path = require("path");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// ==========================================
-// MIDDLEWARE
-// ==========================================
-
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
-
-// ==========================================
-// AI API
-// ==========================================
 
 app.post("/api/ai", async (req, res) => {
   try {
     const { message, tasks } = req.body;
-
-    // ------------------------------------------
-    // CHECK MESSAGE
-    // ------------------------------------------
 
     if (!message || !message.trim()) {
       return res.status(400).json({
@@ -32,26 +20,16 @@ app.post("/api/ai", async (req, res) => {
       });
     }
 
-    // ------------------------------------------
-    // OPENROUTER API KEY
-    // ------------------------------------------
-
     const API_KEY = process.env.OPENROUTER_API_KEY;
 
     console.log("OpenRouter key loaded:", !!API_KEY);
 
     if (!API_KEY) {
-      console.error("❌ OPENROUTER_API_KEY is missing.");
-
       return res.status(500).json({
         type: "setup_error",
         error: "OpenRouter API key is not configured."
       });
     }
-
-    // ------------------------------------------
-    // AI PROMPT
-    // ------------------------------------------
 
     const prompt = `
 You are Life Admin AI.
@@ -66,15 +44,17 @@ ${message}
 
 Today's date is ${new Date().toISOString().split("T")[0]}.
 
-IMPORTANT: Reply in the same language as the user's message.
-If the user writes English, the reply must be in English.
-If the user writes Hindi, Urdu, Punjabi, or any other language, reply in that same language.
-Keep the JSON structure unchanged.
+Reply in the same language as the user's message.
 
+Return ONLY valid JSON.
+Do not use markdown.
+Do not use code fences.
+
+========================
 ADD TASK
 ========================
 
-If the user clearly wants to add/create/set a task:
+If the user clearly wants to add, create, or set a task:
 
 {
   "action": "add_task",
@@ -91,11 +71,9 @@ If the user clearly wants to add/create/set a task:
 EDIT TASK
 ========================
 
-If the user wants to change/edit/update an existing task:
+If the user wants to change, edit, or update an existing task:
 
 Find the closest matching task.
-
-Return:
 
 {
   "action": "edit_task",
@@ -114,11 +92,9 @@ taskIndex MUST be the exact index of the existing task.
 DELETE TASK
 ========================
 
-If the user clearly wants to delete/remove a task:
+If the user clearly wants to delete or remove a task:
 
 Find the matching task.
-
-Return:
 
 {
   "action": "delete_task",
@@ -133,7 +109,7 @@ taskIndex MUST be the exact index of the task.
 NORMAL QUESTION
 ========================
 
-If the user is not adding, editing or deleting a task:
+If the user is not adding, editing, or deleting a task:
 
 {
   "action": "none",
@@ -164,15 +140,7 @@ Only use edit_task when the user clearly wants to modify an existing task.
 Only use delete_task when the user clearly wants to remove a task.
 `;
 
-    // ==========================================
-    // OPENROUTER REQUEST
-    // ==========================================
-
     console.log("🤖 Sending request to OpenRouter...");
-
-    const model =
-      process.env.OPENROUTER_MODEL ||
-      "nex-agi/nex-n2.5-mini:free";
 
     const response = await fetch(
       "https://openrouter.ai/api/v1/chat/completions",
@@ -181,19 +149,21 @@ Only use delete_task when the user clearly wants to remove a task.
 
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${API_KEY}`,
-          "HTTP-Referer": "http://localhost:3000",
+          "Authorization": `Bearer ${API_KEY}`,
+          "HTTP-Referer": "https://lifeadminai.onrender.com",
           "X-Title": "LifeAdminAI"
         },
 
         body: JSON.stringify({
-          model,
+          model: "openrouter/free",
+
           messages: [
             {
               role: "user",
               content: prompt
             }
           ],
+
           temperature: 0.2
         })
       }
@@ -201,24 +171,21 @@ Only use delete_task when the user clearly wants to remove a task.
 
     const data = await response.json();
 
-    // ==========================================
-    // OPENROUTER ERROR
-    // ==========================================
-
     if (!response.ok) {
-      console.error("");
       console.error("======================================");
       console.error("❌ OPENROUTER API ERROR");
       console.error("Status:", response.status);
-      console.error("Response:", JSON.stringify(data, null, 2));
+      console.error(
+        "Response:",
+        JSON.stringify(data, null, 2)
+      );
       console.error("======================================");
-      console.error("");
 
       if (response.status === 429) {
         return res.status(429).json({
           type: "quota",
           message:
-            "AI temporarily unavailable hai. OpenRouter rate limit / free model limit ho sakti hai.",
+            "AI temporarily unavailable hai. OpenRouter rate limit hit ho sakti hai.",
           retryAfter: 30
         });
       }
@@ -227,26 +194,17 @@ Only use delete_task when the user clearly wants to remove a task.
         type: "ai_error",
         error:
           data?.error?.message ||
-          "OpenRouter request failed. Please check your API key, model, or account limits."
+          "OpenRouter request failed."
       });
     }
 
-    // ==========================================
-    // GET AI RESPONSE
-    // ==========================================
-
-    let rawReply = "";
-
-    rawReply =
+    let rawReply =
       data?.choices?.[0]?.message?.content || "";
 
-    // ==========================================
-    // EMPTY RESPONSE
-    // ==========================================
-
     if (!rawReply) {
-      console.error("❌ OpenRouter returned an empty response.");
-      console.error(JSON.stringify(data, null, 2));
+      console.error(
+        "❌ OpenRouter returned an empty response."
+      );
 
       return res.status(500).json({
         type: "empty_response",
@@ -254,20 +212,12 @@ Only use delete_task when the user clearly wants to remove a task.
       });
     }
 
-    // ==========================================
-    // CLEAN RESPONSE
-    // ==========================================
-
     rawReply = rawReply
       .replace(/```json/gi, "")
       .replace(/```/g, "")
       .trim();
 
     console.log("✅ OpenRouter response received.");
-
-    // ==========================================
-    // JSON PARSE
-    // ==========================================
 
     let result;
 
@@ -285,10 +235,6 @@ Only use delete_task when the user clearly wants to remove a task.
       });
     }
 
-    // ==========================================
-    // SEND RESULT TO FRONTEND
-    // ==========================================
-
     return res.json({
       action: result.action || "none",
 
@@ -300,22 +246,14 @@ Only use delete_task when the user clearly wants to remove a task.
           : null,
 
       reply:
-        result.reply ||
-        "Done."
+        result.reply || "Done."
     });
 
   } catch (error) {
-
-    // ==========================================
-    // SERVER ERROR
-    // ==========================================
-
-    console.error("");
     console.error("======================================");
     console.error("❌ SERVER ERROR");
     console.error(error);
     console.error("======================================");
-    console.error("");
 
     return res.status(500).json({
       type: "server_error",
@@ -325,17 +263,10 @@ Only use delete_task when the user clearly wants to remove a task.
   }
 });
 
-// ==========================================
-// START SERVER
-// ==========================================
-
 app.listen(PORT, "0.0.0.0", () => {
-  console.log("");
   console.log("======================================");
   console.log("        LIFE ADMIN AI");
   console.log("======================================");
-  console.log(`PC: http://localhost:${PORT}`);
-  console.log(`Port: ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
   console.log("======================================");
-  console.log("");
 });
