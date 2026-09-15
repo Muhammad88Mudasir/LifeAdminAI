@@ -290,6 +290,57 @@ button{
   border-color:#fecaca;
 }
 
+
+/* ================= PROFILE / THEME ================= */
+.profile-wrap{position:relative;}
+.profile-btn{width:46px;height:46px;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.14);border-radius:50%;padding:3px;display:grid;place-items:center;transition:.2s;}
+.profile-btn:hover{background:rgba(255,255,255,.23);transform:translateY(-1px);}
+.profile-avatar{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(145deg,#ffe0bd,#ffc4d6);color:#4c1d95;font-size:21px;box-shadow:inset 0 0 0 2px rgba(255,255,255,.6);}
+.profile-popover{position:absolute;right:0;top:54px;width:260px;background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:18px;padding:10px;box-shadow:0 20px 50px rgba(15,23,42,.22);z-index:2200;}
+.profile-email{padding:12px;border-radius:13px;background:var(--surface-2);font-size:12px;color:var(--muted);word-break:break-word;margin-bottom:7px;}
+.profile-action{width:100%;border:0;background:transparent;color:var(--text);padding:11px 12px;border-radius:11px;text-align:left;font-weight:650;}
+.profile-action:hover{background:var(--surface-2);}
+.profile-action.logout{color:var(--danger);}
+.theme-toggle{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-width:92px;}
+
+/* ================= SOFT PROFESSIONAL STATS ================= */
+.stat-total .stat-icon{background:#eef2ff;color:#4f46e5;}
+.stat-pending .stat-icon{background:#fff7ed;color:#c2410c;}
+.stat-completed .stat-icon{background:#ecfdf5;color:#047857;}
+.stat-total .stat-number{color:#4f46e5;}
+.stat-pending .stat-number{color:#c2410c;}
+.stat-completed .stat-number{color:#047857;}
+body.dark .stat-total .stat-icon{background:#1c2140;color:#a5b4fc;}
+body.dark .stat-pending .stat-icon{background:#2b2115;color:#fdba74;}
+body.dark .stat-completed .stat-icon{background:#10271f;color:#6ee7b7;}
+body.dark .stat-total .stat-number{color:#a5b4fc;}
+body.dark .stat-pending .stat-number{color:#fdba74;}
+body.dark .stat-completed .stat-number{color:#6ee7b7;}
+
+/* ================= MENU NOTIFICATIONS ================= */
+.menu-notification{color:#7c3aed;}
+.menu-notification:hover{background:#f5f3ff;border-color:#ddd6fe;}
+body.dark .menu-notification:hover{background:#211b35;border-color:#40345f;}
+.notification-panel{position:fixed;inset:0;z-index:2100;}
+.notification-overlay{position:absolute;inset:0;background:rgba(15,23,42,.45);backdrop-filter:blur(3px);}
+.notification-drawer{position:absolute;top:0;right:0;width:min(390px,92vw);height:100%;background:var(--surface);border-left:1px solid var(--border);box-shadow:-20px 0 50px rgba(15,23,42,.18);padding:24px;overflow-y:auto;animation:menuIn .25s ease;}
+.notification-head{display:flex;justify-content:space-between;align-items:flex-start;gap:15px;margin-bottom:20px;}
+.notification-head h2{font-size:21px;}
+.notification-head p{color:var(--muted);font-size:13px;margin-top:4px;line-height:1.5;}
+.notification-status-card{padding:18px;border:1px solid var(--border);background:var(--surface-2);border-radius:17px;}
+.notification-status-card h3{font-size:15px;margin-bottom:6px;}
+.notification-status-card p{font-size:13px;color:var(--muted);line-height:1.55;margin-bottom:14px;}
+.notification-enabled{color:#047857!important;}
+body.dark .notification-enabled{color:#6ee7b7!important;}
+
+@media(max-width:600px){
+ .profile-btn{width:42px;height:42px;}
+ .profile-avatar{width:34px;height:34px;font-size:19px;}
+ .theme-toggle{min-width:44px;padding:9px 11px;}
+ .theme-toggle .theme-label{display:none;}
+ .profile-popover{right:-5px;}
+}
+
 /* ================= AUTH ================= */
 
 .auth-card{
@@ -612,56 +663,6 @@ button{
   padding:10px 15px;
   border-radius:11px;
   font-weight:700;
-}
-
-/* ================= NOTIFICATIONS ================= */
-
-.notification-card{
-  background:linear-gradient(135deg,rgba(99,91,255,.08),rgba(124,58,237,.05));
-  border:1px solid rgba(99,91,255,.16);
-}
-
-.notification-row{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:15px;
-  flex-wrap:wrap;
-}
-
-.notification-info{
-  flex:1;
-  min-width:220px;
-}
-
-.notification-status{
-  margin-top:6px;
-  color:var(--muted);
-  font-size:13px;
-  line-height:1.5;
-}
-
-.notification-btn{
-  border:0;
-  background:var(--primary);
-  color:white;
-  padding:11px 16px;
-  border-radius:12px;
-  font-weight:700;
-}
-
-.notification-btn:hover{
-  background:var(--primary-dark);
-}
-
-.notification-btn.secondary{
-  background:var(--surface-2);
-  color:var(--text);
-  border:1px solid var(--border);
-}
-
-body.dark .notification-card{
-  background:linear-gradient(135deg,rgba(99,91,255,.14),rgba(124,58,237,.08));
 }
 
 /* ================= MANUAL ================= */
@@ -1306,23 +1307,24 @@ body.app-locked #authSection{
 
     <div class="header-actions">
 
-      <div id="userBadge" class="user-badge">
-        Not signed in
+      <div class="profile-wrap">
+        <button id="profileButton" class="profile-btn" type="button" aria-label="Profile">
+          <span class="profile-avatar">🧑‍💻</span>
+        </button>
+
+        <div id="profilePopover" class="profile-popover hidden">
+          <div id="profileEmail" class="profile-email">Not signed in</div>
+          <button id="profileHistoryButton" class="profile-action" type="button">🕘 History</button>
+          <button id="profileLogoutButton" class="profile-action logout" type="button">🚪 Logout</button>
+        </div>
       </div>
 
-      <button
-        id="historyButton"
-        class="header-btn"
-        type="button"
-      >
-        🕘 History
+      <button id="themeToggleButton" class="header-btn theme-toggle" type="button" aria-label="Toggle theme">
+        <span id="themeToggleIcon">🌙</span>
+        <span class="theme-label" id="themeToggleText">Dark</span>
       </button>
 
-      <button
-        id="menuButton"
-        class="header-btn"
-        type="button"
-      >
+      <button id="menuButton" class="header-btn" type="button">
         ☰ Menu
       </button>
 
@@ -1354,7 +1356,7 @@ body.app-locked #authSection{
 
   <div
     id="totalStat"
-    class="stat active"
+    class="stat stat-total active"
     onclick="setFilter('all')"
   >
     <div class="stat-top">
@@ -1381,7 +1383,7 @@ body.app-locked #authSection{
 
   <div
     id="pendingStat"
-    class="stat"
+    class="stat stat-pending"
     onclick="setFilter('pending')"
   >
     <div class="stat-top">
@@ -1408,7 +1410,7 @@ body.app-locked #authSection{
 
   <div
     id="completedStat"
-    class="stat"
+    class="stat stat-completed"
     onclick="setFilter('completed')"
   >
     <div class="stat-top">
@@ -1573,32 +1575,6 @@ body.app-locked #authSection{
       Add Task
     </button>
 
-  </div>
-
-</section>
-
-
-<!-- ================= NOTIFICATIONS ================= -->
-
-<section id="notificationSection" class="card notification-card">
-
-  <div class="card-header">
-    <div>
-      <div class="card-title">Task notifications</div>
-      <div class="card-subtitle">Get a browser notification when a pending task reaches its date and time.</div>
-    </div>
-    <div class="section-icon">🔔</div>
-  </div>
-
-  <div class="notification-row">
-    <div class="notification-info">
-      <strong id="notificationTitle">Notifications are off</strong>
-      <div id="notificationStatus" class="notification-status">Turn them on once to allow Life Admin AI to notify you.</div>
-    </div>
-
-    <button id="notificationButton" class="notification-btn" type="button" onclick="requestNotifications()">
-      Enable Notifications
-    </button>
   </div>
 
 </section>
@@ -1772,15 +1748,6 @@ body.app-locked #authSection{
 
       <button
         class="menu-item"
-        onclick="openNotificationsFromMenu()"
-      >
-        <span class="menu-icon">🔔</span>
-        <span>Notifications</span>
-      </button>
-
-
-      <button
-        class="menu-item"
         onclick="openHistoryFromMenu()"
       >
         <span class="menu-icon">🕘</span>
@@ -1792,12 +1759,11 @@ body.app-locked #authSection{
 
 
       <button
-        id="themeMenuButton"
-        class="menu-item"
-        onclick="toggleTheme()"
+        class="menu-item menu-notification"
+        onclick="openNotificationPanel()"
       >
-        <span class="menu-icon">🌙</span>
-        <span id="themeMenuText">Dark Mode</span>
+        <span class="menu-icon">🔔</span>
+        <span>Notifications</span>
       </button>
 
 
@@ -1827,6 +1793,26 @@ body.app-locked #authSection{
 
   </div>
 
+</div>
+
+
+<!-- ================= NOTIFICATIONS ================= -->
+<div id="notificationPanel" class="notification-panel hidden">
+  <div id="notificationOverlay" class="notification-overlay"></div>
+  <div class="notification-drawer">
+    <div class="notification-head">
+      <div>
+        <h2>🔔 Notifications</h2>
+        <p>Manage task reminders from here. Notification settings stay inside the menu instead of taking space on your dashboard.</p>
+      </div>
+      <button id="closeNotificationButton" class="history-close" type="button">✕</button>
+    </div>
+    <div class="notification-status-card">
+      <h3 id="notificationStatusTitle">Notifications are off</h3>
+      <p id="notificationStatusText">Enable browser notifications to receive task reminders while Life Admin AI is open.</p>
+      <button id="notificationButton" class="primary-btn" type="button" style="height:45px;padding:0 17px;">Enable Notifications</button>
+    </div>
+  </div>
 </div>
 
 
@@ -1972,7 +1958,35 @@ const authMessage =
   document.getElementById("authMessage");
 
 const userBadge =
-  document.getElementById("userBadge");
+  document.getElementById("profileEmail");
+
+const profileButton =
+  document.getElementById("profileButton");
+const profilePopover =
+  document.getElementById("profilePopover");
+const profileHistoryButton =
+  document.getElementById("profileHistoryButton");
+const profileLogoutButton =
+  document.getElementById("profileLogoutButton");
+const themeToggleButton =
+  document.getElementById("themeToggleButton");
+const themeToggleIcon =
+  document.getElementById("themeToggleIcon");
+const themeToggleText =
+  document.getElementById("themeToggleText");
+
+const notificationPanel =
+  document.getElementById("notificationPanel");
+const notificationOverlay =
+  document.getElementById("notificationOverlay");
+const closeNotificationButton =
+  document.getElementById("closeNotificationButton");
+const notificationButton =
+  document.getElementById("notificationButton");
+const notificationStatusTitle =
+  document.getElementById("notificationStatusTitle");
+const notificationStatusText =
+  document.getElementById("notificationStatusText");
 
 const authSection =
   document.getElementById("authSection");
@@ -2359,15 +2373,11 @@ function updateAuthUI(){
 
 
   if(currentUser){
-
-    userBadge.textContent =
-      currentUser.email;
-
+    userBadge.textContent = currentUser.email;
+    document.getElementById("profileButton").title = currentUser.email;
   }else{
-
-    userBadge.textContent =
-      "Not signed in";
-
+    userBadge.textContent = "Not signed in";
+    document.getElementById("profileButton").title = "Profile";
   }
 
 }
@@ -2630,8 +2640,6 @@ firebaseAuth.onAuthStateChanged(
     if(user){
 
       await loadUserData();
-      updateNotificationUI();
-      checkDueNotifications();
 
     }else{
 
@@ -2781,188 +2789,6 @@ function updateStats(){
     );
 
 }
-
-
-/* ==========================================
-   NOTIFICATIONS
-========================================== */
-
-const NOTIFICATION_CHECK_MS = 15000;
-const notificationStorageKey = "lifeAdminAI_notified_tasks";
-
-function getNotifiedTaskIds(){
-
-  try{
-    return JSON.parse(
-      localStorage.getItem(notificationStorageKey) || "[]"
-    );
-  }catch(error){
-    return [];
-  }
-}
-
-function markTaskNotified(taskId){
-
-  const ids = getNotifiedTaskIds();
-
-  if(!ids.includes(String(taskId))){
-    ids.push(String(taskId));
-  }
-
-  localStorage.setItem(
-    notificationStorageKey,
-    JSON.stringify(ids.slice(-500))
-  );
-}
-
-function updateNotificationUI(){
-
-  const title = document.getElementById("notificationTitle");
-  const status = document.getElementById("notificationStatus");
-  const button = document.getElementById("notificationButton");
-
-  if(!title || !status || !button){
-    return;
-  }
-
-  if(!("Notification" in window)){
-    title.textContent = "Notifications not supported";
-    status.textContent = "This browser does not support browser notifications.";
-    button.style.display = "none";
-    return;
-  }
-
-  if(Notification.permission === "granted"){
-    title.textContent = "Notifications are on";
-    status.textContent = "Life Admin AI will notify you when a pending task becomes due while this app is open.";
-    button.textContent = "Notifications Enabled";
-    button.classList.add("secondary");
-    return;
-  }
-
-  if(Notification.permission === "denied"){
-    title.textContent = "Notifications are blocked";
-    status.textContent = "Allow notifications for this site in your browser settings, then refresh the page.";
-    button.textContent = "Check Again";
-    button.classList.add("secondary");
-    return;
-  }
-
-  title.textContent = "Notifications are off";
-  status.textContent = "Turn them on once to allow Life Admin AI to notify you.";
-  button.textContent = "Enable Notifications";
-}
-
-async function requestNotifications(){
-
-  if(!currentUser){
-    showAIResponse(`
-      <div class="response">
-        Please login first to use task notifications.
-      </div>
-    `);
-    return;
-  }
-
-  if(!("Notification" in window)){
-    updateNotificationUI();
-    return;
-  }
-
-  try{
-    const permission = await Notification.requestPermission();
-
-    updateNotificationUI();
-
-    if(permission === "granted"){
-      new Notification("Life Admin AI",{
-        body:"Notifications are enabled. I’ll remind you when your task is due."
-      });
-      checkDueNotifications();
-    }
-
-  }catch(error){
-    console.error("Notification permission error:",error);
-  }
-}
-
-function getTaskDueDate(task){
-
-  if(!task || !task.date || !task.time){
-    return null;
-  }
-
-  const due = new Date(`${task.date}T${task.time}`);
-
-  if(isNaN(due.getTime())){
-    return null;
-  }
-
-  return due;
-}
-
-function checkDueNotifications(){
-
-  if(!currentUser || !("Notification" in window) || Notification.permission !== "granted" || !Array.isArray(tasks)){
-    return;
-  }
-
-  const now = Date.now();
-  const notified = getNotifiedTaskIds();
-
-  tasks.forEach(task => {
-
-    if(!task || task.completed){
-      return;
-    }
-
-    const due = getTaskDueDate(task);
-
-    if(!due){
-      return;
-    }
-
-    const taskId = String(task.id);
-
-    if(notified.includes(taskId)){
-      return;
-    }
-
-    if(due.getTime() <= now){
-
-      markTaskNotified(task.id);
-
-      try{
-        const notification = new Notification("Life Admin AI — Task Due",{
-          body: task.text,
-          tag: `life-admin-task-${task.id}`,
-          requireInteraction: true
-        });
-
-        notification.onclick = function(){
-          window.focus();
-          notification.close();
-        };
-      }catch(error){
-        console.error("Notification display error:",error);
-      }
-    }
-  });
-}
-
-function openNotificationsFromMenu(){
-
-  closeMenu();
-
-  document
-    .getElementById("notificationSection")
-    .scrollIntoView({behavior:"smooth"});
-
-  updateNotificationUI();
-}
-
-updateNotificationUI();
-setInterval(checkDueNotifications,NOTIFICATION_CHECK_MS);
 
 
 /* ==========================================
@@ -3266,7 +3092,6 @@ function addManualTask(){
   saveUserData();
 
   renderTasks();
-  checkDueNotifications();
 
 
   document.getElementById(
@@ -3326,7 +3151,6 @@ function addAITask(task){
   saveUserData();
 
   renderTasks();
-  checkDueNotifications();
 
 }
 
@@ -3445,7 +3269,6 @@ function editTask(index){
   saveUserData();
 
   renderTasks();
-  checkDueNotifications();
 
 }
 
@@ -4222,74 +4045,104 @@ historySearch.addEventListener(
 
 
 /* ==========================================
-   THEME
+   PROFILE / THEME / NOTIFICATIONS
 ========================================== */
+function closeProfile(){
+  profilePopover.classList.add("hidden");
+}
+
+profileButton.addEventListener("click", function(event){
+  event.stopPropagation();
+  profilePopover.classList.toggle("hidden");
+});
+
+profileHistoryButton.addEventListener("click", function(){
+  closeProfile();
+  openHistory();
+});
+
+profileLogoutButton.addEventListener("click", async function(){
+  closeProfile();
+  await handleLogoutFromMenu();
+});
+
+document.addEventListener("click", function(event){
+  if(!profilePopover.contains(event.target) && !profileButton.contains(event.target)){
+    closeProfile();
+  }
+});
 
 function toggleTheme(){
-
-  const isDark =
-    document.body.classList.toggle(
-      "dark"
-    );
-
-
-  localStorage.setItem(
-    "lifeAdminTheme",
-    isDark
-      ? "dark"
-      : "light"
-  );
-
-
+  const isDark = document.body.classList.toggle("dark");
+  localStorage.setItem("lifeAdminTheme", isDark ? "dark" : "light");
   updateThemeButton();
-
 }
-
 
 function updateThemeButton(){
-
-  const isDark =
-    document.body.classList.contains(
-      "dark"
-    );
-
-
-  const text =
-    document.getElementById(
-      "themeMenuText"
-    );
-
-
-  if(isDark){
-
-    text.textContent =
-      "Light Mode";
-
-  }else{
-
-    text.textContent =
-      "Dark Mode";
-
-  }
-
+  const isDark = document.body.classList.contains("dark");
+  themeToggleIcon.textContent = isDark ? "☀️" : "🌙";
+  themeToggleText.textContent = isDark ? "Light" : "Dark";
 }
 
+themeToggleButton.addEventListener("click", toggleTheme);
 
-if(
-  localStorage.getItem(
-    "lifeAdminTheme"
-  ) === "dark"
-){
-
-  document.body.classList.add(
-    "dark"
-  );
-
+if(localStorage.getItem("lifeAdminTheme") === "dark"){
+  document.body.classList.add("dark");
 }
-
-
 updateThemeButton();
 
+/* Notifications are kept inside Menu only. */
+function openNotificationPanel(){
+  closeMenu();
+  notificationPanel.classList.remove("hidden");
+  updateNotificationUI();
+}
+
+function closeNotificationPanel(){
+  notificationPanel.classList.add("hidden");
+}
+
+function updateNotificationUI(){
+  if(!("Notification" in window)){
+    notificationStatusTitle.textContent = "Notifications unavailable";
+    notificationStatusText.textContent = "This browser does not support desktop notifications.";
+    notificationButton.classList.add("hidden");
+    return;
+  }
+
+  notificationButton.classList.remove("hidden");
+  if(Notification.permission === "granted"){
+    notificationStatusTitle.textContent = "Notifications are enabled";
+    notificationStatusTitle.classList.add("notification-enabled");
+    notificationStatusText.textContent = "Life Admin AI can show task reminders while the app is open.";
+    notificationButton.textContent = "Notifications Enabled";
+    notificationButton.disabled = true;
+  }else{
+    notificationStatusTitle.textContent = "Notifications are off";
+    notificationStatusTitle.classList.remove("notification-enabled");
+    notificationStatusText.textContent = Notification.permission === "denied"
+      ? "Browser notifications are blocked. Allow them from your browser site settings."
+      : "Enable browser notifications to receive task reminders while Life Admin AI is open.";
+    notificationButton.textContent = "Enable Notifications";
+    notificationButton.disabled = false;
+  }
+}
+
+async function requestNotifications(){
+  if(!("Notification" in window)) return;
+  const permission = await Notification.requestPermission();
+  updateNotificationUI();
+  if(permission === "granted"){
+    new Notification("Life Admin AI", {
+      body:"Notifications are now enabled. Your task reminders will appear here.",
+      tag:"life-admin-ai-enabled"
+    });
+  }
+}
+
+notificationButton.addEventListener("click", requestNotifications);
+closeNotificationButton.addEventListener("click", closeNotificationPanel);
+notificationOverlay.addEventListener("click", closeNotificationPanel);
 
 /* ==========================================
    INITIAL
