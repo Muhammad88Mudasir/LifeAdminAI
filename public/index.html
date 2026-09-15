@@ -1,4 +1,4 @@
-
+﻿
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1962,6 +1962,7 @@ body.app-locked #authSection{
 <script src="https://www.gstatic.com/firebasejs/12.18.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.18.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.18.0/firebase-messaging-compat.js"></script>
 
 <script>
 
@@ -1978,6 +1979,7 @@ const firebaseConfig = {
 const firebaseApp = firebase.initializeApp(firebaseConfig);
 const firebaseAuth = firebase.auth(firebaseApp);
 const firestoreDB = firebase.firestore(firebaseApp);
+const firebaseMessaging = firebase.messaging(firebaseApp);
 
 console.log("Firebase initialized");
 
@@ -2011,6 +2013,82 @@ async function firebaseLogout(){
 
 async function firebaseForgotPassword(email){
   await firebaseAuth.sendPasswordResetEmail(email);
+}
+
+async function registerForPushNotifications(user) {
+  try {
+    if (!user) {
+      console.log("No user logged in. FCM registration skipped.");
+      return;
+    }
+
+    if (!("Notification" in window)) {
+      console.log("This browser does not support notifications.");
+      return;
+    }
+
+    const permission = await Notification.requestPermission();
+
+    if (permission !== "granted") {
+      console.log("Notification permission not granted.");
+      return;
+    }
+
+    const serviceWorkerRegistration =
+      await navigator.serviceWorker.register(
+        "/firebase-messaging-sw.js"
+      );
+
+    const vapidKey =
+      "B0DFFA47291067353D3F7DA440B374E21C8C9236";
+
+    const token = await firebaseMessaging.getToken({
+      vapidKey: vapidKey,
+      serviceWorkerRegistration:
+        serviceWorkerRegistration
+    });
+
+    if (!token) {
+      console.log("FCM token nahi mila.");
+      return;
+    }
+
+    const timezone =
+      Intl.DateTimeFormat().resolvedOptions().timeZone ||
+      "Asia/Karachi";
+
+    const response = await fetch(
+      "/api/register-token",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          uid: user.uid,
+          token: token,
+          timezone: timezone
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    if (data.ok) {
+      console.log("✅ FCM token registered successfully.");
+    } else {
+      console.error(
+        "❌ FCM token registration failed:",
+        data
+      );
+    }
+
+  } catch (error) {
+    console.error(
+      "❌ Push notification setup error:",
+      error
+    );
+  }
 }
 
 </script>
@@ -2701,6 +2779,8 @@ firebaseAuth.onAuthStateChanged(
       await loadUserData();
       updateNotificationUI();
       checkDueNotifications();
+
+      await registerForPushNotifications(user);
 
     }else{
 
@@ -4510,4 +4590,3 @@ updateStats();
 
 </body>
 </html>
-```

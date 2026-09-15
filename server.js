@@ -3,167 +3,170 @@ require("dotenv").config();
 const express = require("express");
 const path = require("path");
 
-const app = express();
-const PORT = process.env.PORT || 3000;
+const {
+  initializeApp,
+  cert,
+  getApps
+} = require("firebase-admin/app");
 
-app.use(express.json());
+const {
+  getFirestore,
+  FieldValue
+} = require("firebase-admin/firestore");
+
+const {
+  getMessaging
+} = require("firebase-admin/messaging");
+
+const app = express();
+
+app.use(express.json({ limit: "1mb" }));
+
+/* =========================
+   FIREBASE ADMIN
+========================= */
+
+let firebaseReady = false;
+let db = null;
+let messaging = null;
+
+try {
+  const serviceAccountRaw = process.env.FIREBASE_SERVICE_ACCOUNT;
+
+  if (serviceAccountRaw) {
+    let serviceAccount;
+
+    try {
+      serviceAccount = JSON.parse(serviceAccountRaw);
+    } catch (error) {
+      console.error("FIREBASE_SERVICE_ACCOUNT JSON is invalid.");
+    }
+
+    if (serviceAccount) {
+      if (!getApps().length) {
+        initializeApp({
+          credential: cert(serviceAccount)
+        });
+      }
+
+      db = getFirestore();
+      messaging = getMessaging();
+
+      firebaseReady = true;
+
+      console.log("Firebase Admin connected.");
+    }
+  } else {
+    console.log("FIREBASE_SERVICE_ACCOUNT is missing.");
+  }
+} catch (error) {
+  console.error("Firebase initialization error:", error.message);
+}
+
+/* =========================
+   STATIC WEBSITE
+========================= */
+
 app.use(express.static(path.join(__dirname, "public")));
+
+/* =========================
+   HEALTH CHECK
+========================= */
+
+app.get("/api/health", (req, res) => {
+  res.json({
+    ok: true,
+    app: "Life Admin AI",
+    firebase: firebaseReady
+  });
+});
+
+/* =========================
+   AI API
+========================= */
 
 app.post("/api/ai", async (req, res) => {
   try {
-    const { message, tasks } = req.body;
+    const { message } = req.body;
 
-    if (!message || !message.trim()) {
+    if (!message || typeof message !== "string") {
       return res.status(400).json({
-        type: "input_error",
         error: "Message is required."
       });
     }
 
-    const API_KEY = process.env.OPENROUTER_API_KEY;
+    const apiKey = process.env.OPENROUTER_API_KEY;
 
-    console.log("OpenRouter key loaded:", !!API_KEY);
-
-    if (!API_KEY) {
+    if (!apiKey) {
       return res.status(500).json({
-        type: "setup_error",
-        error: "OpenRouter API key is not configured."
+        error: "AI service is not configured."
       });
     }
 
     const prompt = `
-You are Life Admin AI.
-
-You manage the user's tasks.
-
-Current tasks:
-${JSON.stringify(tasks || [])}
+You are Life Admin AI, a helpful personal task and reminder assistant.
 
 User message:
 ${message}
 
-Today's date is ${new Date().toISOString().split("T")[0]}.
+Your job is to understand what the user wants.
 
-Reply in the same language as the user's message.
-
-Return ONLY valid JSON.
-Do not use markdown.
-Do not use code fences.
-
-========================
-ADD TASK
-========================
-
-If the user clearly wants to add, create, or set a task:
+If the user wants to create a task/reminder, return JSON only:
 
 {
   "action": "add_task",
-  "task": {
-    "text": "short clear task",
-    "date": "YYYY-MM-DD or null",
-    "time": "HH:MM or null"
-  },
-  "taskIndex": null,
-  "reply": "short natural confirmation"
+  "title": "short task title",
+  "date": "YYYY-MM-DD",
+  "time": "HH:MM"
 }
 
-========================
-EDIT TASK
-========================
-
-If the user wants to change, edit, or update an existing task:
-
-Find the closest matching task.
-
-{
-  "action": "edit_task",
-  "task": {
-    "text": "updated task text",
-    "date": "YYYY-MM-DD or null",
-    "time": "HH:MM or null"
-  },
-  "taskIndex": 0,
-  "reply": "short natural confirmation"
-}
-
-taskIndex MUST be the exact index of the existing task.
-
-========================
-DELETE TASK
-========================
-
-If the user clearly wants to delete or remove a task:
-
-Find the matching task.
+If the user wants to delete a task:
 
 {
   "action": "delete_task",
-  "task": null,
-  "taskIndex": 0,
-  "reply": "short natural confirmation"
+  "title": "task title"
 }
 
-taskIndex MUST be the exact index of the task.
-
-========================
-NORMAL QUESTION
-========================
-
-If the user is not adding, editing, or deleting a task:
+If the user wants to edit a task:
 
 {
-  "action": "none",
-  "task": null,
-  "taskIndex": null,
-  "reply": "short natural answer"
+  "action": "edit_task",
+  "oldTitle": "old task title",
+  "newTitle": "new task title",
+  "date": "YYYY-MM-DD",
+  "time": "HH:MM"
 }
 
-Understand:
+If the user is simply asking a question or chatting:
 
-today
-tomorrow
-kal
-aaj
-subah
-dopahar
-shaam
-raat
+{
+  "action": "chat",
+  "reply": "helpful response"
+}
 
-If no exact date or time is given, use null.
+Use the current date when interpreting words like today, tomorrow, etc.
 
-IMPORTANT:
-
-Only use add_task when the user clearly wants to create a task.
-
-Only use edit_task when the user clearly wants to modify an existing task.
-
-Only use delete_task when the user clearly wants to remove a task.
+Return valid JSON only.
 `;
-
-    console.log("🤖 Sending request to OpenRouter...");
 
     const response = await fetch(
       "https://openrouter.ai/api/v1/chat/completions",
       {
         method: "POST",
-
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${API_KEY}`,
-          "HTTP-Referer": "https://lifeadminai.onrender.com",
-          "X-Title": "LifeAdminAI"
+          Authorization: `Bearer ${apiKey}`,
+          "HTTP-Referer": "https://life-admin-ai-gamma.vercel.app",
+          "X-Title": "Life Admin AI"
         },
-
         body: JSON.stringify({
-          model: "openrouter/free",
-
+          model: "openai/gpt-4o-mini",
           messages: [
             {
               role: "user",
               content: prompt
             }
           ],
-
           temperature: 0.2
         })
       }
@@ -172,101 +175,329 @@ Only use delete_task when the user clearly wants to remove a task.
     const data = await response.json();
 
     if (!response.ok) {
-      console.error("======================================");
-      console.error("❌ OPENROUTER API ERROR");
-      console.error("Status:", response.status);
-      console.error(
-        "Response:",
-        JSON.stringify(data, null, 2)
-      );
-      console.error("======================================");
-
-      if (response.status === 429) {
-        return res.status(429).json({
-          type: "quota",
-          message:
-            "AI temporarily unavailable hai. OpenRouter rate limit hit ho sakti hai.",
-          retryAfter: 30
-        });
-      }
+      console.error("OpenRouter error:", data);
 
       return res.status(response.status).json({
-        type: "ai_error",
-        error:
-          data?.error?.message ||
-          "OpenRouter request failed."
+        error: "AI service is temporarily unavailable."
       });
     }
 
-    let rawReply =
+    const text =
       data?.choices?.[0]?.message?.content || "";
 
-    if (!rawReply) {
-      console.error(
-        "❌ OpenRouter returned an empty response."
-      );
-
-      return res.status(500).json({
-        type: "empty_response",
-        error: "OpenRouter ne empty response diya."
-      });
-    }
-
-    rawReply = rawReply
-      .replace(/```json/gi, "")
-      .replace(/```/g, "")
-      .trim();
-
-    console.log("✅ OpenRouter response received.");
-
-    let result;
+    let parsed;
 
     try {
-      result = JSON.parse(rawReply);
-    } catch (parseError) {
-      console.error("❌ AI JSON Parse Error:");
-      console.error(rawReply);
+      parsed = JSON.parse(text);
+    } catch (error) {
+      const cleaned = text
+        .replace(/```json/gi, "")
+        .replace(/```/g, "")
+        .trim();
 
-      return res.json({
-        action: "none",
-        task: null,
-        taskIndex: null,
-        reply: rawReply
-      });
+      try {
+        parsed = JSON.parse(cleaned);
+      } catch (error2) {
+        parsed = {
+          action: "chat",
+          reply: text
+        };
+      }
     }
 
-    return res.json({
-      action: result.action || "none",
-
-      task: result.task || null,
-
-      taskIndex:
-        typeof result.taskIndex === "number"
-          ? result.taskIndex
-          : null,
-
-      reply:
-        result.reply || "Done."
-    });
+    return res.json(parsed);
 
   } catch (error) {
-    console.error("======================================");
-    console.error("❌ SERVER ERROR");
-    console.error(error);
-    console.error("======================================");
+    console.error("AI API error:", error);
 
     return res.status(500).json({
-      type: "server_error",
-      error:
-        "Server se connection mein problem aa gayi."
+      error: "Something went wrong with the AI."
     });
   }
 });
 
-app.listen(PORT, "0.0.0.0", () => {
-  console.log("======================================");
-  console.log("        LIFE ADMIN AI");
-  console.log("======================================");
-  console.log(`Server running on port ${PORT}`);
-  console.log("======================================");
+/* =========================
+   REGISTER PUSH TOKEN
+========================= */
+
+app.post("/api/register-token", async (req, res) => {
+  try {
+    if (!firebaseReady || !db) {
+      return res.status(503).json({
+        error: "Firebase is not configured."
+      });
+    }
+
+    const {
+      uid,
+      token,
+      timezone
+    } = req.body;
+
+    if (!uid || !token) {
+      return res.status(400).json({
+        error: "uid and token are required."
+      });
+    }
+
+    const safeTimezone =
+      typeof timezone === "string" && timezone.length <= 100
+        ? timezone
+        : "Asia/Karachi";
+
+    const tokenRef = db
+      .collection("notificationTokens")
+      .doc(token);
+
+    await tokenRef.set(
+      {
+        uid,
+        token,
+        timezone: safeTimezone,
+        updatedAt: FieldValue.serverTimestamp()
+      },
+      {
+        merge: true
+      }
+    );
+
+    return res.json({
+      ok: true,
+      message: "Notification token registered."
+    });
+
+  } catch (error) {
+    console.error("Register token error:", error);
+
+    return res.status(500).json({
+      error: "Could not register notification token."
+    });
+  }
 });
+
+/* =========================
+   SEND REMINDERS
+========================= */
+
+app.post("/api/send-reminders", async (req, res) => {
+  try {
+    const cronSecret = process.env.CRON_SECRET;
+
+    const providedSecret =
+      req.headers["x-cron-secret"];
+
+    if (!cronSecret) {
+      return res.status(500).json({
+        error: "CRON_SECRET is not configured."
+      });
+    }
+
+    if (providedSecret !== cronSecret) {
+      return res.status(401).json({
+        error: "Unauthorized."
+      });
+    }
+
+    if (!firebaseReady || !db || !messaging) {
+      return res.status(503).json({
+        error: "Firebase is not configured."
+      });
+    }
+
+    const now = new Date();
+
+    const tokenSnapshot = await db
+      .collection("notificationTokens")
+      .get();
+
+    let checkedTokens = 0;
+    let notificationsSent = 0;
+    let notificationsFailed = 0;
+
+    for (const tokenDoc of tokenSnapshot.docs) {
+      checkedTokens++;
+
+      const tokenData = tokenDoc.data();
+
+      const uid = tokenData.uid;
+      const token = tokenData.token;
+      const timezone =
+        tokenData.timezone || "Asia/Karachi";
+
+      if (!uid || !token) {
+        continue;
+      }
+
+      /* =========================
+         USER LOCAL TIME
+      ========================= */
+
+      const localParts = new Intl.DateTimeFormat(
+        "en-CA",
+        {
+          timeZone: timezone,
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false
+        }
+      ).formatToParts(now);
+
+      const parts = {};
+
+      for (const part of localParts) {
+        if (part.type !== "literal") {
+          parts[part.type] = part.value;
+        }
+      }
+
+      const localDate =
+        `${parts.year}-${parts.month}-${parts.day}`;
+
+      const localTime =
+        `${parts.hour}:${parts.minute}`;
+
+      /* =========================
+         FIND USER TASKS
+      ========================= */
+
+      const tasksSnapshot = await db
+        .collection("tasks")
+        .where("uid", "==", uid)
+        .get();
+
+      for (const taskDoc of tasksSnapshot.docs) {
+        const task = taskDoc.data();
+
+        if (task.completed === true) {
+          continue;
+        }
+
+        if (task.notificationSentAt) {
+          continue;
+        }
+
+        if (!task.date || !task.time) {
+          continue;
+        }
+
+        /*
+          Task is due when:
+          date is today AND time <= current local time
+          OR date is before today.
+        */
+
+        const isDue =
+          task.date < localDate ||
+          (
+            task.date === localDate &&
+            task.time <= localTime
+          );
+
+        if (!isDue) {
+          continue;
+        }
+
+        const title =
+          task.title ||
+          "You have a task due.";
+
+        try {
+          await messaging.send({
+            token,
+
+            notification: {
+              title: "Life Admin AI",
+              body: `Reminder: ${title}`
+            },
+
+            data: {
+              taskId: taskDoc.id,
+              title: title
+            },
+
+            webpush: {
+              notification: {
+                title: "Life Admin AI",
+                body: `Reminder: ${title}`,
+                requireInteraction: true
+              }
+            }
+          });
+
+          await taskDoc.ref.update({
+            notificationSentAt:
+              FieldValue.serverTimestamp()
+          });
+
+          notificationsSent++;
+
+        } catch (sendError) {
+          notificationsFailed++;
+
+          console.error(
+            "Notification send error:",
+            sendError.message
+          );
+
+          const errorCode =
+            sendError?.errorInfo?.code || "";
+
+          /*
+            Remove invalid/expired FCM tokens.
+          */
+
+          if (
+            errorCode.includes("registration-token-not-registered") ||
+            errorCode.includes("invalid-registration-token")
+          ) {
+            await tokenDoc.ref.delete();
+          }
+        }
+      }
+    }
+
+    return res.json({
+      ok: true,
+      checkedTokens,
+      notificationsSent,
+      notificationsFailed,
+      time: now.toISOString()
+    });
+
+  } catch (error) {
+    console.error("Send reminders error:", error);
+
+    return res.status(500).json({
+      error: "Could not send reminders."
+    });
+  }
+});
+
+/* =========================
+   WEBSITE FALLBACK
+========================= */
+
+app.use((req, res) => {
+  res.sendFile(
+    path.join(__dirname, "public", "index.html")
+  );
+});
+
+/* =========================
+   START SERVER
+========================= */
+
+const PORT = process.env.PORT || 3000;
+
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(
+      `Life Admin AI server running on port ${PORT}`
+    );
+  });
+}
+
+module.exports = app;
