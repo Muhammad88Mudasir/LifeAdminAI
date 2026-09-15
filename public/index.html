@@ -1,0 +1,4034 @@
+﻿
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<title>Life Admin AI</title>
+
+<style>
+:root{
+  --bg:#f5f7fb;
+  --surface:#ffffff;
+  --surface-2:#f8fafc;
+  --text:#111827;
+  --muted:#6b7280;
+  --border:#e5e7eb;
+  --primary:#635bff;
+  --primary-dark:#5147e8;
+  --danger:#ef4444;
+  --success:#10b981;
+  --shadow:0 10px 35px rgba(15,23,42,.07);
+}
+
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  transition:.25s;
+}
+
+button,input{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+}
+
+.hidden{
+  display:none !important;
+}
+
+.app{
+  max-width:1180px;
+  margin:auto;
+  padding:24px;
+}
+
+/* ================= HEADER ================= */
+
+.header{
+  background:
+    radial-gradient(circle at top right,rgba(255,255,255,.18),transparent 35%),
+    linear-gradient(135deg,#635bff,#7c3aed);
+  border-radius:28px;
+  padding:30px;
+  color:white;
+  box-shadow:0 20px 45px rgba(99,91,255,.22);
+  margin-bottom:22px;
+}
+
+.header-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:20px;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+
+.logo{
+  width:52px;
+  height:52px;
+  display:grid;
+  place-items:center;
+  border-radius:16px;
+  background:rgba(255,255,255,.16);
+  backdrop-filter:blur(10px);
+  font-size:25px;
+  font-weight:800;
+}
+
+.brand h1{
+  font-size:27px;
+  letter-spacing:-.5px;
+}
+
+.brand p{
+  margin-top:4px;
+  opacity:.82;
+  font-size:14px;
+}
+
+.header-actions{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+
+.user-badge{
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.25);
+  color:white;
+  padding:9px 13px;
+  border-radius:999px;
+  font-size:13px;
+  font-weight:600;
+}
+
+.header-btn{
+  border:1px solid rgba(255,255,255,.22);
+  background:rgba(255,255,255,.13);
+  color:white;
+  padding:10px 14px;
+  border-radius:12px;
+  transition:.2s;
+}
+
+.header-btn:hover{
+  background:rgba(255,255,255,.22);
+}
+
+.header-content{
+  margin-top:30px;
+  max-width:700px;
+}
+
+.header-content h2{
+  font-size:35px;
+  line-height:1.15;
+  letter-spacing:-1px;
+}
+
+.header-content p{
+  margin-top:10px;
+  opacity:.86;
+  line-height:1.6;
+}
+
+/* ================= MENU ================= */
+
+.menu-panel{
+  position:fixed;
+  inset:0;
+  z-index:2000;
+}
+
+.menu-overlay{
+  position:absolute;
+  inset:0;
+  background:rgba(15,23,42,.45);
+  backdrop-filter:blur(3px);
+}
+
+.menu-drawer{
+  position:absolute;
+  top:0;
+  right:0;
+  width:min(360px,92vw);
+  height:100%;
+  background:var(--surface);
+  border-left:1px solid var(--border);
+  box-shadow:-20px 0 50px rgba(15,23,42,.18);
+  padding:24px;
+  overflow-y:auto;
+  animation:menuIn .25s ease;
+}
+
+@keyframes menuIn{
+  from{
+    transform:translateX(100%);
+    opacity:.7;
+  }
+  to{
+    transform:translateX(0);
+    opacity:1;
+  }
+}
+
+.menu-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:24px;
+}
+
+.menu-brand{
+  display:flex;
+  align-items:center;
+  gap:11px;
+}
+
+.menu-logo{
+  width:42px;
+  height:42px;
+  border-radius:13px;
+  background:linear-gradient(135deg,#635bff,#7c3aed);
+  color:white;
+  display:grid;
+  place-items:center;
+  font-weight:800;
+  font-size:20px;
+}
+
+.menu-header h2{
+  font-size:19px;
+}
+
+.menu-header p{
+  color:var(--muted);
+  font-size:12px;
+  margin-top:2px;
+}
+
+.menu-close{
+  width:38px;
+  height:38px;
+  border:1px solid var(--border);
+  background:var(--surface-2);
+  color:var(--text);
+  border-radius:11px;
+}
+
+.menu-list{
+  display:grid;
+  gap:7px;
+}
+
+.menu-item{
+  width:100%;
+  display:flex;
+  align-items:center;
+  gap:13px;
+  padding:13px 14px;
+  border:1px solid transparent;
+  background:transparent;
+  color:var(--text);
+  border-radius:13px;
+  text-align:left;
+  transition:.2s;
+}
+
+.menu-item:hover{
+  background:var(--surface-2);
+  border-color:var(--border);
+}
+
+.menu-item.active{
+  background:rgba(99,91,255,.09);
+  color:var(--primary);
+  border-color:rgba(99,91,255,.14);
+}
+
+.menu-icon{
+  width:30px;
+  text-align:center;
+  font-size:18px;
+}
+
+.menu-divider{
+  height:1px;
+  background:var(--border);
+  margin:12px 0;
+}
+
+.menu-logout{
+  color:var(--danger);
+}
+
+.menu-logout:hover{
+  background:#fff1f2;
+  border-color:#fecaca;
+}
+
+/* ================= AUTH ================= */
+
+.auth-card{
+  margin-bottom:22px;
+}
+
+.auth-tabs{
+  display:flex;
+  gap:10px;
+  margin-bottom:18px;
+}
+
+.auth-tab{
+  border:1px solid var(--border);
+  background:var(--surface-2);
+  color:var(--muted);
+  padding:10px 16px;
+  border-radius:12px;
+  font-weight:600;
+}
+
+.auth-tab.active{
+  background:var(--primary);
+  border-color:var(--primary);
+  color:white;
+}
+
+.auth-form{
+  display:grid;
+  gap:16px;
+}
+
+.auth-field-group{
+  display:grid;
+  gap:8px;
+}
+
+.auth-field-group label{
+  font-size:14px;
+  font-weight:600;
+}
+
+.auth-field{
+  border:1px solid var(--border);
+  background:var(--surface-2);
+  color:var(--text);
+  border-radius:12px;
+  padding:13px 14px;
+  outline:none;
+}
+
+.auth-field:focus{
+  border-color:var(--primary);
+  box-shadow:0 0 0 4px rgba(99,91,255,.08);
+}
+
+.auth-actions{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+}
+
+.auth-message{
+  min-height:22px;
+  margin-top:12px;
+  font-size:14px;
+  font-weight:600;
+}
+
+.auth-message.success{
+  color:var(--success);
+}
+
+.auth-message.error{
+  color:var(--danger);
+}
+
+/* ================= STATS ================= */
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+  margin-bottom:22px;
+}
+
+.stat{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:20px;
+  box-shadow:var(--shadow);
+  cursor:pointer;
+  transition:.2s;
+}
+
+.stat:hover{
+  transform:translateY(-2px);
+  border-color:#d1d5db;
+}
+
+.stat.active{
+  border-color:var(--primary);
+  box-shadow:0 10px 35px rgba(99,91,255,.13);
+}
+
+.stat-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.stat-icon{
+  width:38px;
+  height:38px;
+  border-radius:12px;
+  display:grid;
+  place-items:center;
+  background:var(--surface-2);
+}
+
+.stat-number{
+  font-size:29px;
+  font-weight:800;
+  margin-top:13px;
+}
+
+.stat-label{
+  color:var(--muted);
+  font-size:13px;
+  margin-top:3px;
+}
+
+/* ================= CARDS ================= */
+
+.card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:22px;
+  padding:24px;
+  box-shadow:var(--shadow);
+  margin-bottom:22px;
+}
+
+.card-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  margin-bottom:17px;
+}
+
+.card-title{
+  font-size:19px;
+  font-weight:750;
+}
+
+.card-subtitle{
+  color:var(--muted);
+  font-size:13px;
+  margin-top:4px;
+}
+
+.section-icon{
+  width:40px;
+  height:40px;
+  border-radius:12px;
+  display:grid;
+  place-items:center;
+  background:rgba(99,91,255,.09);
+  color:var(--primary);
+  font-weight:800;
+}
+
+/* ================= AI ================= */
+
+.ai-box{
+  position:relative;
+}
+
+.ai-input-row{
+  display:flex;
+  gap:10px;
+}
+
+.ai-input{
+  flex:1;
+  min-width:0;
+  border:1px solid var(--border);
+  background:var(--surface-2);
+  color:var(--text);
+  padding:15px 17px;
+  border-radius:15px;
+  outline:none;
+  transition:.2s;
+}
+
+.ai-input:focus{
+  border-color:var(--primary);
+  box-shadow:0 0 0 4px rgba(99,91,255,.1);
+}
+
+.primary-btn{
+  border:0;
+  background:var(--primary);
+  color:white;
+  padding:0 21px;
+  border-radius:15px;
+  font-weight:700;
+  transition:.2s;
+}
+
+.primary-btn:hover{
+  background:var(--primary-dark);
+  transform:translateY(-1px);
+}
+
+.primary-btn:disabled{
+  opacity:.6;
+  cursor:not-allowed;
+  transform:none;
+}
+
+.examples{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:12px;
+}
+
+.example{
+  border:1px solid var(--border);
+  background:var(--surface-2);
+  color:var(--muted);
+  padding:8px 11px;
+  border-radius:999px;
+  font-size:12px;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.example:hover{
+  border-color:var(--primary);
+  color:var(--primary);
+}
+
+.ai-response{
+  display:none;
+  margin-top:16px;
+}
+
+.response{
+  padding:15px 16px;
+  border-radius:15px;
+  background:var(--surface-2);
+  border:1px solid var(--border);
+  line-height:1.5;
+}
+
+.loading{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  color:var(--muted);
+}
+
+.spinner{
+  width:17px;
+  height:17px;
+  border:2px solid var(--border);
+  border-top-color:var(--primary);
+  border-radius:50%;
+  animation:spin .8s linear infinite;
+}
+
+@keyframes spin{
+  to{transform:rotate(360deg)}
+}
+
+/* ================= QUOTA ================= */
+
+.quota{
+  padding:20px;
+  border-radius:18px;
+  border:1px solid #fed7aa;
+  background:linear-gradient(135deg,#fff7ed,#fffbeb);
+}
+
+.quota h3{
+  font-size:16px;
+  margin-bottom:6px;
+}
+
+.quota p{
+  color:#6b7280;
+  line-height:1.55;
+  font-size:14px;
+  margin-bottom:15px;
+}
+
+.quota-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:9px;
+}
+
+.retry{
+  border:0;
+  background:var(--primary);
+  color:white;
+  padding:10px 15px;
+  border-radius:11px;
+  font-weight:700;
+}
+
+.upgrade{
+  text-decoration:none;
+  background:#111827;
+  color:white;
+  padding:10px 15px;
+  border-radius:11px;
+  font-weight:700;
+}
+
+/* ================= MANUAL ================= */
+
+.manual-grid{
+  display:grid;
+  grid-template-columns:2fr 1fr 1fr auto;
+  gap:10px;
+}
+
+.field{
+  border:1px solid var(--border);
+  background:var(--surface-2);
+  color:var(--text);
+  padding:13px 14px;
+  border-radius:13px;
+  outline:none;
+}
+
+.field:focus{
+  border-color:var(--primary);
+}
+
+.add-btn{
+  border:0;
+  background:#111827;
+  color:white;
+  padding:0 18px;
+  border-radius:13px;
+  font-weight:700;
+}
+
+/* ================= CONTROLS ================= */
+
+.controls{
+  display:flex;
+  gap:9px;
+  flex-wrap:wrap;
+  margin-bottom:16px;
+}
+
+.search{
+  flex:1;
+  min-width:190px;
+  border:1px solid var(--border);
+  background:var(--surface-2);
+  color:var(--text);
+  padding:12px 14px;
+  border-radius:12px;
+  outline:none;
+}
+
+.filter{
+  border:1px solid var(--border);
+  background:var(--surface-2);
+  color:var(--muted);
+  padding:10px 13px;
+  border-radius:11px;
+  font-weight:650;
+}
+
+.filter.active{
+  background:var(--primary);
+  border-color:var(--primary);
+  color:white;
+}
+
+.clear-btn{
+  border:1px solid #fecaca;
+  background:#fff1f2;
+  color:#dc2626;
+  padding:10px 13px;
+  border-radius:11px;
+  font-weight:650;
+}
+
+/* ================= TASK ================= */
+
+.task-list{
+  min-height:100px;
+}
+
+.task{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+  padding:16px;
+  border:1px solid var(--border);
+  background:var(--surface);
+  border-radius:16px;
+  margin-bottom:10px;
+  transition:.2s;
+  animation:taskIn .25s ease;
+}
+
+@keyframes taskIn{
+  from{
+    opacity:0;
+    transform:translateY(5px);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+
+.task:hover{
+  border-color:#d5d8e1;
+  transform:translateY(-1px);
+}
+
+.task-left{
+  display:flex;
+  align-items:flex-start;
+  gap:13px;
+  min-width:0;
+  flex:1;
+}
+
+.checkbox{
+  width:20px;
+  height:20px;
+  margin-top:2px;
+  accent-color:var(--primary);
+  cursor:pointer;
+}
+
+.task-info{
+  min-width:0;
+}
+
+.task-text{
+  font-size:15px;
+  font-weight:700;
+  word-break:break-word;
+}
+
+.completed .task-text{
+  color:var(--muted);
+  text-decoration:line-through;
+}
+
+.task-meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-top:7px;
+}
+
+.meta{
+  font-size:11px;
+  color:var(--muted);
+  background:var(--surface-2);
+  border:1px solid var(--border);
+  padding:4px 7px;
+  border-radius:7px;
+}
+
+.added-time{
+  font-size:11px;
+  color:var(--primary);
+  background:rgba(99,91,255,.07);
+  border-color:rgba(99,91,255,.14);
+}
+
+.task-actions{
+  display:flex;
+  gap:6px;
+}
+
+.icon-btn{
+  width:35px;
+  height:35px;
+  border:1px solid var(--border);
+  background:var(--surface-2);
+  color:var(--text);
+  border-radius:10px;
+}
+
+.icon-btn:hover{
+  border-color:#cbd5e1;
+}
+
+.delete:hover{
+  color:var(--danger);
+  border-color:#fecaca;
+}
+
+.edit:hover{
+  color:var(--primary);
+  border-color:#c7c4ff;
+}
+
+/* ================= EMPTY ================= */
+
+.empty{
+  text-align:center;
+  padding:50px 20px;
+  color:var(--muted);
+}
+
+.empty-icon{
+  width:55px;
+  height:55px;
+  border-radius:18px;
+  background:var(--surface-2);
+  display:grid;
+  place-items:center;
+  margin:0 auto 13px;
+  font-size:24px;
+}
+
+.empty h3{
+  color:var(--text);
+  margin-bottom:5px;
+}
+
+/* ================= HISTORY ================= */
+
+.history-panel{
+  position:fixed;
+  inset:0;
+  z-index:1000;
+}
+
+.history-overlay{
+  position:absolute;
+  inset:0;
+  background:rgba(15,23,42,.45);
+  backdrop-filter:blur(3px);
+}
+
+.history-drawer{
+  position:absolute;
+  top:0;
+  right:0;
+  width:min(430px,92vw);
+  height:100%;
+  background:var(--surface);
+  border-left:1px solid var(--border);
+  box-shadow:-20px 0 50px rgba(15,23,42,.18);
+  padding:24px;
+  overflow-y:auto;
+  animation:historyIn .25s ease;
+}
+
+@keyframes historyIn{
+  from{
+    transform:translateX(100%);
+    opacity:.7;
+  }
+  to{
+    transform:translateX(0);
+    opacity:1;
+  }
+}
+
+.history-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:15px;
+  margin-bottom:20px;
+}
+
+.history-header h2{
+  font-size:22px;
+}
+
+.history-header p{
+  color:var(--muted);
+  font-size:13px;
+  margin-top:4px;
+}
+
+.history-close{
+  width:38px;
+  height:38px;
+  border:1px solid var(--border);
+  background:var(--surface-2);
+  color:var(--text);
+  border-radius:11px;
+}
+
+.history-search-wrap{
+  margin-bottom:18px;
+}
+
+.history-search{
+  width:100%;
+  border:1px solid var(--border);
+  background:var(--surface-2);
+  color:var(--text);
+  padding:13px 14px;
+  border-radius:13px;
+  outline:none;
+}
+
+.history-search:focus{
+  border-color:var(--primary);
+}
+
+.history-list{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.history-item{
+  border:1px solid var(--border);
+  background:var(--surface-2);
+  border-radius:15px;
+  padding:14px;
+}
+
+.history-item-top{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:flex-start;
+}
+
+.history-task-text{
+  font-size:14px;
+  font-weight:700;
+  word-break:break-word;
+}
+
+.history-status{
+  font-size:11px;
+  padding:4px 7px;
+  border-radius:7px;
+  white-space:nowrap;
+}
+
+.history-status.pending{
+  background:#fff7ed;
+  color:#c2410c;
+}
+
+.history-status.completed{
+  background:#ecfdf5;
+  color:#047857;
+}
+
+.history-status.deleted{
+  background:#fff1f2;
+  color:#dc2626;
+}
+
+.history-meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-top:8px;
+}
+
+.history-time{
+  color:var(--muted);
+  font-size:11px;
+  margin-top:9px;
+}
+
+.history-empty{
+  text-align:center;
+  color:var(--muted);
+  padding:45px 15px;
+}
+
+/* ================= FOOTER ================= */
+
+.footer{
+  text-align:center;
+  color:var(--muted);
+  font-size:12px;
+  padding:5px 0 20px;
+}
+
+/* ================= DARK MODE ================= */
+
+body.dark{
+  --bg:#0b1020;
+  --surface:#111827;
+  --surface-2:#172033;
+  --text:#f9fafb;
+  --muted:#9ca3af;
+  --border:#263247;
+  --shadow:0 10px 35px rgba(0,0,0,.2);
+}
+
+body.dark .quota{
+  background:linear-gradient(135deg,#24190d,#211b0d);
+  border-color:#6b4b1f;
+}
+
+body.dark .quota p{
+  color:#9ca3af;
+}
+
+body.dark .upgrade{
+  background:#f9fafb;
+  color:#111827;
+}
+
+body.dark .clear-btn{
+  background:#29151a;
+  border-color:#5b252d;
+  color:#f87171;
+}
+
+body.dark .menu-logout:hover{
+  background:#29151a;
+  border-color:#5b252d;
+}
+
+body.dark .history-status.pending{
+  background:#291d10;
+  color:#fb923c;
+}
+
+body.dark .history-status.completed{
+  background:#10261e;
+  color:#34d399;
+}
+
+body.dark .history-status.deleted{
+  background:#29151a;
+  color:#f87171;
+}
+
+body.app-locked .app-content{
+  display:none;
+}
+
+#authSection{
+  display:none;
+}
+
+body.app-locked #authSection{
+  display:block;
+  position:fixed;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  width:min(460px,calc(100vw - 24px));
+  z-index:40;
+  box-shadow:0 24px 60px rgba(15,23,42,.35);
+}
+
+/* ================= MOBILE ================= */
+
+@media(max-width:800px){
+  .app{
+    padding:14px;
+  }
+
+  .header{
+    padding:22px;
+    border-radius:22px;
+  }
+
+  .header-content h2{
+    font-size:28px;
+  }
+
+  .stats{
+    grid-template-columns:1fr;
+  }
+
+  .manual-grid{
+    grid-template-columns:1fr;
+  }
+
+  .add-btn{
+    height:47px;
+  }
+}
+
+@media(max-width:600px){
+  .header-top{
+    align-items:center;
+  }
+
+  .brand h1{
+    font-size:21px;
+  }
+
+  .brand p{
+    font-size:12px;
+  }
+
+  .logo{
+    width:44px;
+    height:44px;
+    font-size:21px;
+  }
+
+  .user-badge{
+    display:none;
+  }
+
+  .header-actions{
+    gap:6px;
+  }
+
+  .header-btn{
+    padding:9px 10px;
+    font-size:12px;
+  }
+
+  .card{
+    padding:18px;
+    border-radius:18px;
+  }
+
+  .ai-input-row{
+    flex-direction:column;
+  }
+
+  .primary-btn{
+    height:47px;
+  }
+
+  .task{
+    align-items:flex-start;
+  }
+
+  .task-actions{
+    flex-shrink:0;
+  }
+
+  .history-drawer{
+    width:100%;
+    padding:20px;
+  }
+
+  .menu-drawer{
+    width:100%;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<!-- ================= AUTH ================= -->
+
+<section id="authSection" class="card auth-card">
+
+  <div class="auth-tabs">
+    <button type="button" class="auth-tab active" data-auth-mode="login">
+      Login
+    </button>
+
+    <button type="button" class="auth-tab" data-auth-mode="signup">
+      Sign Up
+    </button>
+  </div>
+
+  <form id="authForm" class="auth-form">
+
+    <div class="auth-field-group">
+      <label for="authEmail">Email</label>
+      <input
+        id="authEmail"
+        class="auth-field"
+        type="email"
+        placeholder="you@example.com"
+        required
+      >
+    </div>
+
+    <div class="auth-field-group">
+      <label for="authPassword">Password</label>
+      <input
+        id="authPassword"
+        class="auth-field"
+        type="password"
+        placeholder="Your password"
+        required
+      >
+    </div>
+
+    <div id="authConfirmWrap" class="auth-field-group hidden">
+      <label for="authConfirmPassword">Confirm password</label>
+
+      <input
+        id="authConfirmPassword"
+        class="auth-field"
+        type="password"
+        placeholder="Confirm your password"
+      >
+    </div>
+
+    <div class="auth-actions">
+
+      <button id="authSubmit" class="primary-btn" type="submit">
+        Login
+      </button>
+
+      <button
+        id="forgotPasswordBtn"
+        class="secondary-btn"
+        type="button"
+      >
+        Forgot password?
+      </button>
+
+    </div>
+
+  </form>
+
+  <div id="authMessage" class="auth-message"></div>
+
+</section>
+
+
+<!-- ================= APP ================= -->
+
+<div id="appContent" class="app-content">
+
+<!-- ================= HEADER ================= -->
+
+<header class="header">
+
+  <div class="header-top">
+
+    <div class="brand">
+
+      <!-- Life Admin AI professional icon -->
+      <div class="logo">✦</div>
+
+      <div>
+        <h1>Life Admin AI</h1>
+        <p>Your intelligent personal productivity assistant</p>
+      </div>
+
+    </div>
+
+    <div class="header-actions">
+
+      <div id="userBadge" class="user-badge">
+        Not signed in
+      </div>
+
+      <button
+        id="historyButton"
+        class="header-btn"
+        type="button"
+      >
+        🕘 History
+      </button>
+
+      <button
+        id="menuButton"
+        class="header-btn"
+        type="button"
+      >
+        ☰ Menu
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <div class="header-content">
+
+    <h2>
+      Organize your life.<br>
+      Simply.
+    </h2>
+
+    <p>
+      Tell your assistant what you need to do in natural language.
+      Life Admin AI turns your requests into organized tasks.
+    </p>
+
+  </div>
+
+</header>
+
+
+<!-- ================= STATS ================= -->
+
+<section class="stats">
+
+  <div
+    id="totalStat"
+    class="stat active"
+    onclick="setFilter('all')"
+  >
+    <div class="stat-top">
+
+      <span class="stat-label">
+        Total tasks
+      </span>
+
+      <div class="stat-icon">
+        📊
+      </div>
+
+    </div>
+
+    <div id="totalTasks" class="stat-number">
+      0
+    </div>
+
+    <div class="stat-label">
+      All your tasks
+    </div>
+  </div>
+
+
+  <div
+    id="pendingStat"
+    class="stat"
+    onclick="setFilter('pending')"
+  >
+    <div class="stat-top">
+
+      <span class="stat-label">
+        Pending
+      </span>
+
+      <div class="stat-icon">
+        ⏳
+      </div>
+
+    </div>
+
+    <div id="pendingTasks" class="stat-number">
+      0
+    </div>
+
+    <div class="stat-label">
+      Tasks waiting for you
+    </div>
+  </div>
+
+
+  <div
+    id="completedStat"
+    class="stat"
+    onclick="setFilter('completed')"
+  >
+    <div class="stat-top">
+
+      <span class="stat-label">
+        Completed
+      </span>
+
+      <div class="stat-icon">
+        ✅
+      </div>
+
+    </div>
+
+    <div id="completedTasks" class="stat-number">
+      0
+    </div>
+
+    <div class="stat-label">
+      Tasks you've finished
+    </div>
+  </div>
+
+</section>
+
+
+<!-- ================= AI ================= -->
+
+<section id="aiSection" class="card">
+
+  <div class="card-header">
+
+    <div>
+      <div class="card-title">
+        Ask AI
+      </div>
+
+      <div class="card-subtitle">
+        Tell Life Admin AI what you want to do
+      </div>
+    </div>
+
+    <div class="section-icon">
+      ✦
+    </div>
+
+  </div>
+
+
+  <div class="ai-box">
+
+    <div class="ai-input-row">
+
+      <input
+        id="aiInput"
+        class="ai-input"
+        type="text"
+        placeholder="What would you like to get done?"
+        autocomplete="off"
+        onkeydown="handleEnter(event)"
+      >
+
+      <button
+        class="primary-btn"
+        id="askButton"
+        onclick="askAI()"
+      >
+        Ask AI
+      </button>
+
+    </div>
+
+
+    <div class="examples">
+
+      <span
+        class="example"
+        onclick="useExample('Add a task to call the bank tomorrow')"
+      >
+        Add a task
+      </span>
+
+      <span
+        class="example"
+        onclick="useExample('Show me my tasks')"
+      >
+        Show my tasks
+      </span>
+
+      <span
+        class="example"
+        onclick="useExample('Delete my meeting task')"
+      >
+        Delete a task
+      </span>
+
+      <span
+        class="example"
+        onclick="useExample('Change my task time to 6 PM')"
+      >
+        Edit a task
+      </span>
+
+    </div>
+
+
+    <div id="aiResponse" class="ai-response"></div>
+
+  </div>
+
+</section>
+
+
+<!-- ================= MANUAL TASK ================= -->
+
+<section id="addTaskSection" class="card">
+
+  <div class="card-header">
+
+    <div>
+      <div class="card-title">
+        Add a task
+      </div>
+
+      <div class="card-subtitle">
+        Create a task manually
+      </div>
+    </div>
+
+    <div class="section-icon">
+      +
+    </div>
+
+  </div>
+
+
+  <div class="manual-grid">
+
+    <input
+      id="taskText"
+      class="field"
+      type="text"
+      placeholder="Task name"
+    >
+
+    <input
+      id="taskDate"
+      class="field"
+      type="date"
+    >
+
+    <input
+      id="taskTime"
+      class="field"
+      type="time"
+    >
+
+    <button
+      class="add-btn"
+      onclick="addManualTask()"
+    >
+      Add Task
+    </button>
+
+  </div>
+
+</section>
+
+
+<!-- ================= TASKS ================= -->
+
+<section id="tasksSection" class="card">
+
+  <div class="card-header">
+
+    <div>
+      <div class="card-title">
+        Your tasks
+      </div>
+
+      <div id="taskSubtitle" class="card-subtitle">
+        Showing all tasks
+      </div>
+    </div>
+
+  </div>
+
+
+  <div class="controls">
+
+    <input
+      id="searchInput"
+      class="search"
+      type="text"
+      placeholder="Search tasks..."
+      oninput="renderTasks()"
+    >
+
+    <button
+      id="allBtn"
+      class="filter active"
+      onclick="setFilter('all')"
+    >
+      All
+    </button>
+
+    <button
+      id="pendingBtn"
+      class="filter"
+      onclick="setFilter('pending')"
+    >
+      Pending
+    </button>
+
+    <button
+      id="completedBtn"
+      class="filter"
+      onclick="setFilter('completed')"
+    >
+      Completed
+    </button>
+
+    <button
+      class="clear-btn"
+      onclick="clearCompleted()"
+    >
+      Clear completed
+    </button>
+
+  </div>
+
+
+  <div id="taskList" class="task-list"></div>
+
+</section>
+
+
+<div class="footer">
+  Life Admin AI ✦ Your productivity, simplified.
+</div>
+
+</div>
+</div>
+
+
+<!-- ================= MENU ================= -->
+
+<div id="menuPanel" class="menu-panel hidden">
+
+  <div id="menuOverlay" class="menu-overlay"></div>
+
+  <div class="menu-drawer">
+
+    <div class="menu-header">
+
+      <div class="menu-brand">
+
+        <div class="menu-logo">
+          ✦
+        </div>
+
+        <div>
+          <h2>Life Admin AI</h2>
+          <p>Everything in one place</p>
+        </div>
+
+      </div>
+
+      <button
+        id="closeMenuButton"
+        class="menu-close"
+        type="button"
+      >
+        ✕
+      </button>
+
+    </div>
+
+
+    <div class="menu-list">
+
+      <button
+        class="menu-item active"
+        onclick="menuNavigate('dashboard')"
+      >
+        <span class="menu-icon">🏠</span>
+        <span>Dashboard</span>
+      </button>
+
+
+      <button
+        class="menu-item"
+        onclick="menuNavigate('ai')"
+      >
+        <span class="menu-icon">✦</span>
+        <span>Ask AI</span>
+      </button>
+
+
+      <button
+        class="menu-item"
+        onclick="menuNavigate('all')"
+      >
+        <span class="menu-icon">📋</span>
+        <span>All Tasks</span>
+      </button>
+
+
+      <button
+        class="menu-item"
+        onclick="menuNavigate('pending')"
+      >
+        <span class="menu-icon">⏳</span>
+        <span>Pending Tasks</span>
+      </button>
+
+
+      <button
+        class="menu-item"
+        onclick="menuNavigate('completed')"
+      >
+        <span class="menu-icon">✅</span>
+        <span>Completed Tasks</span>
+      </button>
+
+
+      <button
+        class="menu-item"
+        onclick="menuNavigate('add')"
+      >
+        <span class="menu-icon">➕</span>
+        <span>Add Task</span>
+      </button>
+
+
+      <button
+        class="menu-item"
+        onclick="openHistoryFromMenu()"
+      >
+        <span class="menu-icon">🕘</span>
+        <span>History</span>
+      </button>
+
+
+      <div class="menu-divider"></div>
+
+
+      <button
+        id="themeMenuButton"
+        class="menu-item"
+        onclick="toggleTheme()"
+      >
+        <span class="menu-icon">🌙</span>
+        <span id="themeMenuText">Dark Mode</span>
+      </button>
+
+
+      <button
+        class="menu-item"
+        onclick="menuNavigate('settings')"
+      >
+        <span class="menu-icon">⚙️</span>
+        <span>Settings</span>
+      </button>
+
+
+      <div class="menu-divider"></div>
+
+
+      <button
+        id="menuLogoutButton"
+        class="menu-item menu-logout"
+        type="button"
+        onclick="handleLogoutFromMenu()"
+      >
+        <span class="menu-icon">🚪</span>
+        <span>Logout</span>
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- ================= HISTORY ================= -->
+
+<div id="historyPanel" class="history-panel hidden">
+
+  <div class="history-overlay" id="historyOverlay"></div>
+
+  <div class="history-drawer">
+
+    <div class="history-header">
+
+      <div>
+        <h2>🕘 History</h2>
+
+        <p>
+          Your previous tasks and activity
+        </p>
+      </div>
+
+      <button
+        id="closeHistoryButton"
+        class="history-close"
+        type="button"
+      >
+        ✕
+      </button>
+
+    </div>
+
+
+    <div class="history-search-wrap">
+
+      <input
+        id="historySearch"
+        class="history-search"
+        type="text"
+        placeholder="Search history..."
+      >
+
+    </div>
+
+
+    <div id="historyList" class="history-list"></div>
+
+  </div>
+
+</div>
+
+
+<!-- ================= FIREBASE ================= -->
+
+<script src="https://www.gstatic.com/firebasejs/12.18.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.18.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore-compat.js"></script>
+
+<script>
+
+const firebaseConfig = {
+  apiKey:"AIzaSyCA09yChwyrD_JsqdzPrT1SClPRYBIaOh8",
+  authDomain:"lifeadminai-2b796.firebaseapp.com",
+  projectId:"lifeadminai-2b796",
+  storageBucket:"lifeadminai-2b796.firebasestorage.app",
+  messagingSenderId:"874467303774",
+  appId:"1:874467303774:web:16c3dab2bf4906caa32fcf",
+  measurementId:"G-MWDCEL2C2Q"
+};
+
+const firebaseApp = firebase.initializeApp(firebaseConfig);
+const firebaseAuth = firebase.auth(firebaseApp);
+const firestoreDB = firebase.firestore(firebaseApp);
+
+console.log("Firebase initialized");
+
+
+async function firebaseSignup(email,password){
+  const userCredential =
+    await firebaseAuth.createUserWithEmailAndPassword(
+      email,
+      password
+    );
+
+  return userCredential.user;
+}
+
+
+async function firebaseLogin(email,password){
+  const userCredential =
+    await firebaseAuth.signInWithEmailAndPassword(
+      email,
+      password
+    );
+
+  return userCredential.user;
+}
+
+
+async function firebaseLogout(){
+  await firebaseAuth.signOut();
+}
+
+
+async function firebaseForgotPassword(email){
+  await firebaseAuth.sendPasswordResetEmail(email);
+}
+
+</script>
+
+
+<script>
+
+/* ==========================================
+   VARIABLES
+========================================== */
+
+let tasks = [];
+let historyItems = [];
+let currentFilter = "all";
+let currentUser = null;
+
+let authMode = "login";
+
+const authForm =
+  document.getElementById("authForm");
+
+const authEmailInput =
+  document.getElementById("authEmail");
+
+const authPasswordInput =
+  document.getElementById("authPassword");
+
+const authConfirmPasswordInput =
+  document.getElementById("authConfirmPassword");
+
+const authConfirmWrap =
+  document.getElementById("authConfirmWrap");
+
+const authSubmitButton =
+  document.getElementById("authSubmit");
+
+const authMessage =
+  document.getElementById("authMessage");
+
+const userBadge =
+  document.getElementById("userBadge");
+
+const authSection =
+  document.getElementById("authSection");
+
+
+/* ==========================================
+   FIRESTORE
+========================================== */
+
+async function loadUserData(){
+
+  if(!currentUser){
+
+    tasks = [];
+    historyItems = [];
+
+    renderTasks();
+    renderHistory();
+
+    return;
+  }
+
+  try{
+
+    const docRef =
+      firestoreDB
+        .collection("users")
+        .doc(currentUser.uid);
+
+    const snapshot =
+      await docRef.get();
+
+    if(snapshot.exists){
+
+      const data =
+        snapshot.data() || {};
+
+      tasks =
+        Array.isArray(data.tasks)
+          ? data.tasks
+          : [];
+
+      historyItems =
+        Array.isArray(data.history)
+          ? data.history
+          : [];
+
+    }else{
+
+      tasks = [];
+      historyItems = [];
+
+    }
+
+    /* Add createdAt to older tasks */
+    let changed = false;
+
+    tasks = tasks.map(task => {
+
+      if(!task.createdAt){
+
+        changed = true;
+
+        return {
+          ...task,
+          createdAt:new Date().toISOString()
+        };
+
+      }
+
+      return task;
+
+    });
+
+    if(changed){
+      await saveUserData();
+    }
+
+    renderTasks();
+    renderHistory();
+
+  }catch(error){
+
+    console.error(
+      "Firestore load error:",
+      error
+    );
+
+  }
+
+}
+
+
+async function saveUserData(){
+
+  if(!currentUser){
+    return;
+  }
+
+  try{
+
+    await firestoreDB
+      .collection("users")
+      .doc(currentUser.uid)
+      .set(
+        {
+          tasks:tasks,
+          history:historyItems,
+          updatedAt:
+            firebase.firestore.FieldValue.serverTimestamp()
+        },
+        {
+          merge:true
+        }
+      );
+
+  }catch(error){
+
+    console.error(
+      "Firestore save error:",
+      error
+    );
+
+  }
+
+}
+
+
+/* ==========================================
+   HISTORY
+========================================== */
+
+function addHistory(
+  text,
+  action="created",
+  task=null
+){
+
+  historyItems.unshift({
+
+    id:Date.now(),
+
+    text:text,
+
+    action:action,
+
+    date:task?.date || null,
+
+    time:task?.time || null,
+
+    createdAt:new Date().toISOString()
+
+  });
+
+  historyItems =
+    historyItems.slice(0,200);
+
+  saveUserData();
+
+}
+
+
+function renderHistory(){
+
+  const list =
+    document.getElementById(
+      "historyList"
+    );
+
+  const search =
+    document.getElementById(
+      "historySearch"
+    ).value
+      .toLowerCase()
+      .trim();
+
+  const filtered =
+    historyItems.filter(item =>
+      String(item.text || "")
+        .toLowerCase()
+        .includes(search)
+    );
+
+  if(filtered.length === 0){
+
+    list.innerHTML = `
+      <div class="history-empty">
+
+        <div style="font-size:30px;margin-bottom:10px">
+          🕘
+        </div>
+
+        <h3>No history yet</h3>
+
+        <p>
+          Your task activity will appear here.
+        </p>
+
+      </div>
+    `;
+
+    return;
+  }
+
+
+  list.innerHTML =
+    filtered.map(item => {
+
+      let statusText = "Created";
+      let statusClass = "pending";
+
+      if(item.action === "completed"){
+
+        statusText = "Completed";
+        statusClass = "completed";
+
+      }
+
+      if(item.action === "deleted"){
+
+        statusText = "Deleted";
+        statusClass = "deleted";
+
+      }
+
+      if(item.action === "edited"){
+
+        statusText = "Edited";
+        statusClass = "pending";
+
+      }
+
+      const date =
+        new Date(item.createdAt);
+
+      const formatted =
+        isNaN(date.getTime())
+          ? "Unknown time"
+          : date.toLocaleString();
+
+
+      let meta = "";
+
+      if(item.date){
+
+        meta += `
+          <span class="meta">
+            📅 ${escapeHTML(item.date)}
+          </span>
+        `;
+
+      }
+
+      if(item.time){
+
+        meta += `
+          <span class="meta">
+            ⏰ ${escapeHTML(item.time)}
+          </span>
+        `;
+
+      }
+
+
+      return `
+        <div class="history-item">
+
+          <div class="history-item-top">
+
+            <div class="history-task-text">
+              ${escapeHTML(item.text)}
+            </div>
+
+            <span class="history-status ${statusClass}">
+              ${statusText}
+            </span>
+
+          </div>
+
+          ${
+            meta
+              ? `
+                <div class="history-meta">
+                  ${meta}
+                </div>
+              `
+              : ""
+          }
+
+          <div class="history-time">
+            ${escapeHTML(formatted)}
+          </div>
+
+        </div>
+      `;
+
+    }).join("");
+
+}
+
+
+/* ==========================================
+   AUTH
+========================================== */
+
+function setAuthMode(mode){
+
+  authMode = mode;
+
+  document
+    .querySelectorAll(".auth-tab")
+    .forEach(button => {
+
+      button.classList.toggle(
+        "active",
+        button.dataset.authMode === mode
+      );
+
+    });
+
+
+  const isSignup =
+    mode === "signup";
+
+  authConfirmWrap.classList.toggle(
+    "hidden",
+    !isSignup
+  );
+
+
+  authSubmitButton.textContent =
+    isSignup
+      ? "Create account"
+      : "Login";
+
+
+  if(isSignup){
+
+    authConfirmPasswordInput.setAttribute(
+      "required",
+      "required"
+    );
+
+  }else{
+
+    authConfirmPasswordInput.removeAttribute(
+      "required"
+    );
+
+  }
+
+}
+
+
+function setAuthMessage(
+  text,
+  type=""
+){
+
+  authMessage.textContent =
+    text || "";
+
+  authMessage.classList.remove(
+    "success",
+    "error"
+  );
+
+  if(type){
+    authMessage.classList.add(type);
+  }
+
+}
+
+
+function updateAuthUI(){
+
+  const isLocked =
+    !currentUser;
+
+  document.body.classList.toggle(
+    "app-locked",
+    isLocked
+  );
+
+
+  if(currentUser){
+
+    userBadge.textContent =
+      currentUser.email;
+
+  }else{
+
+    userBadge.textContent =
+      "Not signed in";
+
+  }
+
+}
+
+
+async function handleAuthSubmit(event){
+
+  event.preventDefault();
+
+  const email =
+    authEmailInput.value
+      .trim()
+      .toLowerCase();
+
+  const password =
+    authPasswordInput.value;
+
+  const confirmPassword =
+    authConfirmPasswordInput.value;
+
+
+  if(!email || !password){
+
+    setAuthMessage(
+      "Please enter your email and password.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+
+    setAuthMessage(
+      "Please enter a valid email address.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  try{
+
+    authSubmitButton.disabled = true;
+
+
+    if(authMode === "signup"){
+
+      if(password.length < 6){
+
+        setAuthMessage(
+          "Password must be at least 6 characters long.",
+          "error"
+        );
+
+        return;
+      }
+
+
+      if(password !== confirmPassword){
+
+        setAuthMessage(
+          "Passwords do not match.",
+          "error"
+        );
+
+        return;
+      }
+
+
+      await firebaseSignup(
+        email,
+        password
+      );
+
+
+      setAuthMessage(
+        "Account created successfully!",
+        "success"
+      );
+
+      authForm.reset();
+
+      setAuthMode("login");
+
+      return;
+    }
+
+
+    await firebaseLogin(
+      email,
+      password
+    );
+
+
+    setAuthMessage(
+      `Welcome back, ${email}!`,
+      "success"
+    );
+
+    authForm.reset();
+
+
+  }catch(error){
+
+    console.error(
+      "Firebase Auth Error:",
+      error
+    );
+
+    let message =
+      "Authentication failed. Please try again.";
+
+
+    if(error.code === "auth/email-already-in-use"){
+      message =
+        "This email is already registered.";
+    }
+
+    if(error.code === "auth/invalid-email"){
+      message =
+        "Please enter a valid email address.";
+    }
+
+    if(error.code === "auth/weak-password"){
+      message =
+        "Password must be at least 6 characters.";
+    }
+
+    if(error.code === "auth/invalid-credential"){
+      message =
+        "Invalid email or password.";
+    }
+
+    if(error.code === "auth/user-not-found"){
+      message =
+        "No account found with this email.";
+    }
+
+    if(error.code === "auth/wrong-password"){
+      message =
+        "Incorrect password.";
+    }
+
+
+    setAuthMessage(
+      message,
+      "error"
+    );
+
+
+  }finally{
+
+    authSubmitButton.disabled = false;
+
+  }
+
+}
+
+
+async function handleForgotPassword(){
+
+  const email =
+    authEmailInput.value
+      .trim()
+      .toLowerCase();
+
+
+  if(!email){
+
+    setAuthMessage(
+      "Enter your email first, then click Forgot password.",
+      "error"
+    );
+
+    return;
+  }
+
+
+  try{
+
+    await firebaseForgotPassword(email);
+
+    setAuthMessage(
+      "Password reset email sent. Check your inbox.",
+      "success"
+    );
+
+  }catch(error){
+
+    console.error(
+      "Password Reset Error:",
+      error
+    );
+
+    setAuthMessage(
+      "Could not send password reset email.",
+      "error"
+    );
+
+  }
+
+}
+
+
+async function handleLogout(){
+
+  try{
+
+    await firebaseLogout();
+
+    closeMenu();
+
+    closeHistory();
+
+    setAuthMessage(
+      "You have been signed out.",
+      "success"
+    );
+
+  }catch(error){
+
+    console.error(
+      "Logout Error:",
+      error
+    );
+
+    setAuthMessage(
+      "Logout failed. Please try again.",
+      "error"
+    );
+
+  }
+
+}
+
+
+async function handleLogoutFromMenu(){
+
+  await handleLogout();
+
+}
+
+
+/* ==========================================
+   FIREBASE AUTH STATE
+========================================== */
+
+firebaseAuth.onAuthStateChanged(
+  async function(user){
+
+    currentUser =
+      user || null;
+
+    updateAuthUI();
+
+
+    if(user){
+
+      await loadUserData();
+
+    }else{
+
+      tasks = [];
+      historyItems = [];
+
+      renderTasks();
+      renderHistory();
+
+    }
+
+  }
+);
+
+
+setAuthMode("login");
+updateAuthUI();
+
+
+document
+  .getElementById("forgotPasswordBtn")
+  .addEventListener(
+    "click",
+    handleForgotPassword
+  );
+
+
+authForm.addEventListener(
+  "submit",
+  handleAuthSubmit
+);
+
+
+document
+  .querySelectorAll(".auth-tab")
+  .forEach(button => {
+
+    button.addEventListener(
+      "click",
+      () => {
+
+        setAuthMode(
+          button.dataset.authMode
+        );
+
+        setAuthMessage("");
+
+      }
+    );
+
+  });
+
+
+/* ==========================================
+   ESCAPE HTML
+========================================== */
+
+function escapeHTML(value){
+
+  const div =
+    document.createElement("div");
+
+  div.textContent =
+    String(value ?? "");
+
+  return div.innerHTML;
+
+}
+
+
+/* ==========================================
+   FORMAT ADDED TIME
+========================================== */
+
+function formatAddedTime(createdAt){
+
+  if(!createdAt){
+    return "Added time unavailable";
+  }
+
+  const date =
+    new Date(createdAt);
+
+  if(isNaN(date.getTime())){
+    return "Added time unavailable";
+  }
+
+  return `Added ${date.toLocaleString()}`;
+
+}
+
+
+/* ==========================================
+   STATS
+========================================== */
+
+function updateStats(){
+
+  const total =
+    tasks.length;
+
+  const completed =
+    tasks.filter(
+      task => task.completed
+    ).length;
+
+  const pending =
+    total - completed;
+
+
+  document.getElementById(
+    "totalTasks"
+  ).textContent = total;
+
+
+  document.getElementById(
+    "pendingTasks"
+  ).textContent = pending;
+
+
+  document.getElementById(
+    "completedTasks"
+  ).textContent = completed;
+
+
+  document
+    .getElementById("totalStat")
+    .classList.toggle(
+      "active",
+      currentFilter === "all"
+    );
+
+
+  document
+    .getElementById("pendingStat")
+    .classList.toggle(
+      "active",
+      currentFilter === "pending"
+    );
+
+
+  document
+    .getElementById("completedStat")
+    .classList.toggle(
+      "active",
+      currentFilter === "completed"
+    );
+
+}
+
+
+/* ==========================================
+   RENDER TASKS
+========================================== */
+
+function renderTasks(){
+
+  const list =
+    document.getElementById(
+      "taskList"
+    );
+
+
+  const search =
+    document.getElementById(
+      "searchInput"
+    ).value
+      .toLowerCase()
+      .trim();
+
+
+  let filtered =
+    tasks.filter(task => {
+
+      const matchesSearch =
+        String(task.text || "")
+          .toLowerCase()
+          .includes(search);
+
+
+      if(!matchesSearch){
+        return false;
+      }
+
+
+      if(currentFilter === "pending"){
+        return !task.completed;
+      }
+
+
+      if(currentFilter === "completed"){
+        return task.completed;
+      }
+
+
+      return true;
+
+    });
+
+
+  /* Newest added task first */
+  filtered.sort((a,b) => {
+
+    const timeA =
+      new Date(a.createdAt || 0).getTime();
+
+    const timeB =
+      new Date(b.createdAt || 0).getTime();
+
+    return timeB - timeA;
+
+  });
+
+
+  const subtitle =
+    document.getElementById(
+      "taskSubtitle"
+    );
+
+
+  if(currentFilter === "pending"){
+
+    subtitle.textContent =
+      `Showing ${filtered.length} pending task${filtered.length === 1 ? "" : "s"}`;
+
+  }else if(currentFilter === "completed"){
+
+    subtitle.textContent =
+      `Showing ${filtered.length} completed task${filtered.length === 1 ? "" : "s"}`;
+
+  }else{
+
+    subtitle.textContent =
+      `Showing ${filtered.length} task${filtered.length === 1 ? "" : "s"}`;
+
+  }
+
+
+  if(filtered.length === 0){
+
+    list.innerHTML = `
+
+      <div class="empty">
+
+        <div class="empty-icon">
+          ${search ? "🔎" : currentFilter === "completed" ? "📋" : "✅"}
+        </div>
+
+        <h3>
+          ${
+            search
+              ? "No matching tasks"
+              : currentFilter === "pending"
+                ? "No pending tasks"
+                : currentFilter === "completed"
+                  ? "No completed tasks"
+                  : "You're all set"
+          }
+        </h3>
+
+        <p>
+          ${
+            search
+              ? "Try another search."
+              : currentFilter === "pending"
+                ? "You have no pending tasks right now."
+                : currentFilter === "completed"
+                  ? "Complete a task and it will appear here."
+                  : "Add your first task to get started."
+          }
+        </p>
+
+      </div>
+
+    `;
+
+    updateStats();
+
+    return;
+  }
+
+
+  list.innerHTML =
+    filtered.map(task => {
+
+      const index =
+        tasks.indexOf(task);
+
+
+      let meta = "";
+
+
+      if(task.date){
+
+        meta += `
+          <span class="meta">
+            📅 ${escapeHTML(task.date)}
+          </span>
+        `;
+
+      }
+
+
+      if(task.time){
+
+        meta += `
+          <span class="meta">
+            ⏰ ${escapeHTML(task.time)}
+          </span>
+        `;
+
+      }
+
+
+      meta += `
+        <span class="meta added-time">
+          🕒 ${escapeHTML(
+            formatAddedTime(task.createdAt)
+          )}
+        </span>
+      `;
+
+
+      return `
+
+        <div class="task ${task.completed ? "completed" : ""}">
+
+          <div class="task-left">
+
+            <input
+              class="checkbox"
+              type="checkbox"
+              ${task.completed ? "checked" : ""}
+              onchange="toggleTask(${index})"
+            >
+
+
+            <div class="task-info">
+
+              <div class="task-text">
+                ${escapeHTML(task.text)}
+              </div>
+
+
+              <div class="task-meta">
+                ${meta}
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <div class="task-actions">
+
+            <button
+              class="icon-btn edit"
+              title="Edit task"
+              onclick="editTask(${index})"
+            >
+              ✏️
+            </button>
+
+            <button
+              class="icon-btn delete"
+              title="Delete task"
+              onclick="deleteTask(${index})"
+            >
+              🗑️
+            </button>
+
+          </div>
+
+        </div>
+
+      `;
+
+    }).join("");
+
+
+  updateStats();
+
+}
+
+
+/* ==========================================
+   ADD MANUAL TASK
+========================================== */
+
+function addManualTask(){
+
+  const text =
+    document
+      .getElementById("taskText")
+      .value
+      .trim();
+
+
+  const date =
+    document.getElementById(
+      "taskDate"
+    ).value || null;
+
+
+  const time =
+    document.getElementById(
+      "taskTime"
+    ).value || null;
+
+
+  if(!text){
+
+    showAIResponse(`
+      <div class="response">
+        Please enter a task name.
+      </div>
+    `);
+
+    return;
+  }
+
+
+  const newTask = {
+
+    id:Date.now(),
+
+    text:text,
+
+    date:date,
+
+    time:time,
+
+    completed:false,
+
+    createdAt:new Date().toISOString()
+
+  };
+
+
+  tasks.push(newTask);
+
+
+  addHistory(
+    text,
+    "created",
+    newTask
+  );
+
+
+  saveUserData();
+
+  renderTasks();
+
+
+  document.getElementById(
+    "taskText"
+  ).value = "";
+
+  document.getElementById(
+    "taskDate"
+  ).value = "";
+
+  document.getElementById(
+    "taskTime"
+  ).value = "";
+
+}
+
+
+/* ==========================================
+   AI ADD TASK
+========================================== */
+
+function addAITask(task){
+
+  const newTask = {
+
+    id:Date.now(),
+
+    text:
+      task.text ||
+      "New task",
+
+    date:
+      task.date ||
+      null,
+
+    time:
+      task.time ||
+      null,
+
+    completed:false,
+
+    createdAt:new Date().toISOString()
+
+  };
+
+
+  tasks.push(newTask);
+
+
+  addHistory(
+    newTask.text,
+    "created",
+    newTask
+  );
+
+
+  saveUserData();
+
+  renderTasks();
+
+}
+
+
+/* ==========================================
+   TOGGLE TASK
+========================================== */
+
+function toggleTask(index){
+
+  if(!tasks[index]){
+    return;
+  }
+
+
+  tasks[index].completed =
+    !tasks[index].completed;
+
+
+  addHistory(
+    tasks[index].text,
+    tasks[index].completed
+      ? "completed"
+      : "created",
+    tasks[index]
+  );
+
+
+  saveUserData();
+
+  renderTasks();
+
+}
+
+
+/* ==========================================
+   EDIT TASK
+========================================== */
+
+function editTask(index){
+
+  if(!tasks[index]){
+    return;
+  }
+
+
+  const task =
+    tasks[index];
+
+
+  const newText =
+    prompt(
+      "Edit task name:",
+      task.text
+    );
+
+
+  if(newText === null){
+    return;
+  }
+
+
+  const cleanedText =
+    newText.trim();
+
+
+  if(!cleanedText){
+    return;
+  }
+
+
+  const newDate =
+    prompt(
+      "Edit date (YYYY-MM-DD) or leave blank:",
+      task.date || ""
+    );
+
+
+  if(newDate === null){
+    return;
+  }
+
+
+  const newTime =
+    prompt(
+      "Edit time (HH:MM) or leave blank:",
+      task.time || ""
+    );
+
+
+  if(newTime === null){
+    return;
+  }
+
+
+  tasks[index] = {
+
+    ...task,
+
+    text:cleanedText,
+
+    date:newDate.trim() || null,
+
+    time:newTime.trim() || null
+
+  };
+
+
+  addHistory(
+    cleanedText,
+    "edited",
+    tasks[index]
+  );
+
+
+  saveUserData();
+
+  renderTasks();
+
+}
+
+
+/* ==========================================
+   DELETE TASK
+========================================== */
+
+function deleteTask(index){
+
+  if(!tasks[index]){
+    return;
+  }
+
+
+  const deletedTask =
+    tasks[index];
+
+
+  const confirmed =
+    confirm(
+      `Delete "${deletedTask.text}"?`
+    );
+
+
+  if(!confirmed){
+    return;
+  }
+
+
+  addHistory(
+    deletedTask.text,
+    "deleted",
+    deletedTask
+  );
+
+
+  tasks.splice(
+    index,
+    1
+  );
+
+
+  saveUserData();
+
+  renderTasks();
+
+}
+
+
+/* ==========================================
+   CLEAR COMPLETED
+========================================== */
+
+function clearCompleted(){
+
+  const completedCount =
+    tasks.filter(
+      task => task.completed
+    ).length;
+
+
+  if(!completedCount){
+    return;
+  }
+
+
+  const confirmed =
+    confirm(
+      `Clear ${completedCount} completed task${completedCount === 1 ? "" : "s"}?`
+    );
+
+
+  if(!confirmed){
+    return;
+  }
+
+
+  tasks =
+    tasks.filter(
+      task => !task.completed
+    );
+
+
+  saveUserData();
+
+  renderTasks();
+
+}
+
+
+/* ==========================================
+   FILTER
+========================================== */
+
+function setFilter(filter){
+
+  currentFilter =
+    filter;
+
+
+  document
+    .querySelectorAll(".filter")
+    .forEach(button =>
+      button.classList.remove("active")
+    );
+
+
+  if(filter === "all"){
+
+    document
+      .getElementById("allBtn")
+      .classList.add("active");
+
+  }
+
+
+  if(filter === "pending"){
+
+    document
+      .getElementById("pendingBtn")
+      .classList.add("active");
+
+  }
+
+
+  if(filter === "completed"){
+
+    document
+      .getElementById("completedBtn")
+      .classList.add("active");
+
+  }
+
+
+  renderTasks();
+
+}
+
+
+/* ==========================================
+   EXAMPLES
+========================================== */
+
+function useExample(text){
+
+  const input =
+    document.getElementById(
+      "aiInput"
+    );
+
+  input.value =
+    text;
+
+  input.focus();
+
+}
+
+
+/* ==========================================
+   ENTER
+========================================== */
+
+function handleEnter(event){
+
+  if(event.key === "Enter"){
+    askAI();
+  }
+
+}
+
+
+/* ==========================================
+   AI RESPONSE
+========================================== */
+
+function showAIResponse(html){
+
+  const box =
+    document.getElementById(
+      "aiResponse"
+    );
+
+  box.style.display =
+    "block";
+
+  box.innerHTML =
+    html;
+
+}
+
+
+/* ==========================================
+   ASK AI
+========================================== */
+
+async function askAI(){
+
+  const input =
+    document.getElementById(
+      "aiInput"
+    );
+
+
+  const button =
+    document.getElementById(
+      "askButton"
+    );
+
+
+  const message =
+    input.value.trim();
+
+
+  if(!message){
+
+    showAIResponse(`
+      <div class="response">
+        Tell me what you'd like to do.
+      </div>
+    `);
+
+    return;
+  }
+
+
+  button.disabled = true;
+
+  button.textContent =
+    "Thinking...";
+
+
+  showAIResponse(`
+
+    <div class="response">
+
+      <div class="loading">
+
+        <span class="spinner"></span>
+
+        <span>
+          Life Admin AI is thinking...
+        </span>
+
+      </div>
+
+    </div>
+
+  `);
+
+
+  try{
+
+    const response =
+      await fetch(
+        "/api/ai",
+        {
+          method:"POST",
+
+          headers:{
+            "Content-Type":
+              "application/json"
+          },
+
+          body:JSON.stringify({
+            message:message,
+            tasks:tasks
+          })
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    /* QUOTA */
+
+    if(
+      response.status === 429 ||
+      data.type === "quota"
+    ){
+
+      showAIResponse(`
+
+        <div class="quota">
+
+          <h3>
+            AI is temporarily unavailable
+          </h3>
+
+          <p>
+            The AI service has temporarily
+            reached its usage limit.
+            Please try again shortly.
+          </p>
+
+          <div class="quota-actions">
+
+            <button
+              class="retry"
+              onclick="askAI()"
+            >
+              Try Again
+            </button>
+
+            ${
+              data.upgradeUrl
+                ? `
+                  <a
+                    class="upgrade"
+                    href="${escapeHTML(data.upgradeUrl)}"
+                    target="_blank"
+                    rel="noopener"
+                  >
+                    Upgrade
+                  </a>
+                `
+                : ""
+            }
+
+          </div>
+
+        </div>
+
+      `);
+
+      return;
+    }
+
+
+    /* OTHER ERROR */
+
+    if(!response.ok){
+
+      showAIResponse(`
+
+        <div class="response">
+
+          AI couldn't complete that request
+          right now. Please try again.
+
+        </div>
+
+      `);
+
+      return;
+    }
+
+
+    /* ADD */
+
+    if(
+      data.action === "add_task" &&
+      data.task
+    ){
+
+      addAITask(
+        data.task
+      );
+
+    }
+
+
+    /* EDIT */
+
+    if(
+      data.action === "edit_task" &&
+      data.task &&
+      typeof data.taskIndex === "number"
+    ){
+
+      if(tasks[data.taskIndex]){
+
+        const oldTask =
+          tasks[data.taskIndex];
+
+
+        tasks[data.taskIndex] = {
+
+          ...oldTask,
+
+          text:
+            data.task.text ??
+            oldTask.text,
+
+          date:
+            data.task.date ??
+            null,
+
+          time:
+            data.task.time ??
+            null
+
+        };
+
+
+        addHistory(
+          tasks[data.taskIndex].text,
+          "edited",
+          tasks[data.taskIndex]
+        );
+
+
+        saveUserData();
+
+        renderTasks();
+
+      }
+
+    }
+
+
+    /* DELETE */
+
+    if(
+      data.action === "delete_task" &&
+      typeof data.taskIndex === "number"
+    ){
+
+      if(tasks[data.taskIndex]){
+
+        const deletedTask =
+          tasks[data.taskIndex];
+
+
+        addHistory(
+          deletedTask.text,
+          "deleted",
+          deletedTask
+        );
+
+
+        tasks.splice(
+          data.taskIndex,
+          1
+        );
+
+
+        saveUserData();
+
+        renderTasks();
+
+      }
+
+    }
+
+
+    /* SHOW TASKS */
+
+    if(
+      data.action === "show_tasks"
+    ){
+
+      setFilter("all");
+
+      document
+        .getElementById("tasksSection")
+        .scrollIntoView({
+          behavior:"smooth"
+        });
+
+    }
+
+
+    showAIResponse(`
+
+      <div class="response">
+
+        ✓ ${escapeHTML(
+          data.reply ||
+          "Done."
+        )}
+
+      </div>
+
+    `);
+
+
+    input.value = "";
+
+
+  }catch(error){
+
+    console.error(
+      "AI request failed:",
+      error
+    );
+
+
+    showAIResponse(`
+
+      <div class="response">
+
+        Unable to connect to the AI right now.
+        Please try again.
+
+      </div>
+
+    `);
+
+  }finally{
+
+    button.disabled = false;
+
+    button.textContent =
+      "Ask AI";
+
+  }
+
+}
+
+
+/* ==========================================
+   MENU
+========================================== */
+
+const menuPanel =
+  document.getElementById(
+    "menuPanel"
+  );
+
+const menuOverlay =
+  document.getElementById(
+    "menuOverlay"
+  );
+
+const menuButton =
+  document.getElementById(
+    "menuButton"
+  );
+
+const closeMenuButton =
+  document.getElementById(
+    "closeMenuButton"
+  );
+
+
+function openMenu(){
+
+  menuPanel.classList.remove(
+    "hidden"
+  );
+
+}
+
+
+function closeMenu(){
+
+  menuPanel.classList.add(
+    "hidden"
+  );
+
+}
+
+
+menuButton.addEventListener(
+  "click",
+  openMenu
+);
+
+
+closeMenuButton.addEventListener(
+  "click",
+  closeMenu
+);
+
+
+menuOverlay.addEventListener(
+  "click",
+  closeMenu
+);
+
+
+/* ==========================================
+   MENU NAVIGATION
+========================================== */
+
+function menuNavigate(destination){
+
+  closeMenu();
+
+
+  if(destination === "dashboard"){
+
+    window.scrollTo({
+      top:0,
+      behavior:"smooth"
+    });
+
+    return;
+  }
+
+
+  if(destination === "ai"){
+
+    document
+      .getElementById("aiSection")
+      .scrollIntoView({
+        behavior:"smooth"
+      });
+
+    setTimeout(() => {
+      document
+        .getElementById("aiInput")
+        .focus();
+    },400);
+
+    return;
+  }
+
+
+  if(destination === "all"){
+
+    setFilter("all");
+
+    document
+      .getElementById("tasksSection")
+      .scrollIntoView({
+        behavior:"smooth"
+      });
+
+    return;
+  }
+
+
+  if(destination === "pending"){
+
+    setFilter("pending");
+
+    document
+      .getElementById("tasksSection")
+      .scrollIntoView({
+        behavior:"smooth"
+      });
+
+    return;
+  }
+
+
+  if(destination === "completed"){
+
+    setFilter("completed");
+
+    document
+      .getElementById("tasksSection")
+      .scrollIntoView({
+        behavior:"smooth"
+      });
+
+    return;
+  }
+
+
+  if(destination === "add"){
+
+    document
+      .getElementById("addTaskSection")
+      .scrollIntoView({
+        behavior:"smooth"
+      });
+
+    setTimeout(() => {
+      document
+        .getElementById("taskText")
+        .focus();
+    },400);
+
+    return;
+  }
+
+
+  if(destination === "settings"){
+
+    showAIResponse(`
+      <div class="response">
+        Settings are coming soon. Your account,
+        theme and task preferences will be managed here.
+      </div>
+    `);
+
+    document
+      .getElementById("aiSection")
+      .scrollIntoView({
+        behavior:"smooth"
+      });
+
+  }
+
+}
+
+
+/* ==========================================
+   HISTORY
+========================================== */
+
+const historyButton =
+  document.getElementById(
+    "historyButton"
+  );
+
+const historyPanel =
+  document.getElementById(
+    "historyPanel"
+  );
+
+const historyOverlay =
+  document.getElementById(
+    "historyOverlay"
+  );
+
+const closeHistoryButton =
+  document.getElementById(
+    "closeHistoryButton"
+  );
+
+const historySearch =
+  document.getElementById(
+    "historySearch"
+  );
+
+
+function openHistory(){
+
+  historyPanel.classList.remove(
+    "hidden"
+  );
+
+  renderHistory();
+
+}
+
+
+function closeHistory(){
+
+  historyPanel.classList.add(
+    "hidden"
+  );
+
+}
+
+
+function openHistoryFromMenu(){
+
+  closeMenu();
+
+  openHistory();
+
+}
+
+
+historyButton.addEventListener(
+  "click",
+  openHistory
+);
+
+
+closeHistoryButton.addEventListener(
+  "click",
+  closeHistory
+);
+
+
+historyOverlay.addEventListener(
+  "click",
+  closeHistory
+);
+
+
+historySearch.addEventListener(
+  "input",
+  renderHistory
+);
+
+
+/* ==========================================
+   THEME
+========================================== */
+
+function toggleTheme(){
+
+  const isDark =
+    document.body.classList.toggle(
+      "dark"
+    );
+
+
+  localStorage.setItem(
+    "lifeAdminTheme",
+    isDark
+      ? "dark"
+      : "light"
+  );
+
+
+  updateThemeButton();
+
+}
+
+
+function updateThemeButton(){
+
+  const isDark =
+    document.body.classList.contains(
+      "dark"
+    );
+
+
+  const text =
+    document.getElementById(
+      "themeMenuText"
+    );
+
+
+  if(isDark){
+
+    text.textContent =
+      "Light Mode";
+
+  }else{
+
+    text.textContent =
+      "Dark Mode";
+
+  }
+
+}
+
+
+if(
+  localStorage.getItem(
+    "lifeAdminTheme"
+  ) === "dark"
+){
+
+  document.body.classList.add(
+    "dark"
+  );
+
+}
+
+
+updateThemeButton();
+
+
+/* ==========================================
+   INITIAL
+========================================== */
+
+renderTasks();
+
+updateStats();
+
+</script>
+
+</body>
+</html>
+```
