@@ -1313,9 +1313,13 @@ body.app-locked #authSection{
         </button>
 
         <div id="profilePopover" class="profile-popover hidden">
-          <div id="profileEmail" class="profile-email">Not signed in</div>
-          <button id="profileHistoryButton" class="profile-action" type="button">🕘 History</button>
-          <button id="profileLogoutButton" class="profile-action logout" type="button">🚪 Logout</button>
+          <button id="profileSignInButton" class="profile-action" type="button">
+            🔐 Sign In / Login
+          </button>
+
+          <button id="profileLogoutButton" class="profile-action logout" type="button">
+            🚪 Logout
+          </button>
         </div>
       </div>
 
@@ -1779,15 +1783,7 @@ body.app-locked #authSection{
       <div class="menu-divider"></div>
 
 
-      <button
-        id="menuLogoutButton"
-        class="menu-item menu-logout"
-        type="button"
-        onclick="handleLogoutFromMenu()"
-      >
-        <span class="menu-icon">🚪</span>
-        <span>Logout</span>
-      </button>
+
 
     </div>
 
@@ -1957,15 +1953,12 @@ const authSubmitButton =
 const authMessage =
   document.getElementById("authMessage");
 
-const userBadge =
-  document.getElementById("profileEmail");
-
 const profileButton =
   document.getElementById("profileButton");
 const profilePopover =
   document.getElementById("profilePopover");
-const profileHistoryButton =
-  document.getElementById("profileHistoryButton");
+const profileSignInButton =
+  document.getElementById("profileSignInButton");
 const profileLogoutButton =
   document.getElementById("profileLogoutButton");
 const themeToggleButton =
@@ -2373,10 +2366,8 @@ function updateAuthUI(){
 
 
   if(currentUser){
-    userBadge.textContent = currentUser.email;
     document.getElementById("profileButton").title = currentUser.email;
   }else{
-    userBadge.textContent = "Not signed in";
     document.getElementById("profileButton").title = "Profile";
   }
 
@@ -4056,9 +4047,26 @@ profileButton.addEventListener("click", function(event){
   profilePopover.classList.toggle("hidden");
 });
 
-profileHistoryButton.addEventListener("click", function(){
+profileSignInButton.addEventListener("click", function(){
   closeProfile();
-  openHistory();
+
+  setAuthMode("login");
+  setAuthMessage("");
+
+  const authSection = document.getElementById("authSection");
+
+  if(authSection){
+    authSection.scrollIntoView({
+      behavior: "smooth",
+      block: "center"
+    });
+  }
+
+  setTimeout(function(){
+    if(authEmailInput){
+      authEmailInput.focus();
+    }
+  }, 450);
 });
 
 profileLogoutButton.addEventListener("click", async function(){
