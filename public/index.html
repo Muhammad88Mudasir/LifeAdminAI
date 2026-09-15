@@ -138,6 +138,85 @@ button{
   background:rgba(255,255,255,.22);
 }
 
+.theme-toggle{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+}
+
+.theme-label{
+  font-weight:650;
+}
+
+.profile-wrap{
+  position:relative;
+}
+
+.profile-btn{
+  width:42px;
+  height:42px;
+  border:1px solid rgba(255,255,255,.25);
+  background:rgba(255,255,255,.13);
+  color:white;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  transition:.2s;
+}
+
+.profile-btn:hover{
+  background:rgba(255,255,255,.22);
+  transform:translateY(-1px);
+}
+
+.profile-avatar{
+  font-size:21px;
+  line-height:1;
+}
+
+.profile-popover{
+  position:absolute;
+  top:52px;
+  right:0;
+  width:205px;
+  padding:8px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:15px;
+  box-shadow:0 18px 45px rgba(15,23,42,.18);
+  z-index:2500;
+}
+
+.profile-action{
+  width:100%;
+  border:1px solid transparent;
+  background:transparent;
+  color:var(--text);
+  padding:11px 12px;
+  border-radius:11px;
+  text-align:left;
+  font-weight:650;
+}
+
+.profile-action:hover{
+  background:var(--surface-2);
+  border-color:var(--border);
+}
+
+.profile-action.logout{
+  color:var(--danger);
+}
+
+.profile-action.logout:hover{
+  background:#fff1f2;
+  border-color:#fecaca;
+}
+
+body.dark .profile-action.logout:hover{
+  background:#29151a;
+  border-color:#5b252d;
+}
+
 .header-content{
   margin-top:30px;
   max-width:700px;
@@ -612,6 +691,56 @@ button{
   padding:10px 15px;
   border-radius:11px;
   font-weight:700;
+}
+
+/* ================= NOTIFICATIONS ================= */
+
+.notification-card{
+  background:linear-gradient(135deg,rgba(99,91,255,.08),rgba(124,58,237,.05));
+  border:1px solid rgba(99,91,255,.16);
+}
+
+.notification-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+  flex-wrap:wrap;
+}
+
+.notification-info{
+  flex:1;
+  min-width:220px;
+}
+
+.notification-status{
+  margin-top:6px;
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.5;
+}
+
+.notification-btn{
+  border:0;
+  background:var(--primary);
+  color:white;
+  padding:11px 16px;
+  border-radius:12px;
+  font-weight:700;
+}
+
+.notification-btn:hover{
+  background:var(--primary-dark);
+}
+
+.notification-btn.secondary{
+  background:var(--surface-2);
+  color:var(--text);
+  border:1px solid var(--border);
+}
+
+body.dark .notification-card{
+  background:linear-gradient(135deg,rgba(99,91,255,.14),rgba(124,58,237,.08));
 }
 
 /* ================= MANUAL ================= */
@@ -1256,16 +1385,36 @@ body.app-locked #authSection{
 
     <div class="header-actions">
 
-      <div id="userBadge" class="user-badge">
-        Not signed in
+      <div class="profile-wrap">
+        <button
+          id="profileButton"
+          class="profile-btn"
+          type="button"
+          aria-label="Profile"
+          aria-expanded="false"
+        >
+          <span class="profile-avatar">🧑‍💻</span>
+        </button>
+
+        <div id="profilePopover" class="profile-popover hidden">
+          <button id="profileSignInButton" class="profile-action" type="button">
+            🔐 Sign In / Login
+          </button>
+
+          <button id="profileLogoutButton" class="profile-action logout" type="button">
+            🚪 Logout
+          </button>
+        </div>
       </div>
 
       <button
-        id="historyButton"
-        class="header-btn"
+        id="themeToggleButton"
+        class="header-btn theme-toggle"
         type="button"
+        aria-label="Toggle theme"
       >
-        🕘 History
+        <span id="themeToggleIcon">🌙</span>
+        <span class="theme-label" id="themeToggleText">Dark</span>
       </button>
 
       <button
@@ -1528,6 +1677,11 @@ body.app-locked #authSection{
 </section>
 
 
+<!-- ================= NOTIFICATIONS ================= -->
+
+
+
+
 <!-- ================= TASKS ================= -->
 
 <section id="tasksSection" class="card">
@@ -1696,6 +1850,15 @@ body.app-locked #authSection{
 
       <button
         class="menu-item"
+        onclick="openNotificationsFromMenu()"
+      >
+        <span class="menu-icon">🔔</span>
+        <span>Notifications</span>
+      </button>
+
+
+      <button
+        class="menu-item"
         onclick="openHistoryFromMenu()"
       >
         <span class="menu-icon">🕘</span>
@@ -1707,16 +1870,6 @@ body.app-locked #authSection{
 
 
       <button
-        id="themeMenuButton"
-        class="menu-item"
-        onclick="toggleTheme()"
-      >
-        <span class="menu-icon">🌙</span>
-        <span id="themeMenuText">Dark Mode</span>
-      </button>
-
-
-      <button
         class="menu-item"
         onclick="menuNavigate('settings')"
       >
@@ -1725,19 +1878,30 @@ body.app-locked #authSection{
       </button>
 
 
-      <div class="menu-divider"></div>
 
 
-      <button
-        id="menuLogoutButton"
-        class="menu-item menu-logout"
-        type="button"
-        onclick="handleLogoutFromMenu()"
-      >
-        <span class="menu-icon">🚪</span>
-        <span>Logout</span>
-      </button>
+    <section id="notificationSection" class="card notification-card">
 
+  <div class="card-header">
+    <div>
+      <div class="card-title">Task notifications</div>
+      <div class="card-subtitle">Get a browser notification when a pending task reaches its date and time.</div>
+    </div>
+    <div class="section-icon">🔔</div>
+  </div>
+
+  <div class="notification-row">
+    <div class="notification-info">
+      <strong id="notificationTitle">Notifications are off</strong>
+      <div id="notificationStatus" class="notification-status">Turn them on once to allow Life Admin AI to notify you.</div>
+    </div>
+
+    <button id="notificationButton" class="notification-btn" type="button" onclick="requestNotifications()">
+      Enable Notifications
+    </button>
+  </div>
+
+</section>
     </div>
 
   </div>
@@ -1798,6 +1962,7 @@ body.app-locked #authSection{
 <script src="https://www.gstatic.com/firebasejs/12.18.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.18.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.18.0/firebase-messaging-compat.js"></script>
 
 <script>
 
@@ -1814,6 +1979,7 @@ const firebaseConfig = {
 const firebaseApp = firebase.initializeApp(firebaseConfig);
 const firebaseAuth = firebase.auth(firebaseApp);
 const firestoreDB = firebase.firestore(firebaseApp);
+const firebaseMessaging = firebase.messaging(firebaseApp);
 
 console.log("Firebase initialized");
 
@@ -1847,6 +2013,82 @@ async function firebaseLogout(){
 
 async function firebaseForgotPassword(email){
   await firebaseAuth.sendPasswordResetEmail(email);
+}
+
+async function registerForPushNotifications(user) {
+  try {
+    if (!user) {
+      console.log("No user logged in. FCM registration skipped.");
+      return;
+    }
+
+    if (!("Notification" in window)) {
+      console.log("This browser does not support notifications.");
+      return;
+    }
+
+    const permission = await Notification.requestPermission();
+
+    if (permission !== "granted") {
+      console.log("Notification permission not granted.");
+      return;
+    }
+
+    const serviceWorkerRegistration =
+      await navigator.serviceWorker.register(
+        "/firebase-messaging-sw.js"
+      );
+
+    const vapidKey =
+      "B0DFFA47291067353D3F7DA440B374E21C8C9236";
+
+    const token = await firebaseMessaging.getToken({
+      vapidKey: vapidKey,
+      serviceWorkerRegistration:
+        serviceWorkerRegistration
+    });
+
+    if (!token) {
+      console.log("FCM token nahi mila.");
+      return;
+    }
+
+    const timezone =
+      Intl.DateTimeFormat().resolvedOptions().timeZone ||
+      "Asia/Karachi";
+
+    const response = await fetch(
+      "/api/register-token",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          uid: user.uid,
+          token: token,
+          timezone: timezone
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    if (data.ok) {
+      console.log("✅ FCM token registered successfully.");
+    } else {
+      console.error(
+        "❌ FCM token registration failed:",
+        data
+      );
+    }
+
+  } catch (error) {
+    console.error(
+      "❌ Push notification setup error:",
+      error
+    );
+  }
 }
 
 </script>
@@ -2273,17 +2515,7 @@ function updateAuthUI(){
   );
 
 
-  if(currentUser){
-
-    userBadge.textContent =
-      currentUser.email;
-
-  }else{
-
-    userBadge.textContent =
-      "Not signed in";
-
-  }
+  /* Profile controls are available from the header while signed in. */
 
 }
 
@@ -2545,6 +2777,10 @@ firebaseAuth.onAuthStateChanged(
     if(user){
 
       await loadUserData();
+      updateNotificationUI();
+      checkDueNotifications();
+
+      await registerForPushNotifications(user);
 
     }else{
 
@@ -2694,6 +2930,188 @@ function updateStats(){
     );
 
 }
+
+
+/* ==========================================
+   NOTIFICATIONS
+========================================== */
+
+const NOTIFICATION_CHECK_MS = 15000;
+const notificationStorageKey = "lifeAdminAI_notified_tasks";
+
+function getNotifiedTaskIds(){
+
+  try{
+    return JSON.parse(
+      localStorage.getItem(notificationStorageKey) || "[]"
+    );
+  }catch(error){
+    return [];
+  }
+}
+
+function markTaskNotified(taskId){
+
+  const ids = getNotifiedTaskIds();
+
+  if(!ids.includes(String(taskId))){
+    ids.push(String(taskId));
+  }
+
+  localStorage.setItem(
+    notificationStorageKey,
+    JSON.stringify(ids.slice(-500))
+  );
+}
+
+function updateNotificationUI(){
+
+  const title = document.getElementById("notificationTitle");
+  const status = document.getElementById("notificationStatus");
+  const button = document.getElementById("notificationButton");
+
+  if(!title || !status || !button){
+    return;
+  }
+
+  if(!("Notification" in window)){
+    title.textContent = "Notifications not supported";
+    status.textContent = "This browser does not support browser notifications.";
+    button.style.display = "none";
+    return;
+  }
+
+  if(Notification.permission === "granted"){
+    title.textContent = "Notifications are on";
+    status.textContent = "Life Admin AI will notify you when a pending task becomes due while this app is open.";
+    button.textContent = "Notifications Enabled";
+    button.classList.add("secondary");
+    return;
+  }
+
+  if(Notification.permission === "denied"){
+    title.textContent = "Notifications are blocked";
+    status.textContent = "Allow notifications for this site in your browser settings, then refresh the page.";
+    button.textContent = "Check Again";
+    button.classList.add("secondary");
+    return;
+  }
+
+  title.textContent = "Notifications are off";
+  status.textContent = "Turn them on once to allow Life Admin AI to notify you.";
+  button.textContent = "Enable Notifications";
+}
+
+async function requestNotifications(){
+
+  if(!currentUser){
+    showAIResponse(`
+      <div class="response">
+        Please login first to use task notifications.
+      </div>
+    `);
+    return;
+  }
+
+  if(!("Notification" in window)){
+    updateNotificationUI();
+    return;
+  }
+
+  try{
+    const permission = await Notification.requestPermission();
+
+    updateNotificationUI();
+
+    if(permission === "granted"){
+      new Notification("Life Admin AI",{
+        body:"Notifications are enabled. I’ll remind you when your task is due."
+      });
+      checkDueNotifications();
+    }
+
+  }catch(error){
+    console.error("Notification permission error:",error);
+  }
+}
+
+function getTaskDueDate(task){
+
+  if(!task || !task.date || !task.time){
+    return null;
+  }
+
+  const due = new Date(`${task.date}T${task.time}`);
+
+  if(isNaN(due.getTime())){
+    return null;
+  }
+
+  return due;
+}
+
+function checkDueNotifications(){
+
+  if(!currentUser || !("Notification" in window) || Notification.permission !== "granted" || !Array.isArray(tasks)){
+    return;
+  }
+
+  const now = Date.now();
+  const notified = getNotifiedTaskIds();
+
+  tasks.forEach(task => {
+
+    if(!task || task.completed){
+      return;
+    }
+
+    const due = getTaskDueDate(task);
+
+    if(!due){
+      return;
+    }
+
+    const taskId = String(task.id);
+
+    if(notified.includes(taskId)){
+      return;
+    }
+
+    if(due.getTime() <= now){
+
+      markTaskNotified(task.id);
+
+      try{
+        const notification = new Notification("Life Admin AI — Task Due",{
+          body: task.text,
+          tag: `life-admin-task-${task.id}`,
+          requireInteraction: true
+        });
+
+        notification.onclick = function(){
+          window.focus();
+          notification.close();
+        };
+      }catch(error){
+        console.error("Notification display error:",error);
+      }
+    }
+  });
+}
+
+function openNotificationsFromMenu(){
+
+  closeMenu();
+
+  document
+    .getElementById("notificationSection")
+    .scrollIntoView({behavior:"smooth"});
+
+  updateNotificationUI();
+}
+
+updateNotificationUI();
+setInterval(checkDueNotifications,NOTIFICATION_CHECK_MS);
 
 
 /* ==========================================
@@ -2997,6 +3415,7 @@ function addManualTask(){
   saveUserData();
 
   renderTasks();
+  checkDueNotifications();
 
 
   document.getElementById(
@@ -3056,6 +3475,7 @@ function addAITask(task){
   saveUserData();
 
   renderTasks();
+  checkDueNotifications();
 
 }
 
@@ -3174,6 +3594,7 @@ function editTask(index){
   saveUserData();
 
   renderTasks();
+  checkDueNotifications();
 
 }
 
@@ -3925,12 +4346,6 @@ function openHistoryFromMenu(){
 }
 
 
-historyButton.addEventListener(
-  "click",
-  openHistory
-);
-
-
 closeHistoryButton.addEventListener(
   "click",
   closeHistory
@@ -3952,6 +4367,22 @@ historySearch.addEventListener(
 /* ==========================================
    THEME
 ========================================== */
+
+const themeToggleButton =
+  document.getElementById(
+    "themeToggleButton"
+  );
+
+const themeToggleIcon =
+  document.getElementById(
+    "themeToggleIcon"
+  );
+
+const themeToggleText =
+  document.getElementById(
+    "themeToggleText"
+  );
+
 
 function toggleTheme(){
 
@@ -3982,23 +4413,16 @@ function updateThemeButton(){
     );
 
 
-  const text =
-    document.getElementById(
-      "themeMenuText"
-    );
-
-
-  if(isDark){
-
-    text.textContent =
-      "Light Mode";
-
-  }else{
-
-    text.textContent =
-      "Dark Mode";
-
+  if(!themeToggleIcon || !themeToggleText){
+    return;
   }
+
+
+  themeToggleIcon.textContent =
+    isDark ? "☀️" : "🌙";
+
+  themeToggleText.textContent =
+    isDark ? "Light" : "Dark";
 
 }
 
@@ -4016,8 +4440,143 @@ if(
 }
 
 
+if(themeToggleButton){
+  themeToggleButton.addEventListener(
+    "click",
+    toggleTheme
+  );
+}
+
+
 updateThemeButton();
 
+
+/* ==========================================
+   PROFILE
+========================================== */
+
+const profileButton =
+  document.getElementById(
+    "profileButton"
+  );
+
+const profilePopover =
+  document.getElementById(
+    "profilePopover"
+  );
+
+const profileSignInButton =
+  document.getElementById(
+    "profileSignInButton"
+  );
+
+const profileLogoutButton =
+  document.getElementById(
+    "profileLogoutButton"
+  );
+
+
+function openProfile(){
+
+  profilePopover.classList.remove(
+    "hidden"
+  );
+
+  profileButton.setAttribute(
+    "aria-expanded",
+    "true"
+  );
+
+}
+
+
+function closeProfile(){
+
+  profilePopover.classList.add(
+    "hidden"
+  );
+
+  profileButton.setAttribute(
+    "aria-expanded",
+    "false"
+  );
+
+}
+
+
+if(profileButton && profilePopover){
+
+profileButton.addEventListener(
+  "click",
+  function(event){
+
+    event.stopPropagation();
+
+    if(profilePopover.classList.contains("hidden")){
+      openProfile();
+    }else{
+      closeProfile();
+    }
+
+  }
+);
+
+
+profileSignInButton.addEventListener(
+  "click",
+  async function(){
+
+    closeProfile();
+
+    closeMenu();
+
+    if(currentUser){
+      await handleLogout();
+    }
+
+    setAuthMode("login");
+    setAuthMessage(
+      ""
+    );
+
+    setTimeout(function(){
+      if(authEmailInput){
+        authEmailInput.focus();
+      }
+    },350);
+
+  }
+);
+
+
+profileLogoutButton.addEventListener(
+  "click",
+  async function(){
+
+    closeProfile();
+    await handleLogout();
+
+  }
+);
+
+document.addEventListener(
+  "click",
+  function(event){
+
+    if(
+      profilePopover &&
+      !profilePopover.classList.contains("hidden") &&
+      !profilePopover.contains(event.target) &&
+      !profileButton.contains(event.target)
+    ){
+      closeProfile();
+    }
+
+  }
+);
+
+
+}
 
 /* ==========================================
    INITIAL
@@ -4031,4 +4590,3 @@ updateStats();
 
 </body>
 </html>
-```
