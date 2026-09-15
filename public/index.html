@@ -614,6 +614,56 @@ button{
   font-weight:700;
 }
 
+/* ================= NOTIFICATIONS ================= */
+
+.notification-card{
+  background:linear-gradient(135deg,rgba(99,91,255,.08),rgba(124,58,237,.05));
+  border:1px solid rgba(99,91,255,.16);
+}
+
+.notification-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+  flex-wrap:wrap;
+}
+
+.notification-info{
+  flex:1;
+  min-width:220px;
+}
+
+.notification-status{
+  margin-top:6px;
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.5;
+}
+
+.notification-btn{
+  border:0;
+  background:var(--primary);
+  color:white;
+  padding:11px 16px;
+  border-radius:12px;
+  font-weight:700;
+}
+
+.notification-btn:hover{
+  background:var(--primary-dark);
+}
+
+.notification-btn.secondary{
+  background:var(--surface-2);
+  color:var(--text);
+  border:1px solid var(--border);
+}
+
+body.dark .notification-card{
+  background:linear-gradient(135deg,rgba(99,91,255,.14),rgba(124,58,237,.08));
+}
+
 /* ================= MANUAL ================= */
 
 .manual-grid{
@@ -1528,6 +1578,32 @@ body.app-locked #authSection{
 </section>
 
 
+<!-- ================= NOTIFICATIONS ================= -->
+
+<section id="notificationSection" class="card notification-card">
+
+  <div class="card-header">
+    <div>
+      <div class="card-title">Task notifications</div>
+      <div class="card-subtitle">Get a browser notification when a pending task reaches its date and time.</div>
+    </div>
+    <div class="section-icon">🔔</div>
+  </div>
+
+  <div class="notification-row">
+    <div class="notification-info">
+      <strong id="notificationTitle">Notifications are off</strong>
+      <div id="notificationStatus" class="notification-status">Turn them on once to allow Life Admin AI to notify you.</div>
+    </div>
+
+    <button id="notificationButton" class="notification-btn" type="button" onclick="requestNotifications()">
+      Enable Notifications
+    </button>
+  </div>
+
+</section>
+
+
 <!-- ================= TASKS ================= -->
 
 <section id="tasksSection" class="card">
@@ -1691,6 +1767,15 @@ body.app-locked #authSection{
       >
         <span class="menu-icon">➕</span>
         <span>Add Task</span>
+      </button>
+
+
+      <button
+        class="menu-item"
+        onclick="openNotificationsFromMenu()"
+      >
+        <span class="menu-icon">🔔</span>
+        <span>Notifications</span>
       </button>
 
 
@@ -2545,6 +2630,8 @@ firebaseAuth.onAuthStateChanged(
     if(user){
 
       await loadUserData();
+      updateNotificationUI();
+      checkDueNotifications();
 
     }else{
 
@@ -2694,6 +2781,188 @@ function updateStats(){
     );
 
 }
+
+
+/* ==========================================
+   NOTIFICATIONS
+========================================== */
+
+const NOTIFICATION_CHECK_MS = 15000;
+const notificationStorageKey = "lifeAdminAI_notified_tasks";
+
+function getNotifiedTaskIds(){
+
+  try{
+    return JSON.parse(
+      localStorage.getItem(notificationStorageKey) || "[]"
+    );
+  }catch(error){
+    return [];
+  }
+}
+
+function markTaskNotified(taskId){
+
+  const ids = getNotifiedTaskIds();
+
+  if(!ids.includes(String(taskId))){
+    ids.push(String(taskId));
+  }
+
+  localStorage.setItem(
+    notificationStorageKey,
+    JSON.stringify(ids.slice(-500))
+  );
+}
+
+function updateNotificationUI(){
+
+  const title = document.getElementById("notificationTitle");
+  const status = document.getElementById("notificationStatus");
+  const button = document.getElementById("notificationButton");
+
+  if(!title || !status || !button){
+    return;
+  }
+
+  if(!("Notification" in window)){
+    title.textContent = "Notifications not supported";
+    status.textContent = "This browser does not support browser notifications.";
+    button.style.display = "none";
+    return;
+  }
+
+  if(Notification.permission === "granted"){
+    title.textContent = "Notifications are on";
+    status.textContent = "Life Admin AI will notify you when a pending task becomes due while this app is open.";
+    button.textContent = "Notifications Enabled";
+    button.classList.add("secondary");
+    return;
+  }
+
+  if(Notification.permission === "denied"){
+    title.textContent = "Notifications are blocked";
+    status.textContent = "Allow notifications for this site in your browser settings, then refresh the page.";
+    button.textContent = "Check Again";
+    button.classList.add("secondary");
+    return;
+  }
+
+  title.textContent = "Notifications are off";
+  status.textContent = "Turn them on once to allow Life Admin AI to notify you.";
+  button.textContent = "Enable Notifications";
+}
+
+async function requestNotifications(){
+
+  if(!currentUser){
+    showAIResponse(`
+      <div class="response">
+        Please login first to use task notifications.
+      </div>
+    `);
+    return;
+  }
+
+  if(!("Notification" in window)){
+    updateNotificationUI();
+    return;
+  }
+
+  try{
+    const permission = await Notification.requestPermission();
+
+    updateNotificationUI();
+
+    if(permission === "granted"){
+      new Notification("Life Admin AI",{
+        body:"Notifications are enabled. I’ll remind you when your task is due."
+      });
+      checkDueNotifications();
+    }
+
+  }catch(error){
+    console.error("Notification permission error:",error);
+  }
+}
+
+function getTaskDueDate(task){
+
+  if(!task || !task.date || !task.time){
+    return null;
+  }
+
+  const due = new Date(`${task.date}T${task.time}`);
+
+  if(isNaN(due.getTime())){
+    return null;
+  }
+
+  return due;
+}
+
+function checkDueNotifications(){
+
+  if(!currentUser || !("Notification" in window) || Notification.permission !== "granted" || !Array.isArray(tasks)){
+    return;
+  }
+
+  const now = Date.now();
+  const notified = getNotifiedTaskIds();
+
+  tasks.forEach(task => {
+
+    if(!task || task.completed){
+      return;
+    }
+
+    const due = getTaskDueDate(task);
+
+    if(!due){
+      return;
+    }
+
+    const taskId = String(task.id);
+
+    if(notified.includes(taskId)){
+      return;
+    }
+
+    if(due.getTime() <= now){
+
+      markTaskNotified(task.id);
+
+      try{
+        const notification = new Notification("Life Admin AI — Task Due",{
+          body: task.text,
+          tag: `life-admin-task-${task.id}`,
+          requireInteraction: true
+        });
+
+        notification.onclick = function(){
+          window.focus();
+          notification.close();
+        };
+      }catch(error){
+        console.error("Notification display error:",error);
+      }
+    }
+  });
+}
+
+function openNotificationsFromMenu(){
+
+  closeMenu();
+
+  document
+    .getElementById("notificationSection")
+    .scrollIntoView({behavior:"smooth"});
+
+  updateNotificationUI();
+}
+
+updateNotificationUI();
+setInterval(checkDueNotifications,NOTIFICATION_CHECK_MS);
 
 
 /* ==========================================
@@ -2997,6 +3266,7 @@ function addManualTask(){
   saveUserData();
 
   renderTasks();
+  checkDueNotifications();
 
 
   document.getElementById(
@@ -3056,6 +3326,7 @@ function addAITask(task){
   saveUserData();
 
   renderTasks();
+  checkDueNotifications();
 
 }
 
@@ -3174,6 +3445,7 @@ function editTask(index){
   saveUserData();
 
   renderTasks();
+  checkDueNotifications();
 
 }
 
