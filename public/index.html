@@ -1679,28 +1679,7 @@ body.app-locked #authSection{
 
 <!-- ================= NOTIFICATIONS ================= -->
 
-<section id="notificationSection" class="card notification-card">
 
-  <div class="card-header">
-    <div>
-      <div class="card-title">Task notifications</div>
-      <div class="card-subtitle">Get a browser notification when a pending task reaches its date and time.</div>
-    </div>
-    <div class="section-icon">🔔</div>
-  </div>
-
-  <div class="notification-row">
-    <div class="notification-info">
-      <strong id="notificationTitle">Notifications are off</strong>
-      <div id="notificationStatus" class="notification-status">Turn them on once to allow Life Admin AI to notify you.</div>
-    </div>
-
-    <button id="notificationButton" class="notification-btn" type="button" onclick="requestNotifications()">
-      Enable Notifications
-    </button>
-  </div>
-
-</section>
 
 
 <!-- ================= TASKS ================= -->
@@ -1899,6 +1878,30 @@ body.app-locked #authSection{
       </button>
 
 
+
+
+    <section id="notificationSection" class="card notification-card">
+
+  <div class="card-header">
+    <div>
+      <div class="card-title">Task notifications</div>
+      <div class="card-subtitle">Get a browser notification when a pending task reaches its date and time.</div>
+    </div>
+    <div class="section-icon">🔔</div>
+  </div>
+
+  <div class="notification-row">
+    <div class="notification-info">
+      <strong id="notificationTitle">Notifications are off</strong>
+      <div id="notificationStatus" class="notification-status">Turn them on once to allow Life Admin AI to notify you.</div>
+    </div>
+
+    <button id="notificationButton" class="notification-btn" type="button" onclick="requestNotifications()">
+      Enable Notifications
+    </button>
+  </div>
+
+</section>
     </div>
 
   </div>
@@ -4263,12 +4266,6 @@ function openHistoryFromMenu(){
 }
 
 
-historyButton.addEventListener(
-  "click",
-  openHistory
-);
-
-
 closeHistoryButton.addEventListener(
   "click",
   closeHistory
@@ -4427,6 +4424,8 @@ function closeProfile(){
 }
 
 
+if(profileButton && profilePopover){
+
 profileButton.addEventListener(
   "click",
   function(event){
@@ -4496,6 +4495,8 @@ document.addEventListener(
   }
 );
 
+
+}
 
 /* ==========================================
    INITIAL
