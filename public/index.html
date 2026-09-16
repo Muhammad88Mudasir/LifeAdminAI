@@ -3949,11 +3949,15 @@ async function askAI(){
 
     if(
       data.action === "add_task" &&
-      data.task
+      data.title
     ){
 
       addAITask(
-        data.task
+        {
+          text: data.title,
+          date: data.date || null,
+          time: data.time || null
+        }
       );
 
     }
