@@ -3967,39 +3967,45 @@ async function askAI(){
 
     if(
       data.action === "edit_task" &&
-      data.task &&
-      typeof data.taskIndex === "number"
+      typeof data.oldTitle === "string" &&
+      data.oldTitle.trim()
     ){
 
-      if(tasks[data.taskIndex]){
+      const taskIndex =
+        tasks.findIndex(task =>
+          String(task.text || "").trim().toLowerCase() ===
+          data.oldTitle.trim().toLowerCase()
+        );
+
+      if(taskIndex !== -1){
 
         const oldTask =
-          tasks[data.taskIndex];
+          tasks[taskIndex];
 
 
-        tasks[data.taskIndex] = {
+        tasks[taskIndex] = {
 
           ...oldTask,
 
           text:
-            data.task.text ??
+            data.newTitle ??
             oldTask.text,
 
           date:
-            data.task.date ??
+            data.date ??
             null,
 
           time:
-            data.task.time ??
+            data.time ??
             null
 
         };
 
 
         addHistory(
-          tasks[data.taskIndex].text,
+          tasks[taskIndex].text,
           "edited",
-          tasks[data.taskIndex]
+          tasks[taskIndex]
         );
 
 
