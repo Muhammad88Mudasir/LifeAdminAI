@@ -1220,6 +1220,164 @@ body.app-locked #authSection{position:fixed!important;inset:0!important;width:10
 body.dark .auth-shell{background:radial-gradient(circle at 15% 20%,rgba(230,111,45,.11),transparent 30%),radial-gradient(circle at 85% 80%,rgba(230,111,45,.07),transparent 30%),#0d111b;color:#f8f7f4}body.dark .auth-visual{border-right-color:#252c38}body.dark .auth-visual-copy,body.dark .auth-visual-footer{color:#a9a29a}body.dark .auth-dashboard{background:rgba(17,23,34,.94);border-color:#293243;box-shadow:0 28px 65px rgba(0,0,0,.3)}body.dark .auth-dashboard-top,body.dark .auth-mini-stat,body.dark .auth-mini-ai{border-color:#293243}body.dark .auth-dashboard-note,body.dark .auth-mini-stat,body.dark .auth-mini-ai{background:#141b28;color:#eeeae5}body.dark .auth-mini-nav div{color:#9ea7b5}body.dark .auth-mini-nav .active{background:#2a211c;color:#ff9a62}body.dark .auth-mini-user{background:#202838}body.dark .auth-mini-input{border-color:#293243;color:#7f8a9b}body.dark .auth-panel{background:rgba(10,14,23,.72)}body.dark .auth-card-box{background:#121925;border-color:#2b3444;box-shadow:0 30px 80px rgba(0,0,0,.35)}body.dark .auth-tabs{background:#0d1420;border-color:#293243}body.dark .auth-tab{color:#8f99a8}body.dark .auth-tab.active{background:#1b2331;color:#ff995f;box-shadow:none}body.dark .auth-heading p{color:#a0a8b4}body.dark .auth-choice-btn{background:#151d2a;color:#f5f5f2;border-color:#303a4b}body.dark .auth-choice-btn.email-choice{background:#1d1916;border-color:#5c3a27}body.dark .auth-divider{color:#7f8998}body.dark .auth-divider:before,body.dark .auth-divider:after{background:#2b3444}body.dark .auth-field-group label{color:#d7dbe1}body.dark .auth-field{background:#0e1622;color:#f7f7f5;border-color:#344053}body.dark .auth-field::placeholder{color:#697586}body.dark .auth-back{color:#a2aab6}body.dark .auth-account-note,body.dark .auth-security-note{color:#8e98a7}
 @media(max-width:900px){.auth-shell{grid-template-columns:1fr}.auth-visual{display:none}.auth-panel{min-height:100vh;padding:22px}.auth-card-box{max-width:560px;margin:auto}}@media(max-width:520px){.auth-panel{padding:14px}.auth-card-box{border-radius:22px;padding:24px 18px}.auth-tabs{margin-bottom:25px}.auth-heading h2{font-size:27px}}
 
+
+
+/* =========================================================
+   LIFE ADMIN AI — PREMIUM DASHBOARD V2
+   Visual redesign only; existing IDs/functions preserved.
+   ========================================================= */
+:root{
+  --dash-bg:#f4f1eb;
+  --dash-surface:#fffdf9;
+  --dash-surface-2:#f8f5ef;
+  --dash-ink:#171717;
+  --dash-muted:#77716a;
+  --dash-line:#e7e0d7;
+  --dash-accent:#e46f35;
+  --dash-accent-dark:#c95720;
+  --dash-accent-soft:#fff0e7;
+  --dash-shadow:0 18px 50px rgba(43,35,28,.08);
+}
+
+body{background:var(--dash-bg)!important;color:var(--dash-ink)!important;}
+.app-content{max-width:1240px!important;margin:0 auto!important;padding:28px 22px 42px!important;}
+
+/* Header / brand */
+.header{
+  background:var(--dash-surface)!important;color:var(--dash-ink)!important;
+  border:1px solid var(--dash-line)!important;border-radius:30px!important;
+  box-shadow:var(--dash-shadow)!important;position:relative;overflow:hidden;
+  padding:28px!important;
+}
+.header:before{content:"";position:absolute;right:-80px;top:-120px;width:310px;height:310px;border:52px solid #f8dfd0;border-radius:50%;opacity:.65;}
+.header:after{content:"";position:absolute;right:75px;bottom:-150px;width:240px;height:240px;background:#fff1e8;border-radius:50%;}
+.header-top,.header-content{position:relative;z-index:2;}
+.brand{gap:14px!important;}
+.logo,.menu-logo{
+  background:var(--dash-ink)!important;color:#fff!important;border-radius:15px!important;
+  box-shadow:0 10px 24px rgba(23,23,23,.14)!important;
+}
+.brand h1{color:var(--dash-ink)!important;letter-spacing:-.04em!important;font-weight:800!important;}
+.brand p{color:var(--dash-muted)!important;}
+.header-actions{gap:9px!important;}
+.user-badge{
+  width:44px!important;height:44px!important;padding:0!important;border-radius:50%!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  font-size:0!important;background:#f3eee8!important;border:1px solid var(--dash-line)!important;
+  color:var(--dash-ink)!important;cursor:pointer!important;position:relative!important;
+}
+.user-badge:before{content:"♙";font-size:20px;font-weight:700;line-height:1;}
+.user-badge:after{content:"";position:absolute;right:1px;bottom:2px;width:9px;height:9px;background:#49a56a;border:2px solid var(--dash-surface);border-radius:50%;}
+.header-btn{background:var(--dash-surface)!important;color:var(--dash-ink)!important;border:1px solid var(--dash-line)!important;border-radius:14px!important;font-weight:700!important;box-shadow:none!important;}
+.header-btn:hover{border-color:#d7c9bb!important;background:#f9f5ef!important;transform:translateY(-1px);}
+.header-content{padding:64px 6px 32px!important;max-width:760px!important;}
+.header-content h2{font-size:clamp(42px,6vw,74px)!important;line-height:.94!important;letter-spacing:-.065em!important;color:var(--dash-ink)!important;font-weight:850!important;}
+.header-content h2 br{display:none;}
+.header-content h2:after{content:"";display:inline-block;width:13px;height:13px;background:var(--dash-accent);border-radius:50%;margin:0 0 7px 9px;}
+.header-content p{max-width:610px!important;color:var(--dash-muted)!important;font-size:16px!important;line-height:1.7!important;}
+
+/* Stats */
+.stats{gap:14px!important;margin:18px 0!important;}
+.stat{background:var(--dash-surface)!important;border:1px solid var(--dash-line)!important;border-radius:22px!important;box-shadow:none!important;padding:22px!important;transition:.2s ease!important;}
+.stat:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(43,35,28,.07)!important;}
+.stat.active{border-color:#e7cdbd!important;box-shadow:inset 0 0 0 1px #f1dfd2!important;}
+.stat-top{align-items:center!important;}
+.stat-label{color:var(--dash-muted)!important;}
+.stat-number{color:var(--dash-ink)!important;font-size:42px!important;letter-spacing:-.05em!important;}
+.stat-icon{background:var(--dash-accent-soft)!important;border:1px solid #f4d9c8!important;border-radius:12px!important;font-size:16px!important;}
+
+/* Cards */
+.card{background:var(--dash-surface)!important;border:1px solid var(--dash-line)!important;border-radius:24px!important;box-shadow:none!important;padding:24px!important;margin:14px 0!important;}
+.card:hover{border-color:#ddd2c7;}
+.card-title{color:var(--dash-ink)!important;font-weight:800!important;letter-spacing:-.025em!important;}
+.card-subtitle{color:var(--dash-muted)!important;}
+.section-icon{background:var(--dash-accent-soft)!important;color:var(--dash-accent-dark)!important;border:1px solid #f4d9c8!important;border-radius:13px!important;}
+
+/* AI command area */
+#aiSection{background:linear-gradient(135deg,#fffdf9 0%,#fff8f2 100%)!important;border-color:#ead9cb!important;}
+.ai-box{background:#f8f4ee!important;border:1px solid #ece2d8!important;border-radius:19px!important;padding:14px!important;}
+.ai-input{background:#fff!important;border:1px solid #ded5cc!important;color:var(--dash-ink)!important;border-radius:14px!important;box-shadow:none!important;}
+.ai-input:focus,.field:focus,.search:focus{border-color:var(--dash-accent)!important;box-shadow:0 0 0 4px rgba(228,111,53,.10)!important;outline:none!important;}
+.primary-btn,.add-btn,.notification-btn{background:var(--dash-accent)!important;border:0!important;color:#fff!important;border-radius:13px!important;font-weight:800!important;box-shadow:0 9px 20px rgba(228,111,53,.18)!important;}
+.primary-btn:hover,.add-btn:hover,.notification-btn:hover{background:var(--dash-accent-dark)!important;transform:translateY(-1px);}
+.example{background:#fff!important;border:1px solid #e5dbd2!important;color:#665e56!important;border-radius:999px!important;}
+.example:hover{border-color:#efc5ad!important;color:var(--dash-accent-dark)!important;background:#fff7f1!important;}
+.ai-response{border-radius:14px!important;}
+
+/* Manual task + notification */
+.manual-grid{gap:10px!important;}
+.field,.search{background:#fff!important;border:1px solid #ded5cc!important;color:var(--dash-ink)!important;border-radius:13px!important;}
+.notification-card{background:#fbf8f3!important;}
+.notification-row{background:#fff!important;border:1px solid var(--dash-line)!important;border-radius:17px!important;padding:16px!important;}
+.notification-status{color:var(--dash-muted)!important;}
+.notification-btn.secondary{background:#efe9e1!important;color:#4d4741!important;box-shadow:none!important;}
+
+/* Task controls/list */
+.controls{gap:8px!important;}
+.filter,.clear-btn{border:1px solid var(--dash-line)!important;background:#fff!important;color:#625b54!important;border-radius:11px!important;font-weight:700!important;}
+.filter.active{background:var(--dash-ink)!important;color:#fff!important;border-color:var(--dash-ink)!important;}
+.clear-btn:hover,.filter:hover{border-color:#d5c5b8!important;}
+.task-list{gap:10px!important;}
+.task{background:#fff!important;border:1px solid var(--dash-line)!important;border-radius:17px!important;box-shadow:none!important;}
+.task:hover{border-color:#d9c9bb!important;box-shadow:0 10px 25px rgba(43,35,28,.05)!important;}
+.task.completed{background:#f7f4ef!important;}
+
+/* Menu */
+.menu-overlay,.history-overlay{background:rgba(24,20,16,.42)!important;backdrop-filter:blur(5px)!important;}
+.menu-drawer,.history-drawer{background:#fbf8f3!important;border-left:1px solid var(--dash-line)!important;box-shadow:-20px 0 55px rgba(24,20,16,.12)!important;}
+.menu-header,.history-header{border-bottom:1px solid var(--dash-line)!important;}
+.menu-logo{border-radius:13px!important;}
+.menu-brand h2{color:var(--dash-ink)!important;}
+.menu-brand p{color:var(--dash-muted)!important;}
+.menu-close,.history-close{background:#fff!important;border:1px solid var(--dash-line)!important;color:var(--dash-ink)!important;border-radius:11px!important;}
+.menu-item{color:#4e4842!important;border-radius:13px!important;}
+.menu-item:hover{background:#f2ece5!important;color:var(--dash-ink)!important;}
+.menu-item.active{background:#fff0e7!important;color:var(--dash-accent-dark)!important;}
+.menu-icon{background:#f2ece5!important;border-radius:10px!important;}
+.menu-item.active .menu-icon{background:#ffe0ce!important;}
+.menu-logout{color:#b44e2b!important;}
+.menu-divider{background:var(--dash-line)!important;}
+
+/* Account block inside profile/menu */
+.menu-account{margin:0 0 14px;padding:14px;background:#fff;border:1px solid var(--dash-line);border-radius:16px;display:flex;align-items:center;gap:12px;}
+.menu-account-avatar{width:38px;height:38px;border-radius:12px;background:var(--dash-ink);color:#fff;display:grid;place-items:center;font-weight:800;flex:0 0 auto;}
+.menu-account small{display:block;color:#958c83;font-size:11px;text-transform:uppercase;letter-spacing:.08em;font-weight:800;margin-bottom:3px;}
+.menu-account strong{display:block;color:var(--dash-ink);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:210px;}
+
+.footer{color:#918980!important;border-top:1px solid var(--dash-line)!important;margin-top:26px!important;padding-top:22px!important;}
+
+/* Dark mode */
+body.dark{--dash-bg:#101214;--dash-surface:#17191c;--dash-surface-2:#1d2024;--dash-ink:#f5f2ee;--dash-muted:#aaa29a;--dash-line:#2b2f34;--dash-accent:#ef8a52;--dash-accent-dark:#ff9a67;--dash-accent-soft:#2b201b;--dash-shadow:0 18px 55px rgba(0,0,0,.25);}
+body.dark .header,body.dark .card,body.dark .stat{background:var(--dash-surface)!important;border-color:var(--dash-line)!important;box-shadow:none!important;}
+body.dark .header:before{border-color:#34251e;}body.dark .header:after{background:#241b17;}
+body.dark .header-btn,body.dark .user-badge,body.dark .field,body.dark .search,body.dark .filter,body.dark .clear-btn,body.dark .task,body.dark .notification-row,body.dark .example{background:#1d2024!important;color:var(--dash-ink)!important;border-color:var(--dash-line)!important;}
+body.dark .ai-box{background:#121417!important;border-color:var(--dash-line)!important;}
+body.dark #aiSection{background:linear-gradient(135deg,#17191c,#1e1916)!important;border-color:#3a2c24!important;}
+body.dark .notification-card{background:#17191c!important;}
+body.dark .menu-drawer,body.dark .history-drawer{background:#141619!important;border-color:var(--dash-line)!important;}
+body.dark .menu-item{color:#d4cec7!important;}body.dark .menu-item:hover{background:#20242a!important;color:#fff!important;}
+body.dark .menu-item.active{background:#2b201b!important;color:#ffad80!important;}
+body.dark .menu-icon{background:#20242a!important;}body.dark .menu-item.active .menu-icon{background:#3a261d!important;}
+body.dark .menu-account{background:#1b1e22!important;border-color:var(--dash-line)!important;}
+body.dark .menu-account strong{color:#f5f2ee!important;}
+body.dark .menu-close,body.dark .history-close{background:#1d2024!important;color:#fff!important;border-color:var(--dash-line)!important;}
+body.dark .footer{border-color:var(--dash-line)!important;}
+
+@media (max-width:760px){
+  .app-content{padding:14px 12px 28px!important;}
+  .header{padding:18px!important;border-radius:22px!important;}
+  .header-actions .header-btn{font-size:0!important;width:42px!important;height:42px!important;padding:0!important;}
+  .header-actions .header-btn:first-of-type:before{content:"◷";font-size:18px;}
+  .header-actions .header-btn:last-of-type:before{content:"☰";font-size:18px;}
+  .header-content{padding:48px 3px 22px!important;}
+  .header-content h2{font-size:46px!important;}
+  .stats{grid-template-columns:1fr!important;}
+  .card{padding:17px!important;border-radius:19px!important;}
+  .ai-input-row,.notification-row{flex-direction:column!important;align-items:stretch!important;}
+  .primary-btn,.add-btn,.notification-btn{width:100%!important;}
+  .controls{flex-wrap:wrap!important;}
+  .search{width:100%!important;}
+}
 </style>
 </head>
 
@@ -1309,7 +1467,7 @@ body.dark .auth-shell{background:radial-gradient(circle at 15% 20%,rgba(230,111,
 
     <div class="header-actions">
 
-      <div id="userBadge" class="user-badge">
+      <div id="userBadge" class="user-badge" role="button" tabindex="0" title="Account & sign out" onclick="openMenu()" onkeydown="if(event.key==='Enter'||event.key===' '){openMenu();}">
         Not signed in
       </div>
 
@@ -1719,6 +1877,16 @@ body.dark .auth-shell{background:radial-gradient(circle at 15% 20%,rgba(230,111,
 
     <div class="menu-list">
 
+      <div class="menu-account">
+        <div class="menu-account-avatar">✦</div>
+        <div>
+          <small>Signed in as</small>
+          <strong id="menuAccountEmail">Account</strong>
+        </div>
+      </div>
+
+      
+
       <button
         class="menu-item active"
         onclick="menuNavigate('dashboard')"
@@ -1775,10 +1943,10 @@ body.dark .auth-shell{background:radial-gradient(circle at 15% 20%,rgba(230,111,
 
       <button
         class="menu-item"
-        onclick="openNotificationsFromMenu()"
+        onclick="handleMenuNotifications()"
       >
         <span class="menu-icon">🔔</span>
-        <span>Notifications</span>
+        <span>Enable Notifications</span>
       </button>
 
 
@@ -2383,15 +2551,25 @@ function updateAuthUI(){
   );
 
 
+  const menuAccountEmail = document.getElementById("menuAccountEmail");
+
   if(currentUser){
 
     userBadge.textContent =
       currentUser.email;
 
+    if(menuAccountEmail){
+      menuAccountEmail.textContent = currentUser.email;
+    }
+
   }else{
 
     userBadge.textContent =
       "Not signed in";
+
+    if(menuAccountEmail){
+      menuAccountEmail.textContent = "Not signed in";
+    }
 
   }
 
@@ -4095,6 +4273,27 @@ menuOverlay.addEventListener(
 /* ==========================================
    MENU NAVIGATION
 ========================================== */
+
+function handleMenuNotifications(){
+
+  if(!currentUser){
+    closeMenu();
+    showAIResponse(`
+      <div class="response">
+        Please login first to use task notifications.
+      </div>
+    `);
+    return;
+  }
+
+  if("Notification" in window && Notification.permission === "granted"){
+    openNotificationsFromMenu();
+    return;
+  }
+
+  closeMenu();
+  requestNotifications();
+}
 
 function menuNavigate(destination){
 
