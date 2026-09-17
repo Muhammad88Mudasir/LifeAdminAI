@@ -10,461 +10,587 @@
   <meta name="description" content="Life Admin AI turns your everyday requests into organized tasks. Plan, remember, and manage your day with AI.">
 
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    :root {
+      --bg: #f6f1ea;
+      --bg-soft: #faf6f2;
+      --surface: #fffdfb;
+      --surface-strong: #ffffff;
+      --surface-2: #f7f2ec;
+      --text: #1d1a17;
+      --muted: #6a605a;
+      --border: rgba(29, 26, 23, 0.08);
+      --border-strong: rgba(29, 26, 23, 0.14);
+      --accent: #d9773c;
+      --accent-dark: #bd6634;
+      --soft-accent: rgba(217, 119, 60, 0.12);
+      --shadow: 0 18px 52px rgba(29, 26, 23, 0.08);
+      --shadow-soft: 0 10px 28px rgba(29, 26, 23, 0.04);
+      --navy: #111827;
     }
 
-    html {
-      scroll-behavior: smooth;
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
     body {
       font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #070712;
-      color: #fff;
+      background: var(--bg);
+      color: var(--text);
       line-height: 1.6;
     }
-
-    a {
-      text-decoration: none;
-      color: inherit;
-    }
+    a { text-decoration: none; color: inherit; }
+    img { max-width: 100%; display: block; }
 
     .container {
-      width: min(1120px, 92%);
-      margin: auto;
+      width: min(1160px, 92%);
+      margin: 0 auto;
     }
 
-    /* NAVBAR */
     nav {
       position: sticky;
       top: 0;
-      z-index: 100;
-      background: rgba(7, 7, 18, 0.82);
-      backdrop-filter: blur(18px);
-      border-bottom: 1px solid rgba(255,255,255,0.08);
+      z-index: 30;
+      background: rgba(246, 241, 234, 0.8);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
     }
 
     .nav-inner {
-      height: 72px;
+      height: 80px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 20px;
     }
 
-    .logo {
-      display: flex;
+    .brand {
+      display: inline-flex;
       align-items: center;
-      gap: 10px;
-      font-size: 20px;
+      gap: 12px;
       font-weight: 800;
-      letter-spacing: -0.5px;
+      font-size: 1.2rem;
+      letter-spacing: -0.04em;
     }
 
-    .logo-icon {
+    .brand-mark {
       width: 38px;
       height: 38px;
       border-radius: 12px;
+      background: var(--accent);
+      color: white;
       display: grid;
       place-items: center;
-      background: linear-gradient(135deg, #7c5cff, #a855f7);
-      box-shadow: 0 8px 30px rgba(124,92,255,0.35);
-      font-size: 19px;
+      font-size: 18px;
+      box-shadow: 0 10px 22px rgba(217, 119, 60, 0.25);
     }
 
     .nav-links {
       display: flex;
       align-items: center;
       gap: 30px;
-      color: #aaaabd;
-      font-size: 14px;
+      color: var(--muted);
+      font-size: 0.9rem;
     }
 
-    .nav-links a:hover {
-      color: white;
+    .nav-links a {
+      transition: color 0.2s ease;
     }
 
-    .nav-button {
-      padding: 11px 19px;
+    .nav-links a:hover { color: var(--text); }
+
+    .nav-cta {
+      padding: 11px 18px;
       border-radius: 10px;
-      background: #fff;
-      color: #101018 !important;
+      background: var(--text);
+      color: #fff !important;
       font-weight: 700;
+      box-shadow: var(--shadow-soft);
     }
 
-    /* HERO */
     .hero {
+      padding: 72px 0 54px;
       position: relative;
       overflow: hidden;
-      padding: 105px 0 90px;
-      text-align: center;
     }
 
-    .glow {
+    .hero-bg {
       position: absolute;
-      width: 500px;
-      height: 500px;
-      border-radius: 50%;
-      background: #6941ff;
-      filter: blur(150px);
-      opacity: 0.16;
+      width: 640px;
+      height: 640px;
       left: 50%;
-      top: 40px;
+      top: -80px;
       transform: translateX(-50%);
+      background: radial-gradient(circle, rgba(217,119,60,0.18), rgba(217,119,60,0) 62%);
+      filter: blur(30px);
       pointer-events: none;
     }
 
-    .badge {
-      position: relative;
-      display: inline-flex;
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.08fr 0.92fr;
       align-items: center;
-      gap: 8px;
-      padding: 8px 14px;
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 999px;
-      background: rgba(255,255,255,0.05);
-      color: #c9c5ff;
-      font-size: 13px;
-      margin-bottom: 25px;
+      gap: 40px;
+      position: relative;
+      z-index: 1;
     }
 
-    .badge span {
-      width: 7px;
-      height: 7px;
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 8px 14px;
+      border: 1px solid var(--border-strong);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.55);
+      color: var(--muted);
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      box-shadow: var(--shadow-soft);
+      margin-bottom: 30px;
+    }
+
+    .eyebrow-dot {
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
-      background: #7c5cff;
-      box-shadow: 0 0 12px #7c5cff;
+      background: var(--accent);
+      box-shadow: 0 0 12px rgba(217,119,60,0.55);
     }
 
     h1 {
-      position: relative;
-      max-width: 850px;
-      margin: auto;
-      font-size: clamp(45px, 7vw, 78px);
-      line-height: 1.02;
-      letter-spacing: -3.5px;
-      font-weight: 850;
+      font-size: clamp(3.2rem, 5vw, 6rem);
+      line-height: 0.95;
+      letter-spacing: -0.08em;
+      font-weight: 800;
+      margin: 0;
+      color: var(--text);
     }
 
-    .gradient-text {
-      background: linear-gradient(90deg, #9c8cff, #c084fc, #818cf8);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
+    .accent-text {
+      color: var(--accent);
+      display: block;
     }
 
-    .hero-text {
-      position: relative;
-      max-width: 650px;
-      margin: 25px auto 0;
-      color: #a9a9bb;
-      font-size: 18px;
+    .hero-copy {
+      margin-top: 22px;
+      max-width: 560px;
+      color: var(--muted);
+      font-size: 1.12rem;
     }
 
-    .hero-buttons {
-      position: relative;
-      margin-top: 34px;
+    .cta-row {
       display: flex;
-      justify-content: center;
-      gap: 13px;
       flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 28px;
     }
 
-    .primary-button,
-    .secondary-button {
-      padding: 14px 23px;
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       border-radius: 12px;
-      font-weight: 750;
-      font-size: 15px;
-      transition: 0.2s ease;
-    }
-
-    .primary-button {
-      background: linear-gradient(135deg, #715cff, #8b5cf6);
-      box-shadow: 0 12px 35px rgba(113,92,255,0.28);
-    }
-
-    .primary-button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 16px 40px rgba(113,92,255,0.4);
-    }
-
-    .secondary-button {
-      border: 1px solid rgba(255,255,255,0.13);
-      background: rgba(255,255,255,0.045);
-      color: #ddddea;
-    }
-
-    .secondary-button:hover {
-      background: rgba(255,255,255,0.08);
-    }
-
-    /* APP PREVIEW */
-    .preview {
-      position: relative;
-      max-width: 930px;
-      margin: 55px auto 0;
-      padding: 10px;
-      border-radius: 20px;
-      background: linear-gradient(135deg, rgba(124,92,255,0.35), rgba(255,255,255,0.06));
-      box-shadow: 0 30px 100px rgba(0,0,0,0.5);
-    }
-
-    .preview-window {
-      background: #10101d;
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 15px;
-      overflow: hidden;
-      text-align: left;
-    }
-
-    .window-top {
-      height: 45px;
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      padding: 0 16px;
-      border-bottom: 1px solid rgba(255,255,255,0.07);
-    }
-
-    .dot {
-      width: 9px;
-      height: 9px;
-      border-radius: 50%;
-      background: #555568;
-    }
-
-    .fake-dashboard {
-      display: grid;
-      grid-template-columns: 180px 1fr;
-      min-height: 350px;
-    }
-
-    .fake-sidebar {
-      padding: 22px 15px;
-      border-right: 1px solid rgba(255,255,255,0.07);
-    }
-
-    .fake-side-item {
-      padding: 10px 12px;
-      margin-bottom: 6px;
-      color: #9999ad;
-      font-size: 12px;
-      border-radius: 8px;
-    }
-
-    .fake-side-item.active {
-      background: rgba(124,92,255,0.15);
-      color: #bdb3ff;
-    }
-
-    .fake-main {
-      padding: 25px;
-    }
-
-    .fake-title {
-      font-size: 22px;
-      font-weight: 750;
-      margin-bottom: 6px;
-    }
-
-    .fake-subtitle {
-      color: #858597;
-      font-size: 12px;
-      margin-bottom: 22px;
-    }
-
-    .fake-ai {
-      padding: 20px;
-      border: 1px solid rgba(124,92,255,0.25);
-      background: rgba(124,92,255,0.07);
-      border-radius: 13px;
-      margin-bottom: 18px;
-    }
-
-    .fake-ai-title {
+      padding: 15px 22px;
+      font-size: 0.95rem;
       font-weight: 700;
-      font-size: 14px;
-      margin-bottom: 12px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
     }
 
-    .fake-input {
-      height: 40px;
-      border-radius: 8px;
-      background: #171727;
-      border: 1px solid rgba(255,255,255,0.08);
-      color: #68687c;
+    .button:hover {
+      transform: translateY(-2px);
+    }
+
+    .button-primary {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 14px 28px rgba(217,119,60,0.2);
+    }
+
+    .button-primary:hover { background: var(--accent-dark); }
+
+    .button-secondary {
+      background: rgba(255,255,255,0.5);
+      color: var(--text);
+      border: 1px solid var(--border-strong);
+    }
+
+    .button-secondary:hover { background: rgba(255,255,255,0.8); }
+
+    .mini-points {
+      margin-top: 36px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,0.18);
+    }
+
+    .mini-point {
+      padding: 22px 20px;
+      border-right: 1px solid var(--border);
+    }
+
+    .mini-point:last-child { border-right: 0; }
+
+    .mini-point strong {
+      display: block;
+      font-size: 0.82rem;
+      letter-spacing: 0.04em;
+      color: var(--text);
+      margin-bottom: 5px;
+      text-transform: uppercase;
+    }
+
+    .mini-point span {
+      color: var(--muted);
+      font-size: 0.92rem;
+      display: block;
+      line-height: 1.5;
+    }
+
+    .demo-card {
+      position: relative;
+      max-width: 510px;
+      margin-left: auto;
+      background: rgba(255,255,255,0.38);
+      border: 1px solid var(--border);
+      border-radius: 26px;
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+
+    .demo-shell {
+      background: var(--surface-strong);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+    }
+
+    .demo-topbar {
+      height: 46px;
       display: flex;
       align-items: center;
-      padding: 0 12px;
-      font-size: 11px;
+      gap: 8px;
+      padding: 0 14px;
+      background: #f9f5f0;
+      border-bottom: 1px solid var(--border);
     }
 
-    .fake-cards {
+    .demo-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #d8d2cb;
+    }
+
+    .demo-body {
+      padding: 22px 20px 18px;
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .demo-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .demo-brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .demo-brand-mark {
+      width: 28px;
+      height: 28px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      background: var(--accent);
+      color: white;
+      font-size: 14px;
+    }
+
+    .demo-pill {
+      border: 1px solid var(--border-strong);
+      background: var(--surface-2);
+      color: var(--muted);
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .demo-message {
+      background: linear-gradient(180deg, rgba(217,119,60,0.08), rgba(217,119,60,0.02));
+      border: 1px solid rgba(217,119,60,0.2);
+      border-radius: 16px;
+      padding: 16px;
+    }
+
+    .demo-message-label {
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--accent-dark);
+      margin-bottom: 8px;
+    }
+
+    .demo-message-text {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .demo-arrow {
+      width: 100px;
+      height: 42px;
+      margin: 4px auto 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .demo-arrow::before {
+      content: "";
+      width: 86px;
+      height: 2px;
+      background: linear-gradient(90deg, rgba(217,119,60,0.8), rgba(217,119,60,0.25));
+      display: block;
+      position: absolute;
+    }
+
+    .demo-arrow::after {
+      content: "";
+      width: 12px;
+      height: 12px;
+      border-top: 2px solid rgba(217,119,60,0.9);
+      border-right: 2px solid rgba(217,119,60,0.9);
+      transform: rotate(45deg);
+      position: absolute;
+      right: 8px;
+      top: 14px;
+    }
+
+    .task-card {
+      background: var(--surface-strong);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .task-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       gap: 12px;
     }
 
-    .fake-card {
-      height: 75px;
-      border-radius: 10px;
-      background: #151522;
-      border: 1px solid rgba(255,255,255,0.06);
-      padding: 14px;
+    .task-card-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent-dark);
     }
 
-    .fake-card-label {
-      color: #77778b;
-      font-size: 10px;
+    .task-card-body {
+      margin-top: 12px;
+      font-size: 1.06rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.04em;
     }
 
-    .fake-card-number {
-      margin-top: 5px;
-      font-size: 19px;
-      font-weight: 750;
+    .task-card-meta {
+      margin-top: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 0.78rem;
     }
 
-    /* SECTIONS */
-    section {
-      padding: 90px 0;
+    .meta-tag {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
     }
 
-    .section-heading {
+    .section {
+      padding: 96px 0;
+    }
+
+    .section-head {
       text-align: center;
-      max-width: 650px;
-      margin: auto;
+      max-width: 700px;
+      margin: 0 auto 44px;
     }
 
-    .section-heading h2 {
-      font-size: clamp(30px, 5vw, 46px);
-      letter-spacing: -1.5px;
-      line-height: 1.1;
+    .section-kicker {
+      display: inline-block;
+      margin-bottom: 12px;
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--accent-dark);
     }
 
-    .section-heading p {
-      margin-top: 15px;
-      color: #9999ac;
-      font-size: 16px;
+    .section-head h2 {
+      font-size: clamp(2.3rem, 4vw, 3.5rem);
+      line-height: 1.08;
+      letter-spacing: -0.06em;
+      color: var(--text);
+    }
+
+    .section-head p {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 1.04rem;
     }
 
     .steps {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 18px;
-      margin-top: 48px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px;
     }
 
     .step {
-      padding: 28px;
-      border-radius: 17px;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.035);
+      position: relative;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.42);
+      border-radius: 22px;
+      padding: 24px 22px 20px;
+      box-shadow: var(--shadow-soft);
     }
 
     .step-number {
-      width: 40px;
-      height: 40px;
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
       display: grid;
       place-items: center;
-      border-radius: 11px;
-      background: rgba(124,92,255,0.15);
-      color: #b9adff;
+      background: var(--soft-accent);
+      color: var(--accent-dark);
       font-weight: 800;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
     }
 
     .step h3 {
-      font-size: 19px;
+      font-size: 1.3rem;
+      letter-spacing: -0.04em;
       margin-bottom: 8px;
+      color: var(--text);
     }
 
     .step p {
-      color: #9292a6;
-      font-size: 14px;
+      color: var(--muted);
+      font-size: 0.96rem;
+      line-height: 1.7;
     }
 
-    /* FEATURES */
-    .features {
+    .features-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 18px;
-      margin-top: 48px;
     }
 
-    .feature {
-      padding: 27px;
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 17px;
-      background: linear-gradient(145deg, rgba(255,255,255,0.045), rgba(255,255,255,0.018));
+    .feature-card {
+      background: rgba(255,255,255,0.45);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 26px 24px;
+      box-shadow: var(--shadow-soft);
     }
 
     .feature-icon {
-      font-size: 25px;
-      margin-bottom: 15px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: var(--soft-accent);
+      color: var(--accent-dark);
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 18px;
     }
 
-    .feature h3 {
-      font-size: 18px;
-      margin-bottom: 7px;
+    .feature-card h3 {
+      font-size: 1.2rem;
+      letter-spacing: -0.04em;
+      margin-bottom: 8px;
+      color: var(--text);
     }
 
-    .feature p {
-      color: #9292a6;
-      font-size: 14px;
+    .feature-card p {
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.7;
     }
 
-    /* EXAMPLES */
-    .examples {
-      max-width: 780px;
-      margin: 45px auto 0;
+    .examples-list {
+      max-width: 860px;
+      margin: 0 auto;
       display: grid;
       gap: 12px;
     }
 
-    .example {
-      padding: 17px 20px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(255,255,255,0.035);
-      color: #b5b5c5;
-      font-size: 14px;
+    .example-item {
+      padding: 18px 20px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.4);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-soft);
+      color: var(--muted);
+      font-size: 1rem;
     }
 
-    .example strong {
-      color: white;
-    }
+    .example-item strong { color: var(--text); }
 
-    /* CTA */
-    .cta {
-      padding: 80px 25px;
-      border-radius: 25px;
+    .cta-panel {
+      padding: 70px 26px;
       text-align: center;
-      background:
-        radial-gradient(circle at 50% 0%, rgba(124,92,255,0.3), transparent 55%),
-        rgba(255,255,255,0.035);
-      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.5);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
     }
 
-    .cta h2 {
-      font-size: clamp(30px, 5vw, 48px);
-      letter-spacing: -1.5px;
+    .cta-panel h2 {
+      font-size: clamp(2.4rem, 4vw, 4rem);
+      letter-spacing: -0.07em;
+      color: var(--text);
+      margin-bottom: 10px;
     }
 
-    .cta p {
-      color: #9999ac;
-      max-width: 550px;
-      margin: 14px auto 27px;
+    .cta-panel p {
+      color: var(--muted);
+      max-width: 560px;
+      margin: 0 auto 24px;
+      font-size: 1rem;
     }
 
-    /* FOOTER */
     footer {
-      padding: 35px 0;
-      border-top: 1px solid rgba(255,255,255,0.07);
-      color: #777789;
-      font-size: 13px;
+      padding: 28px 0 34px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.82rem;
     }
 
     .footer-inner {
@@ -476,337 +602,245 @@
 
     .footer-links {
       display: flex;
-      gap: 20px;
+      gap: 18px;
+      align-items: center;
     }
 
-    .footer-links a:hover {
-      color: white;
+    @media (max-width: 900px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .demo-card {
+        margin: 0 auto;
+      }
     }
 
-    /* MOBILE */
     @media (max-width: 760px) {
-      .nav-links a:not(.nav-button) {
-        display: none;
-      }
-
-      .hero {
-        padding-top: 75px;
-      }
-
-      h1 {
-        letter-spacing: -2px;
-      }
-
-      .hero-text {
-        font-size: 16px;
-      }
-
-      .fake-dashboard {
-        grid-template-columns: 1fr;
-      }
-
-      .fake-sidebar {
-        display: none;
-      }
-
-      .fake-main {
-        padding: 18px;
-      }
-
-      .fake-cards {
-        grid-template-columns: 1fr;
-      }
-
-      .steps,
-      .features {
-        grid-template-columns: 1fr;
-      }
-
-      section {
-        padding: 65px 0;
-      }
-
-      .footer-inner {
-        flex-direction: column;
-      }
+      .nav-links a:not(.nav-cta) { display: none; }
+      .nav-inner { height: 72px; }
+      .mini-points { grid-template-columns: 1fr; }
+      .mini-point { border-right: none; border-bottom: 1px solid var(--border); }
+      .mini-point:last-child { border-bottom: none; }
+      .steps, .features-grid { grid-template-columns: 1fr; }
+      .footer-inner { flex-direction: column; text-align: center; }
+      .cta-row { justify-content: center; }
+      .button { width: 100%; }
+      .hero { padding-top: 52px; }
+      h1 { letter-spacing: -0.06em; }
     }
   </style>
 </head>
-
 <body>
-
-  <!-- NAVBAR -->
   <nav>
     <div class="container nav-inner">
-      <a href="#" class="logo">
-        <div class="logo-icon">✦</div>
-        Life Admin AI
+      <a href="#" class="brand" aria-label="Life Admin AI home">
+        <span class="brand-mark">✦</span>
+        <span>Life Admin AI</span>
       </a>
 
       <div class="nav-links">
         <a href="#how">How it works</a>
         <a href="#features">Features</a>
         <a href="#examples">Examples</a>
-        <a href="app.html" class="nav-button">Get Started</a>
+        <a href="app.html" class="nav-cta">Get Started</a>
       </div>
     </div>
   </nav>
 
-  <!-- HERO -->
   <main>
     <section class="hero">
-      <div class="glow"></div>
+      <div class="hero-bg"></div>
+      <div class="container hero-grid">
+        <div>
+          <div class="eyebrow"><span class="eyebrow-dot"></span>AI-POWERED PRODUCTIVITY</div>
 
-      <div class="container">
-        <div class="badge">
-          <span></span>
-          Your personal AI productivity assistant
-        </div>
+          <h1>
+            Turn everyday
+            <span class="accent-text">thoughts into</span>
+            <span class="accent-text">organized action.</span>
+          </h1>
 
-        <h1>
-          Organize your life.
-          <span class="gradient-text">Simply.</span>
-        </h1>
+          <p class="hero-copy">
+            Tell Life Admin what you need to remember, and turn everyday requests into clear, organized tasks.
+          </p>
 
-        <p class="hero-text">
-          Tell Life Admin AI what you need to remember or get done.
-          Your everyday requests become organized tasks in seconds.
-        </p>
+          <div class="cta-row">
+            <a href="app.html" class="button button-primary">Get Started Free →</a>
+            <a href="#how" class="button button-secondary">See How It Works</a>
+          </div>
 
-        <div class="hero-buttons">
-          <a href="app.html" class="primary-button">
-            Get Started Free →
-          </a>
-
-          <a href="#how" class="secondary-button">
-            See How It Works
-          </a>
-        </div>
-
-        <!-- APP PREVIEW -->
-        <div class="preview">
-          <div class="preview-window">
-
-            <div class="window-top">
-              <div class="dot"></div>
-              <div class="dot"></div>
-              <div class="dot"></div>
+          <div class="mini-points" aria-label="Key benefits">
+            <div class="mini-point">
+              <strong>Save Time</strong>
+              <span>Less mental clutter, more focus.</span>
             </div>
-
-            <div class="fake-dashboard">
-
-              <div class="fake-sidebar">
-                <div class="fake-side-item active">Dashboard</div>
-                <div class="fake-side-item">Tasks</div>
-                <div class="fake-side-item">Notifications</div>
-                <div class="fake-side-item">History</div>
-                <div class="fake-side-item">Settings</div>
-              </div>
-
-              <div class="fake-main">
-                <div class="fake-title">Organize your life.</div>
-                <div class="fake-subtitle">
-                  Your intelligent personal productivity assistant
-                </div>
-
-                <div class="fake-ai">
-                  <div class="fake-ai-title">✦ Ask AI</div>
-
-                  <div class="fake-input">
-                    What would you like to get done?
-                  </div>
-                </div>
-
-                <div class="fake-cards">
-                  <div class="fake-card">
-                    <div class="fake-card-label">Total Tasks</div>
-                    <div class="fake-card-number">12</div>
-                  </div>
-
-                  <div class="fake-card">
-                    <div class="fake-card-label">Pending</div>
-                    <div class="fake-card-number">7</div>
-                  </div>
-
-                  <div class="fake-card">
-                    <div class="fake-card-label">Completed</div>
-                    <div class="fake-card-number">5</div>
-                  </div>
-                </div>
-              </div>
-
+            <div class="mini-point">
+              <strong>Stay Organized</strong>
+              <span>Your tasks, in one place.</span>
+            </div>
+            <div class="mini-point">
+              <strong>Be More Productive</strong>
+              <span>Small steps, big progress.</span>
             </div>
           </div>
         </div>
 
+        <div class="demo-card" aria-label="Life Admin AI product mockup">
+          <div class="demo-shell">
+            <div class="demo-topbar">
+              <span class="demo-dot"></span>
+              <span class="demo-dot"></span>
+              <span class="demo-dot"></span>
+            </div>
+
+            <div class="demo-body">
+              <div class="demo-header">
+                <div class="demo-brand">
+                  <span class="demo-brand-mark">✦</span>
+                  <span>Life Admin AI</span>
+                </div>
+                <span class="demo-pill">Personal</span>
+              </div>
+
+              <div class="demo-message">
+                <div class="demo-message-label">User</div>
+                <div class="demo-message-text">Remind me to call my brother tomorrow morning.</div>
+              </div>
+
+              <div class="demo-arrow" aria-hidden="true"></div>
+
+              <div class="task-card">
+                <div class="task-card-header">
+                  <span class="task-card-title">Life Admin AI</span>
+                </div>
+
+                <div class="task-card-body">Call my brother</div>
+
+                <div class="task-card-meta">
+                  <span class="meta-tag">Tomorrow · 9:00 AM</span>
+                  <span class="meta-tag">Personal</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
-    <!-- HOW IT WORKS -->
-    <section id="how">
+    <section id="how" class="section">
       <div class="container">
-
-        <div class="section-heading">
-          <h2>Get things done without the hassle.</h2>
-          <p>
-            Life Admin AI makes managing everyday tasks feel as simple as
-            telling someone what you need.
-          </p>
+        <div class="section-head">
+          <span class="section-kicker">How it works</span>
+          <h2>From your words to organized tasks in seconds.</h2>
+          <p>Life Admin AI turns your natural reminders into clear, actionable tasks without the friction.</p>
         </div>
 
         <div class="steps">
-
           <div class="step">
-            <div class="step-number">1</div>
-            <h3>Tell AI what you need</h3>
-            <p>
-              Write your request naturally, just like you would tell a
-              friend.
-            </p>
+            <div class="step-number">01</div>
+            <h3>You say</h3>
+            <p>Tell us what you need to remember.</p>
           </div>
 
           <div class="step">
-            <div class="step-number">2</div>
-            <h3>AI organizes it</h3>
-            <p>
-              Your request is turned into a clear, manageable task.
-            </p>
+            <div class="step-number">02</div>
+            <h3>Life Admin understands</h3>
+            <p>AI reads the details, dates, and context.</p>
           </div>
 
           <div class="step">
-            <div class="step-number">3</div>
-            <h3>Stay on top of it</h3>
-            <p>
-              View, edit, complete and manage your tasks from one place.
-            </p>
+            <div class="step-number">03</div>
+            <h3>Organized task</h3>
+            <p>Your task is ready, clear and simple.</p>
           </div>
-
         </div>
       </div>
     </section>
 
-    <!-- FEATURES -->
-    <section id="features">
+    <section id="features" class="section">
       <div class="container">
-
-        <div class="section-heading">
+        <div class="section-head">
+          <span class="section-kicker">Features</span>
           <h2>Everything you need to stay organized.</h2>
-          <p>
-            A simple workspace for the everyday things you don't want to
-            forget.
-          </p>
         </div>
 
-        <div class="features">
-
-          <div class="feature">
+        <div class="features-grid">
+          <div class="feature-card">
             <div class="feature-icon">✦</div>
-            <h3>AI Task Assistant</h3>
-            <p>
-              Use natural language to create and manage your tasks.
-            </p>
+            <h3>Natural language task creation</h3>
+            <p>Turn casual thoughts into concrete actions in a few words.</p>
           </div>
 
-          <div class="feature">
+          <div class="feature-card">
+            <div class="feature-icon">◔</div>
+            <h3>Smart date and time understanding</h3>
+            <p>Life Admin interprets reminders like tomorrow morning and next week with clarity.</p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">✧</div>
+            <h3>AI assistance</h3>
+            <p>Ask for updates, edits, and quick follow-ups without learning a new workflow.</p>
+          </div>
+
+          <div class="feature-card">
             <div class="feature-icon">✓</div>
-            <h3>Task Management</h3>
-            <p>
-              Add, edit, complete, search and delete tasks from your
-              dashboard.
-            </p>
+            <h3>Edit &amp; delete tasks</h3>
+            <p>Keep your list accurate as plans shift and priorities change.</p>
           </div>
 
-          <div class="feature">
-            <div class="feature-icon">◷</div>
-            <h3>Stay Organized</h3>
-            <p>
-              Keep pending and completed tasks organized in one place.
-            </p>
+          <div class="feature-card">
+            <div class="feature-icon">▣</div>
+            <h3>Task organization</h3>
+            <p>Keep work, personal life, and daily priorities neatly arranged in one place.</p>
           </div>
 
-          <div class="feature">
-            <div class="feature-icon">◐</div>
-            <h3>Dark Mode</h3>
-            <p>
-              A comfortable interface designed for both day and night use.
-            </p>
+          <div class="feature-card">
+            <div class="feature-icon">◍</div>
+            <h3>Simple productivity dashboard</h3>
+            <p>Track what matters, stay on top of progress, and reduce daily friction.</p>
           </div>
-
         </div>
       </div>
     </section>
 
-    <!-- EXAMPLES -->
-    <section id="examples">
+    <section id="examples" class="section">
       <div class="container">
-
-        <div class="section-heading">
+        <div class="section-head">
+          <span class="section-kicker">Examples</span>
           <h2>Just say what you need.</h2>
-          <p>
-            No complicated forms. Describe your task naturally.
-          </p>
+          <p>No complicated forms. Describe your task naturally, and let AI organize it.</p>
         </div>
 
-        <div class="examples">
-
-          <div class="example">
-            “<strong>Remind me to call my brother tomorrow morning.</strong>”
-          </div>
-
-          <div class="example">
-            “<strong>Add a task to pay my internet bill.</strong>”
-          </div>
-
-          <div class="example">
-            “<strong>Show me my pending tasks.</strong>”
-          </div>
-
-          <div class="example">
-            “<strong>Delete the grocery shopping task.</strong>”
-          </div>
-
+        <div class="examples-list">
+          <div class="example-item">“<strong>Remind me to call Mom tomorrow morning.</strong>”</div>
+          <div class="example-item">“<strong>Add a task to pay my internet bill this month.</strong>”</div>
+          <div class="example-item">“<strong>Remind me to finish the report Friday evening.</strong>”</div>
         </div>
       </div>
     </section>
 
-    <!-- CTA -->
-    <section>
+    <section class="section">
       <div class="container">
-
-        <div class="cta">
+        <div class="cta-panel">
           <h2>Ready to get organized?</h2>
-
-          <p>
-            Start managing your everyday tasks with a simpler,
-            AI-powered workflow.
-          </p>
-
-          <a href="app.html" class="primary-button">
-            Open Life Admin AI →
-          </a>
+          <p>Start managing your everyday tasks with a simpler, AI-powered workflow.</p>
+          <a href="app.html" class="button button-primary">Open Life Admin AI →</a>
         </div>
-
       </div>
     </section>
-
   </main>
 
-  <!-- FOOTER -->
   <footer>
     <div class="container footer-inner">
-
-      <div>
-        © 2026 Life Admin AI. All rights reserved.
-      </div>
-
+      <div>© 2026 Life Admin AI. All rights reserved.</div>
       <div class="footer-links">
         <a href="#how">How it works</a>
         <a href="#features">Features</a>
         <a href="app.html">Open App</a>
       </div>
-
     </div>
   </footer>
-
 </body>
 </html>

@@ -9,17 +9,22 @@
 
 <style>
 :root{
-  --bg:#f5f7fb;
-  --surface:#ffffff;
-  --surface-2:#f8fafc;
-  --text:#111827;
-  --muted:#6b7280;
-  --border:#e5e7eb;
-  --primary:#635bff;
-  --primary-dark:#5147e8;
-  --danger:#ef4444;
-  --success:#10b981;
-  --shadow:0 10px 35px rgba(15,23,42,.07);
+  --bg:#f5efe8;
+  --bg-soft:#faf5f0;
+  --surface:#fffdfb;
+  --surface-2:#f7f2ec;
+  --surface-strong:#ffffff;
+  --text:#1d1a17;
+  --muted:#6b625d;
+  --border:rgba(29,26,23,0.08);
+  --border-strong:rgba(29,26,23,0.12);
+  --primary:#d9773c;
+  --primary-dark:#bf6634;
+  --primary-soft:rgba(217,119,60,0.12);
+  --danger:#d14a4a;
+  --success:#2d9c73;
+  --shadow:0 18px 50px rgba(23,17,14,0.08);
+  --shadow-soft:0 10px 28px rgba(23,17,14,0.04);
 }
 
 *{
@@ -39,6 +44,14 @@ body{
   min-height:100vh;
   transition:.25s;
 }
+.forgotpassword-btn{
+  border:0;
+  background:var(--primary);
+  color:white;
+  padding:10px 15px;
+  border-radius:11px;
+  font-weight:700;
+}
 
 button,input{
   font:inherit;
@@ -46,6 +59,8 @@ button,input{
 
 button{
   cursor:pointer;
+  color-scheme:light;
+  border:none;
 }
 
 .hidden{
@@ -61,13 +76,12 @@ button{
 /* ================= HEADER ================= */
 
 .header{
-  background:
-    radial-gradient(circle at top right,rgba(255,255,255,.18),transparent 35%),
-    linear-gradient(135deg,#635bff,#7c3aed);
+  background:rgba(255,255,255,0.64);
+  border:1px solid var(--border);
   border-radius:28px;
-  padding:30px;
-  color:white;
-  box-shadow:0 20px 45px rgba(99,91,255,.22);
+  padding:28px 28px 24px;
+  color:var(--text);
+  box-shadow:var(--shadow-soft);
   margin-bottom:22px;
 }
 
@@ -90,20 +104,22 @@ button{
   display:grid;
   place-items:center;
   border-radius:16px;
-  background:rgba(255,255,255,.16);
-  backdrop-filter:blur(10px);
-  font-size:25px;
+  background:var(--primary);
+  color:#fff;
+  box-shadow:0 12px 25px rgba(217,119,60,0.22);
+  font-size:24px;
   font-weight:800;
 }
 
 .brand h1{
   font-size:27px;
-  letter-spacing:-.5px;
+  letter-spacing:-.6px;
+  color:var(--text);
 }
 
 .brand p{
   margin-top:4px;
-  opacity:.82;
+  color:var(--muted);
   font-size:14px;
 }
 
@@ -116,9 +132,9 @@ button{
 }
 
 .user-badge{
-  background:rgba(255,255,255,.12);
-  border:1px solid rgba(255,255,255,.25);
-  color:white;
+  background:var(--surface-2);
+  border:1px solid var(--border);
+  color:var(--text);
   padding:9px 13px;
   border-radius:999px;
   font-size:13px;
@@ -126,16 +142,95 @@ button{
 }
 
 .header-btn{
-  border:1px solid rgba(255,255,255,.22);
-  background:rgba(255,255,255,.13);
-  color:white;
+  border:1px solid var(--border-strong);
+  background:var(--surface-strong);
+  color:var(--text);
   padding:10px 14px;
   border-radius:12px;
   transition:.2s;
 }
 
 .header-btn:hover{
-  background:rgba(255,255,255,.22);
+  background:#fff;
+}
+
+.theme-toggle{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+}
+
+.theme-label{
+  font-weight:650;
+}
+
+.profile-wrap{
+  position:relative;
+}
+
+.profile-btn{
+  width:42px;
+  height:42px;
+  border:1px solid var(--border-strong);
+  background:var(--surface-strong);
+  color:var(--text);
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  transition:.2s;
+}
+
+.profile-btn:hover{
+  background:#fff;
+  transform:translateY(-1px);
+}
+
+.profile-avatar{
+  font-size:21px;
+  line-height:1;
+}
+
+.profile-popover{
+  position:absolute;
+  top:52px;
+  right:0;
+  width:205px;
+  padding:8px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:15px;
+  box-shadow:0 18px 45px rgba(15,23,42,.18);
+  z-index:2500;
+}
+
+.profile-action{
+  width:100%;
+  border:1px solid transparent;
+  background:transparent;
+  color:var(--text);
+  padding:11px 12px;
+  border-radius:11px;
+  text-align:left;
+  font-weight:650;
+}
+
+.profile-action:hover{
+  background:var(--surface-2);
+  border-color:var(--border);
+}
+
+.profile-action.logout{
+  color:var(--danger);
+}
+
+.profile-action.logout:hover{
+  background:#fff1f2;
+  border-color:#fecaca;
+}
+
+body.dark .profile-action.logout:hover{
+  background:#29151a;
+  border-color:#5b252d;
 }
 
 .header-content{
@@ -145,13 +240,14 @@ button{
 
 .header-content h2{
   font-size:35px;
-  line-height:1.15;
-  letter-spacing:-1px;
+  line-height:1.08;
+  letter-spacing:-1.2px;
+  color:var(--text);
 }
 
 .header-content p{
   margin-top:10px;
-  opacity:.86;
+  color:var(--muted);
   line-height:1.6;
 }
 
@@ -212,12 +308,13 @@ button{
   width:42px;
   height:42px;
   border-radius:13px;
-  background:linear-gradient(135deg,#635bff,#7c3aed);
-  color:white;
+  background:var(--primary);
+  color:#fff;
   display:grid;
   place-items:center;
   font-weight:800;
   font-size:20px;
+  box-shadow:0 10px 24px rgba(217,119,60,.2);
 }
 
 .menu-header h2{
@@ -264,9 +361,9 @@ button{
 }
 
 .menu-item.active{
-  background:rgba(99,91,255,.09);
-  color:var(--primary);
-  border-color:rgba(99,91,255,.14);
+  background:var(--primary-soft);
+  color:var(--primary-dark);
+  border-color:rgba(217,119,60,.18);
 }
 
 .menu-icon{
@@ -294,32 +391,74 @@ button{
 
 .auth-card{
   margin-bottom:22px;
+  padding:28px 28px 24px;
+  background:rgba(255,255,255,0.76);
+  border:1px solid var(--border);
+  box-shadow:var(--shadow-soft);
+}
+
+.auth-header{
+  margin-bottom:22px;
+}
+
+.auth-kicker{
+  display:inline-block;
+  font-size:11px;
+  letter-spacing:0.12em;
+  font-weight:700;
+  text-transform:uppercase;
+  color:var(--primary-dark);
+  margin-bottom:10px;
+}
+
+.auth-header h2{
+  font-size: clamp(1.9rem, 3vw, 2.5rem);
+  line-height:1.1;
+  letter-spacing:-0.06em;
+  margin-bottom:6px;
+}
+
+.auth-header p{
+  color:var(--muted);
+  line-height:1.55;
+  margin:0;
 }
 
 .auth-tabs{
   display:flex;
   gap:10px;
-  margin-bottom:18px;
+  margin-bottom:20px;
+  padding:6px;
+  border-radius:14px;
+  background:var(--surface-2);
+  border:1px solid var(--border);
 }
 
 .auth-tab{
-  border:1px solid var(--border);
-  background:var(--surface-2);
+  flex:1;
+  border:1px solid transparent;
+  background:transparent;
   color:var(--muted);
-  padding:10px 16px;
-  border-radius:12px;
-  font-weight:600;
+  padding:11px 14px;
+  border-radius:10px;
+  font-weight:700;
+  transition:all .2s ease;
+}
+
+.auth-tab:hover{
+  color:var(--text);
 }
 
 .auth-tab.active{
   background:var(--primary);
   border-color:var(--primary);
-  color:white;
+  color:#fff;
+  box-shadow:0 10px 24px rgba(217,119,60,0.2);
 }
 
 .auth-form{
   display:grid;
-  gap:16px;
+  gap:18px;
 }
 
 .auth-field-group{
@@ -327,9 +466,19 @@ button{
   gap:8px;
 }
 
+.auth-field-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:6px;
+}
+
 .auth-field-group label{
-  font-size:14px;
-  font-weight:600;
+  font-size:0.83rem;
+  font-weight:700;
+  letter-spacing:0.01em;
+  color:var(--text);
 }
 
 .auth-field{
@@ -337,26 +486,54 @@ button{
   background:var(--surface-2);
   color:var(--text);
   border-radius:12px;
-  padding:13px 14px;
+  padding:14px 15px;
   outline:none;
+  font-size:0.96rem;
+  transition:border-color .2s ease, box-shadow .2s ease, background .2s ease;
+}
+
+.auth-field::placeholder{
+  color:var(--muted);
+  opacity:0.9;
 }
 
 .auth-field:focus{
   border-color:var(--primary);
-  box-shadow:0 0 0 4px rgba(99,91,255,.08);
+  box-shadow:0 0 0 4px rgba(217,119,60,.08);
+  background:#fff;
 }
 
 .auth-actions{
   display:flex;
   gap:12px;
   flex-wrap:wrap;
+  align-items:center;
+  justify-content:space-between;
+  margin-top:4px;
+}
+
+.secondary-btn{
+  border:1px solid transparent;
+  background:transparent;
+  color:var(--primary-dark);
+  padding:10px 0;
+  border-radius:10px;
+  font-weight:700;
+  transition:all .2s ease;
+  text-decoration:none;
+}
+
+.secondary-btn:hover{
+  background:var(--primary-soft);
+  border-color:rgba(217,119,60,.16);
 }
 
 .auth-message{
   min-height:22px;
-  margin-top:12px;
-  font-size:14px;
-  font-weight:600;
+  margin-top:14px;
+  font-size:0.88rem;
+  font-weight:700;
+  line-height:1.5;
 }
 
 .auth-message.success{
@@ -381,19 +558,19 @@ button{
   border:1px solid var(--border);
   border-radius:20px;
   padding:20px;
-  box-shadow:var(--shadow);
+  box-shadow:var(--shadow-soft);
   cursor:pointer;
   transition:.2s;
 }
 
 .stat:hover{
   transform:translateY(-2px);
-  border-color:#d1d5db;
+  border-color:var(--border-strong);
 }
 
 .stat.active{
-  border-color:var(--primary);
-  box-shadow:0 10px 35px rgba(99,91,255,.13);
+  border-color:rgba(217,119,60,.28);
+  box-shadow:0 14px 35px rgba(217,119,60,.1);
 }
 
 .stat-top{
@@ -430,7 +607,7 @@ button{
   border:1px solid var(--border);
   border-radius:22px;
   padding:24px;
-  box-shadow:var(--shadow);
+  box-shadow:var(--shadow-soft);
   margin-bottom:22px;
 }
 
@@ -459,8 +636,8 @@ button{
   border-radius:12px;
   display:grid;
   place-items:center;
-  background:rgba(99,91,255,.09);
-  color:var(--primary);
+  background:var(--primary-soft);
+  color:var(--primary-dark);
   font-weight:800;
 }
 
@@ -489,13 +666,13 @@ button{
 
 .ai-input:focus{
   border-color:var(--primary);
-  box-shadow:0 0 0 4px rgba(99,91,255,.1);
+  box-shadow:0 0 0 4px rgba(217,119,60,.08);
 }
 
 .primary-btn{
   border:0;
   background:var(--primary);
-  color:white;
+  color:#fff;
   padding:0 21px;
   border-radius:15px;
   font-weight:700;
@@ -508,7 +685,7 @@ button{
 }
 
 .primary-btn:disabled{
-  opacity:.6;
+  opacity:.65;
   cursor:not-allowed;
   transform:none;
 }
@@ -533,7 +710,7 @@ button{
 
 .example:hover{
   border-color:var(--primary);
-  color:var(--primary);
+  color:var(--primary-dark);
 }
 
 .ai-response{
@@ -617,8 +794,8 @@ button{
 /* ================= NOTIFICATIONS ================= */
 
 .notification-card{
-  background:linear-gradient(135deg,rgba(99,91,255,.08),rgba(124,58,237,.05));
-  border:1px solid rgba(99,91,255,.16);
+  background:linear-gradient(135deg,rgba(217,119,60,.06),rgba(255,255,255,.5));
+  border:1px solid rgba(217,119,60,.12);
 }
 
 .notification-row{
@@ -661,7 +838,7 @@ button{
 }
 
 body.dark .notification-card{
-  background:linear-gradient(135deg,rgba(99,91,255,.14),rgba(124,58,237,.08));
+  background:linear-gradient(135deg,rgba(217,141,86,.12),rgba(255,255,255,.02));
 }
 
 /* ================= MANUAL ================= */
@@ -823,9 +1000,9 @@ body.dark .notification-card{
 
 .added-time{
   font-size:11px;
-  color:var(--primary);
-  background:rgba(99,91,255,.07);
-  border-color:rgba(99,91,255,.14);
+  color:var(--primary-dark);
+  background:var(--primary-soft);
+  border-color:rgba(217,119,60,.16);
 }
 
 .task-actions{
@@ -1044,53 +1221,193 @@ body.dark .notification-card{
 /* ================= DARK MODE ================= */
 
 body.dark{
-  --bg:#0b1020;
-  --surface:#111827;
-  --surface-2:#172033;
-  --text:#f9fafb;
-  --muted:#9ca3af;
-  --border:#263247;
-  --shadow:0 10px 35px rgba(0,0,0,.2);
+  --bg:#0f1724;
+  --bg-soft:#111c2f;
+  --surface:#162232;
+  --surface-2:#1c2b3d;
+  --surface-strong:#20314a;
+  --text:#edf3ff;
+  --muted:#b7c2d4;
+  --border:rgba(148,163,184,0.2);
+  --border-strong:rgba(148,163,184,0.3);
+  --primary:#f4a261;
+  --primary-dark:#f6b77d;
+  --primary-soft:rgba(244,162,97,0.16);
+  --danger:#fca5a5;
+  --success:#7adbb3;
+  --shadow:0 18px 40px rgba(2,6,23,.32);
+}
+
+body.dark .app,
+body.dark .header,
+body.dark .card,
+body.dark .stat,
+body.dark .menu-drawer,
+body.dark .history-drawer,
+body.dark .auth-card,
+body.dark .task,
+body.dark .history-item,
+body.dark .field,
+body.dark .search,
+body.dark .ai-input,
+body.dark .auth-field,
+body.dark .menu-item,
+body.dark .profile-popover,
+body.dark .profile-btn,
+body.dark .header-btn,
+body.dark .user-badge,
+body.dark .menu-close,
+body.dark .history-close,
+body.dark .icon-btn,
+body.dark .filter,
+body.dark .notification-btn.secondary {
+  color:var(--text);
+}
+
+body.dark .auth-field::placeholder,
+body.dark .ai-input::placeholder,
+body.dark .search::placeholder,
+body.dark .history-search::placeholder,
+body.dark .field::placeholder {
+  color:var(--muted);
+  opacity:0.9;
+}
+
+body.dark .menu-item,
+body.dark .history-item,
+body.dark .task,
+body.dark .stat,
+body.dark .header-btn,
+body.dark .menu-close,
+body.dark .history-close,
+body.dark .profile-btn,
+body.dark .user-badge,
+body.dark .filter,
+body.dark .icon-btn,
+body.dark .auth-field,
+body.dark .ai-input,
+body.dark .field,
+body.dark .search,
+body.dark .history-search,
+body.dark .auth-tab,
+body.dark .secondary-btn {
+  border-color:var(--border);
+}
+
+body.dark .header-btn,
+body.dark .profile-btn,
+body.dark .menu-close,
+body.dark .history-close,
+body.dark .user-badge,
+body.dark .icon-btn,
+body.dark .filter,
+body.dark .secondary-btn {
+  background:var(--surface-2);
+  color:var(--text);
+}
+
+body.dark .menu-item.active,
+body.dark .auth-tab.active {
+  background:var(--primary-soft);
+  color:var(--primary-dark);
+  border-color:rgba(246,183,125,0.28);
+}
+
+body.dark .auth-header h2,
+body.dark .card-title,
+body.dark .history-header h2,
+body.dark .menu-header h2,
+body.dark .brand h1,
+body.dark .header-content h2,
+body.dark .empty h3,
+body.dark .task-text,
+body.dark .history-task-text,
+body.dark .stat-number,
+body.dark .menu-item,
+body.dark .auth-field-group label,
+body.dark .header-btn,
+body.dark .profile-action,
+body.dark .logo,
+body.dark .section-icon {
+  color:var(--text);
+}
+
+body.dark .menu-header p,
+body.dark .brand p,
+body.dark .header-content p,
+body.dark .auth-header p,
+body.dark .card-subtitle,
+body.dark .task-meta,
+body.dark .stat-label,
+body.dark .empty,
+body.dark .notification-status,
+body.dark .history-time,
+body.dark .history-header p,
+body.dark .meta,
+body.dark .quota p,
+body.dark .menu-item,
+body.dark .history-status,
+body.dark .auth-message,
+body.dark .field,
+body.dark .search,
+body.dark .history-search,
+body.dark .ai-input,
+body.dark .auth-field,
+body.dark .example,
+body.dark .user-badge,
+body.dark .filter,
+body.dark .task .meta,
+body.dark .text-muted {
+  color:var(--muted);
+}
+
+body.dark .profile-action.logout,
+body.dark .menu-logout,
+body.dark .clear-btn,
+body.dark .delete:hover,
+body.dark .notification-btn.secondary {
+  color:var(--danger);
 }
 
 body.dark .quota{
-  background:linear-gradient(135deg,#24190d,#211b0d);
-  border-color:#6b4b1f;
+  background:linear-gradient(135deg,#201c17,#171d27);
+  border-color:rgba(244,162,97,0.24);
 }
 
 body.dark .quota p{
-  color:#9ca3af;
+  color:var(--muted);
 }
 
 body.dark .upgrade{
-  background:#f9fafb;
+  background:#f4eee9;
   color:#111827;
 }
 
 body.dark .clear-btn{
-  background:#29151a;
-  border-color:#5b252d;
-  color:#f87171;
+  background:rgba(252,165,165,0.08);
+  border-color:rgba(252,165,165,0.2);
+  color:#fca5a5;
 }
 
-body.dark .menu-logout:hover{
-  background:#29151a;
-  border-color:#5b252d;
+body.dark .menu-logout:hover,
+body.dark .profile-action.logout:hover{
+  background:rgba(252,165,165,0.08);
+  border-color:rgba(252,165,165,0.18);
 }
 
 body.dark .history-status.pending{
-  background:#291d10;
-  color:#fb923c;
+  background:rgba(246,183,125,0.08);
+  color:#f9c68a;
 }
 
 body.dark .history-status.completed{
-  background:#10261e;
-  color:#34d399;
+  background:rgba(122,219,179,0.08);
+  color:#8fe7bf;
 }
 
 body.dark .history-status.deleted{
-  background:#29151a;
-  color:#f87171;
+  background:rgba(252,165,165,0.08);
+  color:#fca5a5;
 }
 
 body.app-locked .app-content{
@@ -1203,23 +1520,6 @@ body.app-locked #authSection{
     width:100%;
   }
 }
-
-/* ================= PREMIUM AUTH REDESIGN ================= */
-.auth-card{margin:0!important;padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important;}
-body.app-locked #authSection{position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;max-width:none!important;transform:none!important;z-index:40!important;overflow:auto!important;}
-.auth-shell{min-height:100vh;display:grid;grid-template-columns:minmax(0,1.06fr) minmax(420px,.94fr);background:radial-gradient(circle at 15% 20%,rgba(230,111,45,.09),transparent 30%),radial-gradient(circle at 85% 80%,rgba(230,111,45,.06),transparent 30%),#f7f3ed;color:#171717;overflow:hidden;}
-.auth-visual{position:relative;display:flex;flex-direction:column;justify-content:center;padding:clamp(42px,6vw,96px);border-right:1px solid rgba(30,30,30,.08);overflow:hidden;}
-.auth-visual:before,.auth-visual:after{content:"";position:absolute;border:1px solid rgba(230,111,45,.13);border-radius:50%;pointer-events:none;}
-.auth-visual:before{width:430px;height:430px;right:-190px;top:-130px}.auth-visual:after{width:300px;height:300px;left:-170px;bottom:-150px}
-.auth-brand{display:flex;align-items:center;gap:12px;margin-bottom:48px;position:relative;z-index:2}.auth-brand-mark{width:46px;height:46px;display:grid;place-items:center;border-radius:14px;background:#e66f2d;color:#fff;font-size:22px;font-weight:800;box-shadow:0 12px 25px rgba(230,111,45,.2)}.auth-brand-name{font-size:20px;font-weight:800;letter-spacing:-.4px}
-.auth-kicker{color:#b65b28;font-size:11px;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;margin-bottom:16px;position:relative;z-index:2}.auth-visual h1{max-width:650px;font-family:Georgia,"Times New Roman",serif;font-size:clamp(48px,5vw,76px);line-height:.98;letter-spacing:-3.5px;font-weight:700;margin:0;position:relative;z-index:2}.auth-visual h1 span{color:#e66f2d}.auth-visual-copy{max-width:560px;margin-top:22px;color:#665f57;font-size:17px;line-height:1.65;position:relative;z-index:2}
-.auth-dashboard-wrap{width:min(590px,100%);margin-top:46px;position:relative;z-index:2}.auth-dashboard-note{position:absolute;right:-18px;top:-28px;background:#fffaf4;border:1px solid rgba(30,30,30,.09);border-radius:18px;padding:13px 17px;box-shadow:0 18px 45px rgba(48,38,28,.1);font-size:12px;font-weight:750;color:#4b4037;transform:rotate(2deg);z-index:3}.auth-dashboard{background:rgba(255,255,255,.8);border:1px solid rgba(30,30,30,.1);border-radius:24px;padding:17px;box-shadow:0 28px 65px rgba(48,38,28,.12);backdrop-filter:blur(12px)}.auth-dashboard-top{display:flex;align-items:center;justify-content:space-between;gap:15px;padding-bottom:15px;border-bottom:1px solid #eee7df}.auth-mini-brand{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:800}.auth-mini-dot{width:10px;height:10px;border-radius:3px;background:#e66f2d}.auth-mini-user{width:30px;height:30px;border-radius:50%;background:#f2ede6;display:grid;place-items:center;font-size:12px}.auth-dashboard-body{display:grid;grid-template-columns:115px 1fr;gap:15px;padding-top:15px}.auth-mini-nav{display:grid;align-content:start;gap:6px}.auth-mini-nav div{padding:9px 10px;border-radius:9px;color:#7b7168;font-size:10px;font-weight:650}.auth-mini-nav .active{background:#fff0e5;color:#d85f20}.auth-mini-main{min-width:0}.auth-mini-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.auth-mini-stat{border:1px solid #eee8e0;background:#fffdfa;border-radius:11px;padding:10px}.auth-mini-stat small{display:block;color:#8b8177;font-size:8px}.auth-mini-stat strong{display:block;margin-top:4px;font-size:16px}.auth-mini-ai{margin-top:10px;border:1px solid #eee8e0;border-radius:12px;padding:12px;background:#fffdfa}.auth-mini-ai-title{font-size:10px;font-weight:800;margin-bottom:9px}.auth-mini-input{height:30px;border:1px solid #eee8e0;border-radius:7px;color:#a0968c;font-size:8px;padding:0 8px;display:flex;align-items:center;justify-content:space-between;gap:8px}.auth-mini-input span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.auth-mini-input span:last-child{background:#e66f2d;color:white;padding:5px 7px;border-radius:6px;font-size:8px;font-weight:800;white-space:nowrap}.auth-visual-footer{margin-top:25px;color:#8b8177;font-size:12px;position:relative;z-index:2}
-.auth-panel{display:flex;align-items:center;justify-content:center;padding:38px clamp(24px,5vw,75px);background:rgba(255,255,255,.5)}.auth-panel-inner{width:min(520px,100%)}.auth-card-box{background:rgba(255,255,255,.95);border:1px solid rgba(30,30,30,.1);border-radius:28px;padding:clamp(28px,4vw,48px);box-shadow:0 30px 80px rgba(40,31,23,.13)}
-.auth-tabs{display:grid!important;grid-template-columns:1fr 1fr;gap:5px;padding:4px;background:#f5f1eb;border:1px solid #ebe4db;border-radius:13px;margin-bottom:32px}.auth-tab{border:0;background:transparent;color:#776f68;padding:12px 14px;border-radius:9px;font-weight:750;transition:.2s}.auth-tab.active{background:#fff;color:#e66f2d;box-shadow:0 3px 12px rgba(40,31,23,.08)}
-.auth-heading h2{font-size:31px;line-height:1.1;letter-spacing:-1px;margin-bottom:9px}.auth-heading p{color:#7a7169;font-size:14px;line-height:1.6;margin-bottom:25px}.auth-choice{display:grid;gap:11px;margin-bottom:20px}.auth-choice-btn{width:100%;min-height:51px;border:1px solid #e3ddd5;background:#fff;color:#25211e;border-radius:13px;display:flex;align-items:center;justify-content:center;gap:11px;font-weight:750;transition:.2s}.auth-choice-btn:hover{border-color:#d5b8a3;transform:translateY(-1px);box-shadow:0 9px 22px rgba(40,31,23,.07)}.auth-choice-btn.email-choice{background:#fffaf5;border-color:#f1cbb3}.auth-choice-icon{width:20px;height:20px;display:grid;place-items:center;font-size:17px}.auth-divider{display:flex;align-items:center;gap:12px;color:#9b928a;font-size:12px;margin:4px 0}.auth-divider:before,.auth-divider:after{content:"";height:1px;flex:1;background:#e9e3dc}.auth-email-form-wrap.hidden,.auth-choice-wrap.hidden{display:none!important}.auth-form{display:grid;gap:16px}.auth-field-group{display:grid;gap:8px}.auth-field-group label{font-size:12px;font-weight:750;color:#3b3530}.auth-field{width:100%;min-height:49px;border:1px solid #ddd6ce;background:#fff;color:#201d1a;border-radius:12px;padding:13px 14px;outline:none;transition:.2s}.auth-field::placeholder{color:#aaa29a}.auth-field:focus{border-color:#e66f2d;box-shadow:0 0 0 4px rgba(230,111,45,.1)}.auth-actions{display:grid;gap:9px;margin-top:2px}.auth-submit{width:100%;min-height:49px;border:0;background:#e66f2d;color:#fff;border-radius:12px;font-weight:800;box-shadow:0 10px 22px rgba(230,111,45,.18)}.auth-submit:hover{background:#d85f20}.auth-forgot{border:0;background:transparent;color:#d85f20;font-size:12px;font-weight:700;justify-self:end;padding:4px 0}.auth-back{border:0;background:transparent;color:#746b63;font-size:12px;font-weight:700;padding:4px 0;justify-self:start}.auth-account-note{text-align:center;color:#847b73;font-size:12px;margin-top:22px}.auth-account-note button{border:0;background:transparent;color:#e66f2d;font-weight:800}.auth-security-note{display:flex;justify-content:center;gap:7px;align-items:center;color:#958c84;font-size:11px;margin-top:18px}.auth-message{min-height:22px;margin-top:12px;font-size:13px;line-height:1.5;font-weight:650}.auth-message.success{color:#07855f}.auth-message.error{color:#c0392b}
-body.dark .auth-shell{background:radial-gradient(circle at 15% 20%,rgba(230,111,45,.11),transparent 30%),radial-gradient(circle at 85% 80%,rgba(230,111,45,.07),transparent 30%),#0d111b;color:#f8f7f4}body.dark .auth-visual{border-right-color:#252c38}body.dark .auth-visual-copy,body.dark .auth-visual-footer{color:#a9a29a}body.dark .auth-dashboard{background:rgba(17,23,34,.94);border-color:#293243;box-shadow:0 28px 65px rgba(0,0,0,.3)}body.dark .auth-dashboard-top,body.dark .auth-mini-stat,body.dark .auth-mini-ai{border-color:#293243}body.dark .auth-dashboard-note,body.dark .auth-mini-stat,body.dark .auth-mini-ai{background:#141b28;color:#eeeae5}body.dark .auth-mini-nav div{color:#9ea7b5}body.dark .auth-mini-nav .active{background:#2a211c;color:#ff9a62}body.dark .auth-mini-user{background:#202838}body.dark .auth-mini-input{border-color:#293243;color:#7f8a9b}body.dark .auth-panel{background:rgba(10,14,23,.72)}body.dark .auth-card-box{background:#121925;border-color:#2b3444;box-shadow:0 30px 80px rgba(0,0,0,.35)}body.dark .auth-tabs{background:#0d1420;border-color:#293243}body.dark .auth-tab{color:#8f99a8}body.dark .auth-tab.active{background:#1b2331;color:#ff995f;box-shadow:none}body.dark .auth-heading p{color:#a0a8b4}body.dark .auth-choice-btn{background:#151d2a;color:#f5f5f2;border-color:#303a4b}body.dark .auth-choice-btn.email-choice{background:#1d1916;border-color:#5c3a27}body.dark .auth-divider{color:#7f8998}body.dark .auth-divider:before,body.dark .auth-divider:after{background:#2b3444}body.dark .auth-field-group label{color:#d7dbe1}body.dark .auth-field{background:#0e1622;color:#f7f7f5;border-color:#344053}body.dark .auth-field::placeholder{color:#697586}body.dark .auth-back{color:#a2aab6}body.dark .auth-account-note,body.dark .auth-security-note{color:#8e98a7}
-@media(max-width:900px){.auth-shell{grid-template-columns:1fr}.auth-visual{display:none}.auth-panel{min-height:100vh;padding:22px}.auth-card-box{max-width:560px;margin:auto}}@media(max-width:520px){.auth-panel{padding:14px}.auth-card-box{border-radius:22px;padding:24px 18px}.auth-tabs{margin-bottom:25px}.auth-heading h2{font-size:27px}}
-
 </style>
 </head>
 
@@ -1229,63 +1529,85 @@ body.dark .auth-shell{background:radial-gradient(circle at 15% 20%,rgba(230,111,
 
 <!-- ================= AUTH ================= -->
 
-<section id="authSection" class="auth-card">
-  <div class="auth-shell">
-    <div class="auth-visual">
-      <div class="auth-brand"><div class="auth-brand-mark">✦</div><div class="auth-brand-name">Life Admin AI</div></div>
-      <div class="auth-kicker">Your everyday productivity assistant</div>
-      <h1>Welcome back.<br><span>Your life, organized.</span></h1>
-      <p class="auth-visual-copy">Turn everyday thoughts into clear, organized action — without the clutter. Your tasks, reminders, and priorities stay in one simple place.</p>
-      <div class="auth-dashboard-wrap">
-        <div class="auth-dashboard-note">Less stress. More progress.</div>
-        <div class="auth-dashboard">
-          <div class="auth-dashboard-top"><div class="auth-mini-brand"><span class="auth-mini-dot"></span>Life Admin AI</div><div class="auth-mini-user">✦</div></div>
-          <div class="auth-dashboard-body">
-            <div class="auth-mini-nav"><div class="active">⌂ Home</div><div>□ All Tasks</div><div>◷ Pending</div><div>✓ Completed</div><div>✦ AI Assistant</div></div>
-            <div class="auth-mini-main">
-              <div class="auth-mini-stats"><div class="auth-mini-stat"><small>Total tasks</small><strong>7</strong></div><div class="auth-mini-stat"><small>Pending</small><strong>5</strong></div><div class="auth-mini-stat"><small>Completed</small><strong>2</strong></div></div>
-              <div class="auth-mini-ai"><div class="auth-mini-ai-title">✦ Ask AI</div><div class="auth-mini-input"><span>What would you like to get done?</span><span>Ask AI</span></div></div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="auth-visual-footer">Simple in. Organized out.</div>
-    </div>
+<section id="authSection" class="card auth-card">
 
-    <div class="auth-panel">
-      <div class="auth-panel-inner">
-        <div class="auth-card-box">
-          <div class="auth-tabs"><button type="button" class="auth-tab active" data-auth-mode="login">Login</button><button type="button" class="auth-tab" data-auth-mode="signup">Sign Up</button></div>
-          <div class="auth-heading"><h2>Welcome back</h2><p id="authIntro">Continue where you left off. Your everyday tasks, organized simply.</p></div>
-
-          <div id="authChoiceWrap" class="auth-choice-wrap">
-            <div class="auth-choice">
-              <button id="continueEmailButton" class="auth-choice-btn email-choice" type="button"><span class="auth-choice-icon">✉</span><span>Continue with Email</span></button>
-              <div class="auth-divider"><span>or</span></div>
-              <button id="googleLoginButton" class="auth-choice-btn google-choice" type="button"><span class="auth-choice-icon" style="font-weight:900;">G</span><span>Continue with Google</span></button>
-            </div>
-          </div>
-
-          <div id="authEmailFormWrap" class="auth-email-form-wrap hidden">
-            <form id="authForm" class="auth-form">
-              <div class="auth-field-group"><label for="authEmail">Email</label><input id="authEmail" class="auth-field" type="email" placeholder="you@example.com" autocomplete="email" required></div>
-              <div class="auth-field-group"><label for="authPassword">Password</label><input id="authPassword" class="auth-field" type="password" placeholder="Enter your password" autocomplete="current-password" required></div>
-              <div id="authConfirmWrap" class="auth-field-group hidden"><label for="authConfirmPassword">Confirm password</label><input id="authConfirmPassword" class="auth-field" type="password" placeholder="Confirm your password" autocomplete="new-password"></div>
-              <div class="auth-actions"><button id="authSubmit" class="auth-submit" type="submit">Login</button><button id="forgotPasswordBtn" class="auth-forgot" type="button">Forgot password?</button><button id="backToAuthChoices" class="auth-back" type="button">← Back to sign-in options</button></div>
-            </form>
-          </div>
-
-          <div id="authMessage" class="auth-message"></div>
-          <div class="auth-account-note"><span id="authAccountText">Don't have an account?</span> <button id="authAccountAction" type="button">Sign up</button></div>
-          <div class="auth-security-note"><span>◇</span><span>Your account is protected by secure authentication</span></div>
-        </div>
-      </div>
-    </div>
+  <div class="auth-header">
+    <div class="auth-kicker">Welcome</div>
+    <h2>Welcome back</h2>
+    <p>Your everyday tasks, organized simply.</p>
   </div>
+
+  <div class="auth-tabs">
+    <button type="button" class="auth-tab active" data-auth-mode="login">
+      Login
+    </button>
+
+    <button type="button" class="auth-tab" data-auth-mode="signup">
+      Sign Up
+    </button>
+  </div>
+
+  <form id="authForm" class="auth-form">
+
+    <div class="auth-field-group">
+      <label for="authEmail">Email</label>
+      <input
+        id="authEmail"
+        class="auth-field"
+        type="email"
+        placeholder="you@example.com"
+        required
+      >
+    </div>
+
+    <div class="auth-field-group">
+      <div class="auth-field-row">
+        <label for="authPassword">Password</label>
+        <button
+          id="forgotPasswordBtn"
+          class="secondary-btn"
+          type="button"
+        >
+          Forgot password?
+        </button>
+      </div>
+
+      <input
+        id="authPassword"
+        class="auth-field"
+        type="password"
+        placeholder="Your password"
+        required
+      >
+    </div>
+
+    <div id="authConfirmWrap" class="auth-field-group hidden">
+      <label for="authConfirmPassword">Confirm password</label>
+
+      <input
+        id="authConfirmPassword"
+        class="auth-field"
+        type="password"
+        placeholder="Confirm your password"
+      >
+    </div>
+
+    <div class="auth-actions">
+
+      <button id="authSubmit" class="primary-btn" type="submit">
+        Login
+      </button>
+
+    </div>
+
+  </form>
+
+  <div id="authMessage" class="auth-message"></div>
+
 </section>
 
-<!-- ================= APP ================= -->
 
+<!-- ================= APP ================= -->
 
 <div id="appContent" class="app-content">
 
@@ -1309,16 +1631,36 @@ body.dark .auth-shell{background:radial-gradient(circle at 15% 20%,rgba(230,111,
 
     <div class="header-actions">
 
-      <div id="userBadge" class="user-badge">
-        Not signed in
+      <div class="profile-wrap">
+        <button
+          id="profileButton"
+          class="profile-btn"
+          type="button"
+          aria-label="Profile"
+          aria-expanded="false"
+        >
+          <span class="profile-avatar">🧑‍💻</span>
+        </button>
+
+        <div id="profilePopover" class="profile-popover hidden">
+          <button id="profileSignInButton" class="profile-action" type="button">
+            🔐 Sign In / Login
+          </button>
+
+          <button id="profileLogoutButton" class="profile-action logout" type="button">
+            🚪 Logout
+          </button>
+        </div>
       </div>
 
       <button
-        id="historyButton"
-        class="header-btn"
+        id="themeToggleButton"
+        class="header-btn theme-toggle"
         type="button"
+        aria-label="Toggle theme"
       >
-        🕘 History
+        <span id="themeToggleIcon">🌙</span>
+        <span class="theme-label" id="themeToggleText">Dark</span>
       </button>
 
       <button
@@ -1337,13 +1679,12 @@ body.dark .auth-shell{background:radial-gradient(circle at 15% 20%,rgba(230,111,
   <div class="header-content">
 
     <h2>
-      Organize your life.<br>
-      Simply.
+      Turn everyday thoughts into<br>
+      organized action.
     </h2>
 
     <p>
-      Tell your assistant what you need to do in natural language.
-      Life Admin AI turns your requests into organized tasks.
+      Tell Life Admin what you need to remember, and turn everyday requests into clear, organized tasks.
     </p>
 
   </div>
@@ -1583,28 +1924,7 @@ body.dark .auth-shell{background:radial-gradient(circle at 15% 20%,rgba(230,111,
 
 <!-- ================= NOTIFICATIONS ================= -->
 
-<section id="notificationSection" class="card notification-card">
 
-  <div class="card-header">
-    <div>
-      <div class="card-title">Task notifications</div>
-      <div class="card-subtitle">Get a browser notification when a pending task reaches its date and time.</div>
-    </div>
-    <div class="section-icon">🔔</div>
-  </div>
-
-  <div class="notification-row">
-    <div class="notification-info">
-      <strong id="notificationTitle">Notifications are off</strong>
-      <div id="notificationStatus" class="notification-status">Turn them on once to allow Life Admin AI to notify you.</div>
-    </div>
-
-    <button id="notificationButton" class="notification-btn" type="button" onclick="requestNotifications()">
-      Enable Notifications
-    </button>
-  </div>
-
-</section>
 
 
 <!-- ================= TASKS ================= -->
@@ -1795,16 +2115,6 @@ body.dark .auth-shell{background:radial-gradient(circle at 15% 20%,rgba(230,111,
 
 
       <button
-        id="themeMenuButton"
-        class="menu-item"
-        onclick="toggleTheme()"
-      >
-        <span class="menu-icon">🌙</span>
-        <span id="themeMenuText">Dark Mode</span>
-      </button>
-
-
-      <button
         class="menu-item"
         onclick="menuNavigate('settings')"
       >
@@ -1813,19 +2123,30 @@ body.dark .auth-shell{background:radial-gradient(circle at 15% 20%,rgba(230,111,
       </button>
 
 
-      <div class="menu-divider"></div>
 
 
-      <button
-        id="menuLogoutButton"
-        class="menu-item menu-logout"
-        type="button"
-        onclick="handleLogoutFromMenu()"
-      >
-        <span class="menu-icon">🚪</span>
-        <span>Logout</span>
-      </button>
+    <section id="notificationSection" class="card notification-card">
 
+  <div class="card-header">
+    <div>
+      <div class="card-title">Task notifications</div>
+      <div class="card-subtitle">Get a browser notification when a pending task reaches its date and time.</div>
+    </div>
+    <div class="section-icon">🔔</div>
+  </div>
+
+  <div class="notification-row">
+    <div class="notification-info">
+      <strong id="notificationTitle">Notifications are off</strong>
+      <div id="notificationStatus" class="notification-status">Turn them on once to allow Life Admin AI to notify you.</div>
+    </div>
+
+    <button id="notificationButton" class="notification-btn" type="button" onclick="requestNotifications()">
+      Enable Notifications
+    </button>
+  </div>
+
+</section>
     </div>
 
   </div>
@@ -1886,6 +2207,7 @@ body.dark .auth-shell{background:radial-gradient(circle at 15% 20%,rgba(230,111,
 <script src="https://www.gstatic.com/firebasejs/12.18.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.18.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.18.0/firebase-messaging-compat.js"></script>
 
 <script>
 
@@ -1902,6 +2224,7 @@ const firebaseConfig = {
 const firebaseApp = firebase.initializeApp(firebaseConfig);
 const firebaseAuth = firebase.auth(firebaseApp);
 const firestoreDB = firebase.firestore(firebaseApp);
+const firebaseMessaging = firebase.messaging(firebaseApp);
 
 console.log("Firebase initialized");
 
@@ -1937,11 +2260,80 @@ async function firebaseForgotPassword(email){
   await firebaseAuth.sendPasswordResetEmail(email);
 }
 
-async function firebaseGoogleLogin(){
-  const provider = new firebase.auth.GoogleAuthProvider();
-  provider.setCustomParameters({ prompt: "select_account" });
-  const result = await firebaseAuth.signInWithPopup(provider);
-  return result.user;
+async function registerForPushNotifications(user) {
+  try {
+    if (!user) {
+      console.log("No user logged in. FCM registration skipped.");
+      return;
+    }
+
+    if (!("Notification" in window)) {
+      console.log("This browser does not support notifications.");
+      return;
+    }
+
+    const permission = await Notification.requestPermission();
+
+    if (permission !== "granted") {
+      console.log("Notification permission not granted.");
+      return;
+    }
+
+    const serviceWorkerRegistration =
+      await navigator.serviceWorker.register(
+        "/firebase-messaging-sw.js"
+      );
+
+    const vapidKey =
+      "B0DFFA47291067353D3F7DA440B374E21C8C9236";
+
+    const token = await firebaseMessaging.getToken({
+      vapidKey: vapidKey,
+      serviceWorkerRegistration:
+        serviceWorkerRegistration
+    });
+
+    if (!token) {
+      console.log("FCM token nahi mila.");
+      return;
+    }
+
+    const timezone =
+      Intl.DateTimeFormat().resolvedOptions().timeZone ||
+      "Asia/Karachi";
+
+    const response = await fetch(
+      "/api/register-token",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          uid: user.uid,
+          token: token,
+          timezone: timezone
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    if (data.ok) {
+      console.log("✅ FCM token registered successfully.");
+    } else {
+      console.error(
+        "❌ FCM token registration failed:",
+        data
+      );
+    }
+
+  } catch (error) {
+    console.error(
+      "❌ Push notification setup error:",
+      error
+    );
+  }
 }
 
 </script>
@@ -2318,21 +2710,6 @@ function setAuthMode(mode){
       ? "Create account"
       : "Login";
 
-  authIntro.textContent =
-    isSignup
-      ? "Create your account and keep your everyday life organized in one simple place."
-      : "Continue where you left off. Your everyday tasks, organized simply.";
-
-  document.getElementById("authAccountText").textContent =
-    isSignup
-      ? "Already have an account?"
-      : "Don\'t have an account?";
-
-  authAccountAction.textContent =
-    isSignup
-      ? "Login"
-      : "Sign up";
-
 
   if(isSignup){
 
@@ -2383,17 +2760,7 @@ function updateAuthUI(){
   );
 
 
-  if(currentUser){
-
-    userBadge.textContent =
-      currentUser.email;
-
-  }else{
-
-    userBadge.textContent =
-      "Not signed in";
-
-  }
+  /* Profile controls are available from the header while signed in. */
 
 }
 
@@ -2640,52 +3007,6 @@ async function handleLogoutFromMenu(){
 
 
 /* ==========================================
-   AUTH PRESENTATION
-========================================== */
-
-const authChoiceWrap = document.getElementById("authChoiceWrap");
-const authEmailFormWrap = document.getElementById("authEmailFormWrap");
-const continueEmailButton = document.getElementById("continueEmailButton");
-const googleLoginButton = document.getElementById("googleLoginButton");
-const backToAuthChoices = document.getElementById("backToAuthChoices");
-const authIntro = document.getElementById("authIntro");
-const authAccountAction = document.getElementById("authAccountAction");
-
-function showEmailAuth(){
-  authChoiceWrap.classList.add("hidden");
-  authEmailFormWrap.classList.remove("hidden");
-  authEmailInput.focus();
-}
-
-function showAuthChoices(){
-  authEmailFormWrap.classList.add("hidden");
-  authChoiceWrap.classList.remove("hidden");
-}
-
-continueEmailButton.addEventListener("click", showEmailAuth);
-backToAuthChoices.addEventListener("click", () => { setAuthMessage(""); showAuthChoices(); });
-authAccountAction.addEventListener("click", () => { setAuthMode(authMode === "login" ? "signup" : "login"); setAuthMessage(""); showEmailAuth(); });
-
-googleLoginButton.addEventListener("click", async () => {
-  setAuthMessage("");
-  googleLoginButton.disabled = true;
-  try{
-    await firebaseGoogleLogin();
-  }catch(error){
-    console.error("Google authentication failed:", error);
-    if(error.code === "auth/popup-closed-by-user"){
-      setAuthMessage("Google sign-in was cancelled.", "error");
-    }else if(error.code === "auth/popup-blocked"){
-      setAuthMessage("Please allow the Google sign-in popup and try again.", "error");
-    }else if(error.code === "auth/unauthorized-domain"){
-      setAuthMessage("Google sign-in needs this website domain to be added in Firebase Authentication settings.", "error");
-    }else{
-      setAuthMessage("Google sign-in is temporarily unavailable. Please use email instead.", "error");
-    }
-  }finally{ googleLoginButton.disabled = false; }
-});
-
-/* ==========================================
    FIREBASE AUTH STATE
 ========================================== */
 
@@ -2695,14 +3016,13 @@ firebaseAuth.onAuthStateChanged(
     currentUser =
       user || null;
 
-    updateAuthUI();
-
-
     if(user){
 
       await loadUserData();
       updateNotificationUI();
       checkDueNotifications();
+
+      await registerForPushNotifications(user);
 
     }else{
 
@@ -2714,12 +3034,13 @@ firebaseAuth.onAuthStateChanged(
 
     }
 
+    updateAuthUI();
+
   }
 );
 
 
 setAuthMode("login");
-showAuthChoices();
 updateAuthUI();
 
 
@@ -3872,11 +4193,15 @@ async function askAI(){
 
     if(
       data.action === "add_task" &&
-      data.task
+      data.title
     ){
 
       addAITask(
-        data.task
+        {
+          text: data.title,
+          date: data.date || null,
+          time: data.time || null
+        }
       );
 
     }
@@ -3886,39 +4211,45 @@ async function askAI(){
 
     if(
       data.action === "edit_task" &&
-      data.task &&
-      typeof data.taskIndex === "number"
+      typeof data.oldTitle === "string" &&
+      data.oldTitle.trim()
     ){
 
-      if(tasks[data.taskIndex]){
+      const taskIndex =
+        tasks.findIndex(task =>
+          String(task.text || "").trim().toLowerCase() ===
+          data.oldTitle.trim().toLowerCase()
+        );
+
+      if(taskIndex !== -1){
 
         const oldTask =
-          tasks[data.taskIndex];
+          tasks[taskIndex];
 
 
-        tasks[data.taskIndex] = {
+        tasks[taskIndex] = {
 
           ...oldTask,
 
           text:
-            data.task.text ??
+            data.newTitle ??
             oldTask.text,
 
           date:
-            data.task.date ??
+            data.date ??
             null,
 
           time:
-            data.task.time ??
+            data.time ??
             null
 
         };
 
 
         addHistory(
-          tasks[data.taskIndex].text,
+          tasks[taskIndex].text,
           "edited",
-          tasks[data.taskIndex]
+          tasks[taskIndex]
         );
 
 
@@ -3935,13 +4266,20 @@ async function askAI(){
 
     if(
       data.action === "delete_task" &&
-      typeof data.taskIndex === "number"
+      typeof data.title === "string" &&
+      data.title.trim()
     ){
 
-      if(tasks[data.taskIndex]){
+      const taskIndex =
+        tasks.findIndex(task =>
+          String(task.text || "").trim().toLowerCase() ===
+          data.title.trim().toLowerCase()
+        );
+
+      if(taskIndex !== -1){
 
         const deletedTask =
-          tasks[data.taskIndex];
+          tasks[taskIndex];
 
 
         addHistory(
@@ -3952,7 +4290,7 @@ async function askAI(){
 
 
         tasks.splice(
-          data.taskIndex,
+          taskIndex,
           1
         );
 
@@ -4269,12 +4607,6 @@ function openHistoryFromMenu(){
 }
 
 
-historyButton.addEventListener(
-  "click",
-  openHistory
-);
-
-
 closeHistoryButton.addEventListener(
   "click",
   closeHistory
@@ -4296,6 +4628,22 @@ historySearch.addEventListener(
 /* ==========================================
    THEME
 ========================================== */
+
+const themeToggleButton =
+  document.getElementById(
+    "themeToggleButton"
+  );
+
+const themeToggleIcon =
+  document.getElementById(
+    "themeToggleIcon"
+  );
+
+const themeToggleText =
+  document.getElementById(
+    "themeToggleText"
+  );
+
 
 function toggleTheme(){
 
@@ -4326,23 +4674,16 @@ function updateThemeButton(){
     );
 
 
-  const text =
-    document.getElementById(
-      "themeMenuText"
-    );
-
-
-  if(isDark){
-
-    text.textContent =
-      "Light Mode";
-
-  }else{
-
-    text.textContent =
-      "Dark Mode";
-
+  if(!themeToggleIcon || !themeToggleText){
+    return;
   }
+
+
+  themeToggleIcon.textContent =
+    isDark ? "☀️" : "🌙";
+
+  themeToggleText.textContent =
+    isDark ? "Light" : "Dark";
 
 }
 
@@ -4360,8 +4701,143 @@ if(
 }
 
 
+if(themeToggleButton){
+  themeToggleButton.addEventListener(
+    "click",
+    toggleTheme
+  );
+}
+
+
 updateThemeButton();
 
+
+/* ==========================================
+   PROFILE
+========================================== */
+
+const profileButton =
+  document.getElementById(
+    "profileButton"
+  );
+
+const profilePopover =
+  document.getElementById(
+    "profilePopover"
+  );
+
+const profileSignInButton =
+  document.getElementById(
+    "profileSignInButton"
+  );
+
+const profileLogoutButton =
+  document.getElementById(
+    "profileLogoutButton"
+  );
+
+
+function openProfile(){
+
+  profilePopover.classList.remove(
+    "hidden"
+  );
+
+  profileButton.setAttribute(
+    "aria-expanded",
+    "true"
+  );
+
+}
+
+
+function closeProfile(){
+
+  profilePopover.classList.add(
+    "hidden"
+  );
+
+  profileButton.setAttribute(
+    "aria-expanded",
+    "false"
+  );
+
+}
+
+
+if(profileButton && profilePopover){
+
+profileButton.addEventListener(
+  "click",
+  function(event){
+
+    event.stopPropagation();
+
+    if(profilePopover.classList.contains("hidden")){
+      openProfile();
+    }else{
+      closeProfile();
+    }
+
+  }
+);
+
+
+profileSignInButton.addEventListener(
+  "click",
+  async function(){
+
+    closeProfile();
+
+    closeMenu();
+
+    if(currentUser){
+      await handleLogout();
+    }
+
+    setAuthMode("login");
+    setAuthMessage(
+      ""
+    );
+
+    setTimeout(function(){
+      if(authEmailInput){
+        authEmailInput.focus();
+      }
+    },350);
+
+  }
+);
+
+
+profileLogoutButton.addEventListener(
+  "click",
+  async function(){
+
+    closeProfile();
+    await handleLogout();
+
+  }
+);
+
+document.addEventListener(
+  "click",
+  function(event){
+
+    if(
+      profilePopover &&
+      !profilePopover.classList.contains("hidden") &&
+      !profilePopover.contains(event.target) &&
+      !profileButton.contains(event.target)
+    ){
+      closeProfile();
+    }
+
+  }
+);
+
+
+}
 
 /* ==========================================
    INITIAL
@@ -4375,4 +4851,3 @@ updateStats();
 
 </body>
 </html>
-```
