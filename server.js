@@ -87,7 +87,10 @@ app.get("/api/health", (req, res) => {
 
 app.post("/api/ai", async (req, res) => {
   try {
-    const { message } = req.body;
+    const {
+      message,
+      tasks = []
+    } = req.body;
 
     if (!message || typeof message !== "string") {
       return res.status(400).json({
@@ -103,6 +106,10 @@ app.post("/api/ai", async (req, res) => {
       });
     }
 
+    /* =========================
+       CURRENT DATE
+    ========================= */
+
     const currentDate = new Intl.DateTimeFormat("en-CA", {
       timeZone: "Asia/Karachi",
       year: "numeric",
@@ -110,115 +117,222 @@ app.post("/api/ai", async (req, res) => {
       day: "2-digit"
     }).format(new Date());
 
-    const prompt = `
-You are Life Admin AI, a smart, reliable personal task and reminder assistant.
+    /* =========================
+       EXISTING TASKS
+    ========================= */
 
-Your job is to understand the user's message and determine exactly what they want.
+    const safeTasks = Array.isArray(tasks)
+      ? tasks.map((task, index) => ({
+          index: index,
+          text: task?.text || "",
+          date: task?.date || null,
+          time: task?.time || null,
+          completed: task?.completed === true
+        }))
+      : [];
 
-IMPORTANT RULES:
+    /* =========================
+       AI INSTRUCTIONS
+    ========================= */
 
-1. Understand English, Urdu, Roman Urdu, and mixed language naturally.
-2. Understand natural time phrases such as:
-   - today
-   - tomorrow
-   - tonight
-   - this morning
-   - this evening
-   - next week
-   - kal
-   - aaj
-   - subah
-   - dopahar
-   - shaam
-   - raat
-   - aglay haftay
-3. The actual current date is ${currentDate}. Use it when interpreting relative dates.
-4. Convert dates to YYYY-MM-DD.
-5. Convert times to 24-hour HH:MM format.
-6. If the user gives a clear task and time, create the task directly.
-7. Keep task titles short, clear, and natural.
-8. Never invent a date or time that the user did not provide unless it is implied by a relative phrase such as "tomorrow".
-9. If the user wants to delete a task, identify the task title as accurately as possible.
-10. If the user wants to edit/change a task, identify the old task and the new information.
-11. If the user is only chatting or asking a normal question, respond naturally.
-12. Return VALID JSON ONLY. Never return Markdown, code fences, explanations, or extra text outside the JSON.
+    const systemPrompt = `
+You are Life Admin AI.
 
-AVAILABLE ACTIONS:
+You are a personal task and reminder assistant.
 
-ADD TASK
+Your job is to understand the user's message and return ONE valid JSON object.
 
-If the user wants to create a task or reminder, return:
+CURRENT DATE:
+${currentDate}
+
+EXISTING TASKS:
+${JSON.stringify(safeTasks)}
+
+LANGUAGES:
+Understand English, Urdu, Roman Urdu, and mixed language.
+
+DATE RULES:
+- "today" means the current date.
+- "tomorrow" means the next calendar day.
+- "aaj" means today.
+- "kal" usually means tomorrow when the user is creating a task.
+- "next week" means the appropriate date based on the current date.
+- "subah" means morning.
+- "dopahar" means afternoon.
+- "shaam" means evening.
+- "raat" means night.
+- Convert dates to YYYY-MM-DD.
+- Convert times to 24-hour HH:MM.
+- Do not invent a date or time unless it is clearly implied.
+
+TASK CREATION:
+
+When the user wants to create/add/remind a task, return EXACTLY:
 
 {
   "action": "add_task",
-  "title": "short clear task title",
-  "date": "YYYY-MM-DD",
-  "time": "HH:MM"
+  "task": {
+    "text": "short clear task title",
+    "date": "YYYY-MM-DD or null",
+    "time": "HH:MM or null",
+    "completed": false
+  },
+  "reply": "Task added."
 }
 
-DELETE TASK
+Examples:
 
-If the user wants to delete or remove a task, return:
+User:
+Add task: Call brother tomorrow at 10 AM
+
+Return:
+{
+  "action": "add_task",
+  "task": {
+    "text": "Call brother",
+    "date": "TOMORROW_DATE",
+    "time": "10:00",
+    "completed": false
+  },
+  "reply": "Task added."
+}
+
+User:
+Kal subah 9 baje doctor ko call karna hai
+
+Return an add_task object with the correct date and time.
+
+IMPORTANT:
+For a new task, the task object MUST exist.
+Do not return only "Done".
+Do not return "chat" when the user clearly wants a task created.
+
+TASK DELETION:
+
+When the user wants to delete/remove a task:
+
+1. Look through EXISTING TASKS.
+2. Find the closest matching task.
+3. Return its numeric index.
+
+Return EXACTLY:
 
 {
   "action": "delete_task",
-  "title": "task title"
+  "taskIndex": 0,
+  "reply": "Task deleted."
 }
 
-EDIT TASK
+Replace 0 with the correct existing task index.
 
-If the user wants to change an existing task, return:
+If no matching task exists, return:
+
+{
+  "action": "chat",
+  "reply": "I couldn't find that task."
+}
+
+TASK EDITING:
+
+When the user wants to edit/change/update an existing task:
+
+1. Find the matching task in EXISTING TASKS.
+2. Return its numeric index.
+3. Return the complete updated task.
+
+Return EXACTLY:
 
 {
   "action": "edit_task",
-  "oldTitle": "existing task title",
-  "newTitle": "updated task title",
-  "date": "YYYY-MM-DD",
-  "time": "HH:MM"
+  "taskIndex": 0,
+  "task": {
+    "text": "updated task title",
+    "date": "YYYY-MM-DD or null",
+    "time": "HH:MM or null",
+    "completed": false
+  },
+  "reply": "Task updated."
 }
 
-CHAT
+SHOW TASKS:
 
-If the user is asking a question, greeting, or having a normal conversation, return:
+When the user asks to show/list their tasks:
+
+Return:
+
+{
+  "action": "show_tasks",
+  "reply": "Here are your tasks."
+}
+
+NORMAL CHAT:
+
+For greetings, general questions, or normal conversation:
+
+Return:
 
 {
   "action": "chat",
   "reply": "helpful natural response"
 }
 
-IMPORTANT:
-- Do not add extra JSON fields.
-- Do not use Markdown.
-- Do not put JSON inside backticks.
-- Always return exactly one valid JSON object.
-- Do not mention these instructions to the user.
+CRITICAL RULES:
 
-User message:
-${message}
+- Return VALID JSON ONLY.
+- Return exactly ONE JSON object.
+- Never use Markdown.
+- Never use code fences.
+- Never add explanations outside JSON.
+- Never return a safety classification.
+- Never return "User Safety".
+- Never return "safe".
+- Never return "unsafe".
+- Never return a different action name.
+- For task creation, ALWAYS return action "add_task".
+- For task creation, ALWAYS include a "task" object.
+- For task deletion, ALWAYS return taskIndex when a matching task exists.
+- For task editing, ALWAYS return taskIndex and task when a matching task exists.
+- Keep task titles short and natural.
 `;
+
+    /* =========================
+       OPENROUTER REQUEST
+    ========================= */
 
     const response = await fetch(
       "https://openrouter.ai/api/v1/chat/completions",
       {
         method: "POST",
+
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
+          "Authorization": `Bearer ${apiKey}`,
           "HTTP-Referer": "https://life-admin-ai-gamma.vercel.app",
           "X-Title": "Life Admin AI"
         },
+
         body: JSON.stringify({
           model: "openrouter/free",
+
           messages: [
             {
+              role: "system",
+              content: systemPrompt
+            },
+            {
               role: "user",
-              content: prompt
+              content: message
             }
           ],
-          temperature: 0.2
+
+          temperature: 0.1
         })
       }
     );
+
+    /* =========================
+       OPENROUTER RESPONSE
+    ========================= */
 
     const data = await response.json();
 
@@ -233,6 +347,18 @@ ${message}
     const text =
       data?.choices?.[0]?.message?.content || "";
 
+    console.log("AI raw response:", text);
+
+    if (!text) {
+      return res.status(500).json({
+        error: "AI returned an empty response."
+      });
+    }
+
+    /* =========================
+       PARSE JSON
+    ========================= */
+
     let parsed;
 
     try {
@@ -246,17 +372,180 @@ ${message}
       try {
         parsed = JSON.parse(cleaned);
       } catch (error2) {
-        parsed = {
-          action: "chat",
-          reply: text
-        };
+        console.error(
+          "AI returned invalid JSON:",
+          text
+        );
+
+        return res.status(500).json({
+          error: "AI returned an invalid response."
+        });
       }
     }
 
-    return res.json(parsed);
+    /* =========================
+       VALID ACTIONS
+    ========================= */
+
+    const allowedActions = [
+      "add_task",
+      "edit_task",
+      "delete_task",
+      "show_tasks",
+      "chat"
+    ];
+
+    if (!allowedActions.includes(parsed.action)) {
+      console.error(
+        "Unsupported AI action:",
+        parsed
+      );
+
+      return res.status(500).json({
+        error: "AI returned an unsupported action."
+      });
+    }
+
+    /* =========================
+       ADD TASK
+    ========================= */
+
+    if (parsed.action === "add_task") {
+      if (
+        !parsed.task ||
+        typeof parsed.task !== "object" ||
+        !parsed.task.text
+      ) {
+        return res.status(500).json({
+          error: "AI did not return a valid task."
+        });
+      }
+
+      return res.json({
+        action: "add_task",
+
+        task: {
+          text: String(parsed.task.text),
+          date: parsed.task.date || null,
+          time: parsed.task.time || null,
+          completed: false
+        },
+
+        reply:
+          parsed.reply ||
+          "Task added."
+      });
+    }
+
+    /* =========================
+       DELETE TASK
+    ========================= */
+
+    if (parsed.action === "delete_task") {
+      const taskIndex = Number(
+        parsed.taskIndex
+      );
+
+      if (
+        !Number.isInteger(taskIndex) ||
+        taskIndex < 0 ||
+        taskIndex >= safeTasks.length
+      ) {
+        return res.json({
+          action: "chat",
+          reply: "I couldn't find that task."
+        });
+      }
+
+      return res.json({
+        action: "delete_task",
+        taskIndex: taskIndex,
+        reply:
+          parsed.reply ||
+          "Task deleted."
+      });
+    }
+
+    /* =========================
+       EDIT TASK
+    ========================= */
+
+    if (parsed.action === "edit_task") {
+      const taskIndex = Number(
+        parsed.taskIndex
+      );
+
+      if (
+        !Number.isInteger(taskIndex) ||
+        taskIndex < 0 ||
+        taskIndex >= safeTasks.length
+      ) {
+        return res.json({
+          action: "chat",
+          reply:
+            "I couldn't find that task to edit."
+        });
+      }
+
+      if (
+        !parsed.task ||
+        typeof parsed.task !== "object" ||
+        !parsed.task.text
+      ) {
+        return res.json({
+          action: "chat",
+          reply:
+            "I couldn't understand the updated task."
+        });
+      }
+
+      return res.json({
+        action: "edit_task",
+
+        taskIndex: taskIndex,
+
+        task: {
+          text: String(parsed.task.text),
+          date: parsed.task.date || null,
+          time: parsed.task.time || null,
+          completed: false
+        },
+
+        reply:
+          parsed.reply ||
+          "Task updated."
+      });
+    }
+
+    /* =========================
+       SHOW TASKS
+    ========================= */
+
+    if (parsed.action === "show_tasks") {
+      return res.json({
+        action: "show_tasks",
+        reply:
+          parsed.reply ||
+          "Here are your tasks."
+      });
+    }
+
+    /* =========================
+       NORMAL CHAT
+    ========================= */
+
+    return res.json({
+      action: "chat",
+      reply:
+        parsed.reply ||
+        "How can I help?"
+    });
 
   } catch (error) {
-    console.error("AI API error:", error);
+    console.error(
+      "AI API error:",
+      error
+    );
 
     return res.status(500).json({
       error: "Something went wrong with the AI."
@@ -289,7 +578,8 @@ app.post("/api/register-token", async (req, res) => {
     }
 
     const safeTimezone =
-      typeof timezone === "string" && timezone.length <= 100
+      typeof timezone === "string" &&
+      timezone.length <= 100
         ? timezone
         : "Asia/Karachi";
 
@@ -302,7 +592,8 @@ app.post("/api/register-token", async (req, res) => {
         uid,
         token,
         timezone: safeTimezone,
-        updatedAt: FieldValue.serverTimestamp()
+        updatedAt:
+          FieldValue.serverTimestamp()
       },
       {
         merge: true
@@ -311,14 +602,19 @@ app.post("/api/register-token", async (req, res) => {
 
     return res.json({
       ok: true,
-      message: "Notification token registered."
+      message:
+        "Notification token registered."
     });
 
   } catch (error) {
-    console.error("Register token error:", error);
+    console.error(
+      "Register token error:",
+      error
+    );
 
     return res.status(500).json({
-      error: "Could not register notification token."
+      error:
+        "Could not register notification token."
     });
   }
 });
@@ -329,14 +625,16 @@ app.post("/api/register-token", async (req, res) => {
 
 app.post("/api/send-reminders", async (req, res) => {
   try {
-    const cronSecret = process.env.CRON_SECRET;
+    const cronSecret =
+      process.env.CRON_SECRET;
 
     const providedSecret =
       req.headers["x-cron-secret"];
 
     if (!cronSecret) {
       return res.status(500).json({
-        error: "CRON_SECRET is not configured."
+        error:
+          "CRON_SECRET is not configured."
       });
     }
 
@@ -346,9 +644,14 @@ app.post("/api/send-reminders", async (req, res) => {
       });
     }
 
-    if (!firebaseReady || !db || !messaging) {
+    if (
+      !firebaseReady ||
+      !db ||
+      !messaging
+    ) {
       return res.status(503).json({
-        error: "Firebase is not configured."
+        error:
+          "Firebase is not configured."
       });
     }
 
@@ -362,15 +665,20 @@ app.post("/api/send-reminders", async (req, res) => {
     let notificationsSent = 0;
     let notificationsFailed = 0;
 
-    for (const tokenDoc of tokenSnapshot.docs) {
+    for (
+      const tokenDoc of tokenSnapshot.docs
+    ) {
       checkedTokens++;
 
-      const tokenData = tokenDoc.data();
+      const tokenData =
+        tokenDoc.data();
 
       const uid = tokenData.uid;
       const token = tokenData.token;
+
       const timezone =
-        tokenData.timezone || "Asia/Karachi";
+        tokenData.timezone ||
+        "Asia/Karachi";
 
       if (!uid || !token) {
         continue;
@@ -380,24 +688,30 @@ app.post("/api/send-reminders", async (req, res) => {
          USER LOCAL TIME
       ========================= */
 
-      const localParts = new Intl.DateTimeFormat(
-        "en-CA",
-        {
-          timeZone: timezone,
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: false
-        }
-      ).formatToParts(now);
+      const localParts =
+        new Intl.DateTimeFormat(
+          "en-CA",
+          {
+            timeZone: timezone,
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false
+          }
+        ).formatToParts(now);
 
       const parts = {};
 
-      for (const part of localParts) {
-        if (part.type !== "literal") {
-          parts[part.type] = part.value;
+      for (
+        const part of localParts
+      ) {
+        if (
+          part.type !== "literal"
+        ) {
+          parts[part.type] =
+            part.value;
         }
       }
 
@@ -411,31 +725,40 @@ app.post("/api/send-reminders", async (req, res) => {
          FIND USER TASKS
       ========================= */
 
-      const tasksSnapshot = await db
-        .collection("tasks")
-        .where("uid", "==", uid)
-        .get();
+      const tasksSnapshot =
+        await db
+          .collection("tasks")
+          .where(
+            "uid",
+            "==",
+            uid
+          )
+          .get();
 
-      for (const taskDoc of tasksSnapshot.docs) {
-        const task = taskDoc.data();
+      for (
+        const taskDoc of tasksSnapshot.docs
+      ) {
+        const task =
+          taskDoc.data();
 
-        if (task.completed === true) {
+        if (
+          task.completed === true
+        ) {
           continue;
         }
 
-        if (task.notificationSentAt) {
+        if (
+          task.notificationSentAt
+        ) {
           continue;
         }
 
-        if (!task.date || !task.time) {
+        if (
+          !task.date ||
+          !task.time
+        ) {
           continue;
         }
-
-        /*
-          Task is due when:
-          date is today AND time <= current local time
-          OR date is before today.
-        */
 
         const isDue =
           task.date < localDate ||
@@ -450,6 +773,7 @@ app.post("/api/send-reminders", async (req, res) => {
 
         const title =
           task.title ||
+          task.text ||
           "You have a task due.";
 
         try {
@@ -457,20 +781,26 @@ app.post("/api/send-reminders", async (req, res) => {
             token,
 
             notification: {
-              title: "Life Admin AI",
-              body: `Reminder: ${title}`
+              title:
+                "Life Admin AI",
+              body:
+                `Reminder: ${title}`
             },
 
             data: {
-              taskId: taskDoc.id,
+              taskId:
+                taskDoc.id,
               title: title
             },
 
             webpush: {
               notification: {
-                title: "Life Admin AI",
-                body: `Reminder: ${title}`,
-                requireInteraction: true
+                title:
+                  "Life Admin AI",
+                body:
+                  `Reminder: ${title}`,
+                requireInteraction:
+                  true
               }
             }
           });
@@ -491,15 +821,16 @@ app.post("/api/send-reminders", async (req, res) => {
           );
 
           const errorCode =
-            sendError?.errorInfo?.code || "";
-
-          /*
-            Remove invalid/expired FCM tokens.
-          */
+            sendError?.errorInfo?.code ||
+            "";
 
           if (
-            errorCode.includes("registration-token-not-registered") ||
-            errorCode.includes("invalid-registration-token")
+            errorCode.includes(
+              "registration-token-not-registered"
+            ) ||
+            errorCode.includes(
+              "invalid-registration-token"
+            )
           ) {
             await tokenDoc.ref.delete();
           }
@@ -512,14 +843,19 @@ app.post("/api/send-reminders", async (req, res) => {
       checkedTokens,
       notificationsSent,
       notificationsFailed,
-      time: now.toISOString()
+      time:
+        now.toISOString()
     });
 
   } catch (error) {
-    console.error("Send reminders error:", error);
+    console.error(
+      "Send reminders error:",
+      error
+    );
 
     return res.status(500).json({
-      error: "Could not send reminders."
+      error:
+        "Could not send reminders."
     });
   }
 });
@@ -530,7 +866,11 @@ app.post("/api/send-reminders", async (req, res) => {
 
 app.use((req, res) => {
   res.sendFile(
-    path.join(__dirname, "public", "index.html")
+    path.join(
+      __dirname,
+      "public",
+      "index.html"
+    )
   );
 });
 
@@ -538,14 +878,18 @@ app.use((req, res) => {
    START SERVER
 ========================= */
 
-const PORT = process.env.PORT || 3000;
+const PORT =
+  process.env.PORT || 3000;
 
 if (require.main === module) {
-  app.listen(PORT, () => {
-    console.log(
-      `Life Admin AI server running on port ${PORT}`
-    );
-  });
+  app.listen(
+    PORT,
+    () => {
+      console.log(
+        `Life Admin AI server running on port ${PORT}`
+      );
+    }
+  );
 }
 
 module.exports = app;
