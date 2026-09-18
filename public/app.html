@@ -1719,6 +1719,9 @@ body.dark .footer{border-color:var(--dash-line)!important;}
       id="taskDate"
       class="field"
       type="date"
+      min="2020-01-01"
+      max="2099-12-31"
+      title="Use a 4-digit year, for example 2026-09-18"
     >
 
     <input
@@ -3300,30 +3303,48 @@ function updateStats(){
 ========================================== */
 
 const NOTIFICATION_CHECK_MS = 15000;
-const notificationStorageKey = "lifeAdminAI_notified_tasks";
+function getNotificationStorageKey(){
+  return currentUser
+    ? `lifeAdminAI_notified_tasks_${currentUser.uid}`
+    : "lifeAdminAI_notified_tasks_guest";
+}
 
-function getNotifiedTaskIds(){
+
+function getNotifiedTaskKeys(){
 
   try{
     return JSON.parse(
-      localStorage.getItem(notificationStorageKey) || "[]"
+      localStorage.getItem(getNotificationStorageKey()) || "[]"
     );
   }catch(error){
     return [];
   }
 }
 
-function markTaskNotified(taskId){
+function getTaskNotificationKey(task){
+  if(!task){
+    return "";
+  }
 
-  const ids = getNotifiedTaskIds();
+  return `${String(task.id)}|${task.date || ""}|${task.time || ""}`;
+}
 
-  if(!ids.includes(String(taskId))){
-    ids.push(String(taskId));
+function markTaskNotified(task){
+
+  const keys = getNotifiedTaskKeys();
+  const key = getTaskNotificationKey(task);
+
+  if(!key){
+    return;
+  }
+
+  if(!keys.includes(key)){
+    keys.push(key);
   }
 
   localStorage.setItem(
-    notificationStorageKey,
-    JSON.stringify(ids.slice(-500))
+    getNotificationStorageKey(),
+    JSON.stringify(keys.slice(-500))
   );
 }
 
@@ -3381,20 +3402,40 @@ async function requestNotifications(){
     return;
   }
 
+  /* Never ask again when permission is already decided. */
+  if(Notification.permission === "granted"){
+    updateNotificationUI();
+    checkDueNotifications();
+    return;
+  }
+
+  if(Notification.permission === "denied"){
+    updateNotificationUI();
+    return;
+  }
+
   try{
+    /* The browser permission prompt is shown only from this user action. */
     const permission = await Notification.requestPermission();
 
     updateNotificationUI();
 
     if(permission === "granted"){
-      new Notification("Life Admin AI",{
-        body:"Notifications are enabled. I’ll remind you when your task is due."
-      });
+      try{
+        new Notification("Life Admin AI",{
+          body:"Notifications are enabled. I’ll remind you when your task is due.",
+          tag:"life-admin-notification-enabled"
+        });
+      }catch(error){
+        console.error("Notification test display error:",error);
+      }
+
       checkDueNotifications();
     }
 
   }catch(error){
     console.error("Notification permission error:",error);
+    updateNotificationUI();
   }
 }
 
@@ -3420,7 +3461,7 @@ function checkDueNotifications(){
   }
 
   const now = Date.now();
-  const notified = getNotifiedTaskIds();
+  const notified = getNotifiedTaskKeys();
 
   tasks.forEach(task => {
 
@@ -3434,15 +3475,15 @@ function checkDueNotifications(){
       return;
     }
 
-    const taskId = String(task.id);
+    const taskKey = getTaskNotificationKey(task);
 
-    if(notified.includes(taskId)){
+    if(notified.includes(taskKey)){
       return;
     }
 
     if(due.getTime() <= now){
 
-      markTaskNotified(task.id);
+      markTaskNotified(task);
 
       try{
         const notification = new Notification("Life Admin AI — Task Due",{
@@ -3474,6 +3515,15 @@ function openNotificationsFromMenu(){
 }
 
 updateNotificationUI();
+
+/* Re-check when the user returns to the page. This does not request permission. */
+window.addEventListener("focus", checkDueNotifications);
+document.addEventListener("visibilitychange", () => {
+  if(document.visibilityState === "visible"){
+    checkDueNotifications();
+  }
+});
+
 setInterval(checkDueNotifications,NOTIFICATION_CHECK_MS);
 
 
@@ -3734,6 +3784,31 @@ function addManualTask(){
     document.getElementById(
       "taskTime"
     ).value || null;
+
+
+  if(date && !/^\d{4}-\d{2}-\d{2}$/.test(date)){
+
+    showAIResponse(`
+      <div class="response">
+        Please use a valid date with a 4-digit year.
+      </div>
+    `);
+
+    return;
+  }
+
+
+  if(text && date){
+    const parsedDate = new Date(`${date}T00:00:00`);
+    if(isNaN(parsedDate.getTime())){
+      showAIResponse(`
+        <div class="response">
+          Please enter a valid date.
+        </div>
+      `);
+      return;
+    }
+  }
 
 
   if(!text){
@@ -4362,9 +4437,11 @@ async function askAI(){
         );
 
 
+        /* A changed date/time creates a new notification key. */
         saveUserData();
 
         renderTasks();
+        checkDueNotifications();
 
       }
 

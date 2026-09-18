@@ -31,15 +31,19 @@ let db = null;
 let messaging = null;
 
 try {
-  const serviceAccountRaw = process.env.FIREBASE_SERVICE_ACCOUNT;
+  const serviceAccountRaw =
+    process.env.FIREBASE_SERVICE_ACCOUNT;
 
   if (serviceAccountRaw) {
     let serviceAccount;
 
     try {
-      serviceAccount = JSON.parse(serviceAccountRaw);
+      serviceAccount =
+        JSON.parse(serviceAccountRaw);
     } catch (error) {
-      console.error("FIREBASE_SERVICE_ACCOUNT JSON is invalid.");
+      console.error(
+        "FIREBASE_SERVICE_ACCOUNT JSON is invalid."
+      );
     }
 
     if (serviceAccount) {
@@ -57,17 +61,26 @@ try {
       console.log("Firebase Admin connected.");
     }
   } else {
-    console.log("FIREBASE_SERVICE_ACCOUNT is missing.");
+    console.log(
+      "FIREBASE_SERVICE_ACCOUNT is missing."
+    );
   }
 } catch (error) {
-  console.error("Firebase initialization error:", error.message);
+  console.error(
+    "Firebase initialization error:",
+    error.message
+  );
 }
 
 /* =========================
    STATIC WEBSITE
 ========================= */
 
-app.use(express.static(path.join(__dirname, "public")));
+app.use(
+  express.static(
+    path.join(__dirname, "public")
+  )
+);
 
 /* =========================
    HEALTH CHECK
@@ -92,13 +105,17 @@ app.post("/api/ai", async (req, res) => {
       tasks = []
     } = req.body;
 
-    if (!message || typeof message !== "string") {
+    if (
+      !message ||
+      typeof message !== "string"
+    ) {
       return res.status(400).json({
         error: "Message is required."
       });
     }
 
-    const apiKey = process.env.OPENROUTER_API_KEY;
+    const apiKey =
+      process.env.OPENROUTER_API_KEY;
 
     if (!apiKey) {
       return res.status(500).json({
@@ -110,26 +127,29 @@ app.post("/api/ai", async (req, res) => {
        CURRENT DATE
     ========================= */
 
-    const currentDate = new Intl.DateTimeFormat("en-CA", {
-      timeZone: "Asia/Karachi",
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit"
-    }).format(new Date());
+    const currentDate =
+      new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Asia/Karachi",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+      }).format(new Date());
 
     /* =========================
        EXISTING TASKS
     ========================= */
 
-    const safeTasks = Array.isArray(tasks)
-      ? tasks.map((task, index) => ({
-          index: index,
-          text: task?.text || "",
-          date: task?.date || null,
-          time: task?.time || null,
-          completed: task?.completed === true
-        }))
-      : [];
+    const safeTasks =
+      Array.isArray(tasks)
+        ? tasks.map((task, index) => ({
+            index,
+            text: task?.text || "",
+            date: task?.date || null,
+            time: task?.time || null,
+            completed:
+              task?.completed === true
+          }))
+        : [];
 
     /* =========================
        AI INSTRUCTIONS
@@ -140,7 +160,10 @@ You are Life Admin AI.
 
 You are a personal task and reminder assistant.
 
-Your job is to understand the user's message and return ONE valid JSON object.
+Understand English, Urdu, Roman Urdu,
+and mixed language.
+
+Return ONE valid JSON object only.
 
 CURRENT DATE:
 ${currentDate}
@@ -148,26 +171,24 @@ ${currentDate}
 EXISTING TASKS:
 ${JSON.stringify(safeTasks)}
 
-LANGUAGES:
-Understand English, Urdu, Roman Urdu, and mixed language.
-
 DATE RULES:
 - "today" means the current date.
 - "tomorrow" means the next calendar day.
 - "aaj" means today.
-- "kal" usually means tomorrow when the user is creating a task.
-- "next week" means the appropriate date based on the current date.
+- "kal" usually means tomorrow when creating a task.
+- "next week" means the appropriate future date.
 - "subah" means morning.
 - "dopahar" means afternoon.
 - "shaam" means evening.
 - "raat" means night.
 - Convert dates to YYYY-MM-DD.
-- Convert times to 24-hour HH:MM.
-- Do not invent a date or time unless it is clearly implied.
+- Convert times to HH:MM 24-hour format.
+- Do not invent a date or time unless clearly implied.
 
 TASK CREATION:
 
-When the user wants to create/add/remind a task, return EXACTLY:
+If the user wants to create, add, schedule,
+or be reminded about a task, return:
 
 {
   "action": "add_task",
@@ -180,42 +201,33 @@ When the user wants to create/add/remind a task, return EXACTLY:
   "reply": "Task added."
 }
 
-Examples:
+Example:
 
 User:
 Add task: Call brother tomorrow at 10 AM
 
-Return:
-{
-  "action": "add_task",
-  "task": {
-    "text": "Call brother",
-    "date": "TOMORROW_DATE",
-    "time": "10:00",
-    "completed": false
-  },
-  "reply": "Task added."
-}
-
-User:
-Kal subah 9 baje doctor ko call karna hai
-
-Return an add_task object with the correct date and time.
+Return an add_task object with:
+text = "Call brother"
+time = "10:00"
+date = tomorrow's date.
 
 IMPORTANT:
-For a new task, the task object MUST exist.
-Do not return only "Done".
-Do not return "chat" when the user clearly wants a task created.
+For task creation:
+- ALWAYS use action "add_task".
+- ALWAYS include the task object.
+- NEVER return only "Done".
+- NEVER return "chat".
+- NEVER return a safety classification.
 
 TASK DELETION:
 
-When the user wants to delete/remove a task:
+If the user wants to delete or remove a task:
 
 1. Look through EXISTING TASKS.
 2. Find the closest matching task.
 3. Return its numeric index.
 
-Return EXACTLY:
+Return:
 
 {
   "action": "delete_task",
@@ -223,9 +235,7 @@ Return EXACTLY:
   "reply": "Task deleted."
 }
 
-Replace 0 with the correct existing task index.
-
-If no matching task exists, return:
+If no matching task exists:
 
 {
   "action": "chat",
@@ -234,13 +244,14 @@ If no matching task exists, return:
 
 TASK EDITING:
 
-When the user wants to edit/change/update an existing task:
+If the user wants to edit, change,
+or update an existing task:
 
-1. Find the matching task in EXISTING TASKS.
+1. Find the matching task.
 2. Return its numeric index.
 3. Return the complete updated task.
 
-Return EXACTLY:
+Return:
 
 {
   "action": "edit_task",
@@ -256,9 +267,7 @@ Return EXACTLY:
 
 SHOW TASKS:
 
-When the user asks to show/list their tasks:
-
-Return:
+If the user asks to show or list tasks:
 
 {
   "action": "show_tasks",
@@ -267,9 +276,7 @@ Return:
 
 NORMAL CHAT:
 
-For greetings, general questions, or normal conversation:
-
-Return:
+For greetings or general conversation:
 
 {
   "action": "chat",
@@ -278,20 +285,15 @@ Return:
 
 CRITICAL RULES:
 
-- Return VALID JSON ONLY.
+- Return valid JSON ONLY.
 - Return exactly ONE JSON object.
 - Never use Markdown.
 - Never use code fences.
 - Never add explanations outside JSON.
-- Never return a safety classification.
 - Never return "User Safety".
 - Never return "safe".
 - Never return "unsafe".
-- Never return a different action name.
-- For task creation, ALWAYS return action "add_task".
-- For task creation, ALWAYS include a "task" object.
-- For task deletion, ALWAYS return taskIndex when a matching task exists.
-- For task editing, ALWAYS return taskIndex and task when a matching task exists.
+- Never use another action name.
 - Keep task titles short and natural.
 `;
 
@@ -307,7 +309,8 @@ CRITICAL RULES:
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${apiKey}`,
-          "HTTP-Referer": "https://life-admin-ai-gamma.vercel.app",
+          "HTTP-Referer":
+            "https://life-admin-ai-gamma.vercel.app",
           "X-Title": "Life Admin AI"
         },
 
@@ -334,24 +337,34 @@ CRITICAL RULES:
        OPENROUTER RESPONSE
     ========================= */
 
-    const data = await response.json();
+    const data =
+      await response.json();
 
     if (!response.ok) {
-      console.error("OpenRouter error:", data);
+      console.error(
+        "OpenRouter error:",
+        data
+      );
 
       return res.status(response.status).json({
-        error: "AI service is temporarily unavailable."
+        error:
+          "AI service is temporarily unavailable."
       });
     }
 
     const text =
-      data?.choices?.[0]?.message?.content || "";
+      data?.choices?.[0]?.message?.content ||
+      "";
 
-    console.log("AI raw response:", text);
+    console.log(
+      "AI raw response:",
+      text
+    );
 
     if (!text) {
       return res.status(500).json({
-        error: "AI returned an empty response."
+        error:
+          "AI returned an empty response."
       });
     }
 
@@ -364,10 +377,11 @@ CRITICAL RULES:
     try {
       parsed = JSON.parse(text);
     } catch (error) {
-      const cleaned = text
-        .replace(/```json/gi, "")
-        .replace(/```/g, "")
-        .trim();
+      const cleaned =
+        text
+          .replace(/```json/gi, "")
+          .replace(/```/g, "")
+          .trim();
 
       try {
         parsed = JSON.parse(cleaned);
@@ -378,7 +392,8 @@ CRITICAL RULES:
         );
 
         return res.status(500).json({
-          error: "AI returned an invalid response."
+          error:
+            "AI returned an invalid response."
         });
       }
     }
@@ -395,14 +410,14 @@ CRITICAL RULES:
       "chat"
     ];
 
-    if (!allowedActions.includes(parsed.action)) {
-      console.error(
-        "Unsupported AI action:",
-        parsed
-      );
-
+    if (
+      !allowedActions.includes(
+        parsed.action
+      )
+    ) {
       return res.status(500).json({
-        error: "AI returned an unsupported action."
+        error:
+          "AI returned an unsupported action."
       });
     }
 
@@ -410,14 +425,17 @@ CRITICAL RULES:
        ADD TASK
     ========================= */
 
-    if (parsed.action === "add_task") {
+    if (
+      parsed.action === "add_task"
+    ) {
       if (
         !parsed.task ||
         typeof parsed.task !== "object" ||
         !parsed.task.text
       ) {
         return res.status(500).json({
-          error: "AI did not return a valid task."
+          error:
+            "AI did not return a valid task."
         });
       }
 
@@ -425,9 +443,13 @@ CRITICAL RULES:
         action: "add_task",
 
         task: {
-          text: String(parsed.task.text),
-          date: parsed.task.date || null,
-          time: parsed.task.time || null,
+          text: String(
+            parsed.task.text
+          ),
+          date:
+            parsed.task.date || null,
+          time:
+            parsed.task.time || null,
           completed: false
         },
 
@@ -441,10 +463,11 @@ CRITICAL RULES:
        DELETE TASK
     ========================= */
 
-    if (parsed.action === "delete_task") {
-      const taskIndex = Number(
-        parsed.taskIndex
-      );
+    if (
+      parsed.action === "delete_task"
+    ) {
+      const taskIndex =
+        Number(parsed.taskIndex);
 
       if (
         !Number.isInteger(taskIndex) ||
@@ -453,13 +476,14 @@ CRITICAL RULES:
       ) {
         return res.json({
           action: "chat",
-          reply: "I couldn't find that task."
+          reply:
+            "I couldn't find that task."
         });
       }
 
       return res.json({
         action: "delete_task",
-        taskIndex: taskIndex,
+        taskIndex,
         reply:
           parsed.reply ||
           "Task deleted."
@@ -470,10 +494,11 @@ CRITICAL RULES:
        EDIT TASK
     ========================= */
 
-    if (parsed.action === "edit_task") {
-      const taskIndex = Number(
-        parsed.taskIndex
-      );
+    if (
+      parsed.action === "edit_task"
+    ) {
+      const taskIndex =
+        Number(parsed.taskIndex);
 
       if (
         !Number.isInteger(taskIndex) ||
@@ -502,12 +527,16 @@ CRITICAL RULES:
       return res.json({
         action: "edit_task",
 
-        taskIndex: taskIndex,
+        taskIndex,
 
         task: {
-          text: String(parsed.task.text),
-          date: parsed.task.date || null,
-          time: parsed.task.time || null,
+          text: String(
+            parsed.task.text
+          ),
+          date:
+            parsed.task.date || null,
+          time:
+            parsed.task.time || null,
           completed: false
         },
 
@@ -521,7 +550,9 @@ CRITICAL RULES:
        SHOW TASKS
     ========================= */
 
-    if (parsed.action === "show_tasks") {
+    if (
+      parsed.action === "show_tasks"
+    ) {
       return res.json({
         action: "show_tasks",
         reply:
@@ -539,6 +570,7 @@ CRITICAL RULES:
       reply:
         parsed.reply ||
         "How can I help?"
+
     });
 
   } catch (error) {
@@ -548,11 +580,11 @@ CRITICAL RULES:
     );
 
     return res.status(500).json({
-      error: "Something went wrong with the AI."
+      error:
+        "Something went wrong with the AI."
     });
   }
 });
-
 /* =========================
    REGISTER PUSH TOKEN
 ========================= */
@@ -619,6 +651,7 @@ app.post("/api/register-token", async (req, res) => {
   }
 });
 
+
 /* =========================
    SEND REMINDERS
 ========================= */
@@ -657,9 +690,10 @@ app.post("/api/send-reminders", async (req, res) => {
 
     const now = new Date();
 
-    const tokenSnapshot = await db
-      .collection("notificationTokens")
-      .get();
+    const tokenSnapshot =
+      await db
+        .collection("notificationTokens")
+        .get();
 
     let checkedTokens = 0;
     let notificationsSent = 0;
@@ -721,27 +755,59 @@ app.post("/api/send-reminders", async (req, res) => {
       const localTime =
         `${parts.hour}:${parts.minute}`;
 
+
       /* =========================
-         FIND USER TASKS
+         FIND USER
       ========================= */
 
-      const tasksSnapshot =
-        await db
-          .collection("tasks")
-          .where(
-            "uid",
-            "==",
-            uid
-          )
-          .get();
+      const userRef =
+        db
+          .collection("users")
+          .doc(uid);
+
+      const userDoc =
+        await userRef.get();
+
+      if (!userDoc.exists) {
+        continue;
+      }
+
+      const userData =
+        userDoc.data() || {};
+
+      /*
+        IMPORTANT:
+
+        app.html saves tasks inside:
+
+        users/{uid}.tasks
+
+        So the reminder system reads
+        the same task location.
+      */
+
+      const userTasks =
+        Array.isArray(userData.tasks)
+          ? userData.tasks
+          : [];
+
+      let tasksChanged = false;
+
+
+      /* =========================
+         CHECK USER TASKS
+      ========================= */
 
       for (
-        const taskDoc of tasksSnapshot.docs
+        let taskIndex = 0;
+        taskIndex < userTasks.length;
+        taskIndex++
       ) {
         const task =
-          taskDoc.data();
+          userTasks[taskIndex];
 
         if (
+          !task ||
           task.completed === true
         ) {
           continue;
@@ -760,6 +826,11 @@ app.post("/api/send-reminders", async (req, res) => {
           continue;
         }
 
+
+        /* =========================
+           CHECK IF TASK IS DUE
+        ========================= */
+
         const isDue =
           task.date < localDate ||
           (
@@ -771,10 +842,16 @@ app.post("/api/send-reminders", async (req, res) => {
           continue;
         }
 
+
         const title =
           task.title ||
           task.text ||
           "You have a task due.";
+
+
+        /* =========================
+           SEND NOTIFICATION
+        ========================= */
 
         try {
           await messaging.send({
@@ -783,32 +860,49 @@ app.post("/api/send-reminders", async (req, res) => {
             notification: {
               title:
                 "Life Admin AI",
+
               body:
                 `Reminder: ${title}`
             },
 
             data: {
               taskId:
-                taskDoc.id,
-              title: title
+                String(
+                  task.id ||
+                  taskIndex
+                ),
+
+              title:
+                String(title)
             },
 
             webpush: {
               notification: {
                 title:
                   "Life Admin AI",
+
                 body:
                   `Reminder: ${title}`,
+
                 requireInteraction:
                   true
               }
             }
           });
 
-          await taskDoc.ref.update({
+
+          /* =========================
+             MARK AS SENT
+          ========================= */
+
+          userTasks[taskIndex] = {
+            ...task,
+
             notificationSentAt:
-              FieldValue.serverTimestamp()
-          });
+              new Date().toISOString()
+          };
+
+          tasksChanged = true;
 
           notificationsSent++;
 
@@ -836,13 +930,41 @@ app.post("/api/send-reminders", async (req, res) => {
           }
         }
       }
+
+
+      /* =========================
+         SAVE UPDATED TASKS
+      ========================= */
+
+      if (tasksChanged) {
+        await userRef.set(
+          {
+            tasks: userTasks,
+
+            updatedAt:
+              FieldValue.serverTimestamp()
+          },
+          {
+            merge: true
+          }
+        );
+      }
     }
+
+
+    /* =========================
+       RESPONSE
+    ========================= */
 
     return res.json({
       ok: true,
+
       checkedTokens,
+
       notificationsSent,
+
       notificationsFailed,
+
       time:
         now.toISOString()
     });
@@ -860,6 +982,7 @@ app.post("/api/send-reminders", async (req, res) => {
   }
 });
 
+
 /* =========================
    WEBSITE FALLBACK
 ========================= */
@@ -873,6 +996,7 @@ app.use((req, res) => {
     )
   );
 });
+
 
 /* =========================
    START SERVER
@@ -891,5 +1015,6 @@ if (require.main === module) {
     }
   );
 }
+
 
 module.exports = app;

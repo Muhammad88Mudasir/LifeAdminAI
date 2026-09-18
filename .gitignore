@@ -7,4 +7,6 @@ npm-debug.log*
 .capacitor/
 dist/
 coverage/
-*.log
+*.logfirebase-service-account.json
+
+/firebase-service-account.json
