@@ -346,6 +346,24 @@ CRITICAL RULES:
         data
       );
 
+      const errorMessage =
+        data?.error?.message ||
+        data?.error?.metadata?.raw ||
+        "";
+
+      const isQuotaError =
+        response.status === 429 ||
+        errorMessage.toLowerCase().includes("quota") ||
+        errorMessage.toLowerCase().includes("rate limit") ||
+        errorMessage.toLowerCase().includes("too many requests");
+
+      if (isQuotaError) {
+        return res.status(429).json({
+          error: "AI usage limit reached.",
+          upgradeUrl: "/upgrade"
+        });
+      }
+
       return res.status(response.status).json({
         error:
           "AI service is temporarily unavailable."
@@ -570,7 +588,6 @@ CRITICAL RULES:
       reply:
         parsed.reply ||
         "How can I help?"
-
     });
 
   } catch (error) {
@@ -585,6 +602,7 @@ CRITICAL RULES:
     });
   }
 });
+
 /* =========================
    REGISTER PUSH TOKEN
 ========================= */
@@ -650,7 +668,6 @@ app.post("/api/register-token", async (req, res) => {
     });
   }
 });
-
 
 /* =========================
    SEND REMINDERS
@@ -755,7 +772,6 @@ app.post("/api/send-reminders", async (req, res) => {
       const localTime =
         `${parts.hour}:${parts.minute}`;
 
-
       /* =========================
          FIND USER
       ========================= */
@@ -793,7 +809,6 @@ app.post("/api/send-reminders", async (req, res) => {
 
       let tasksChanged = false;
 
-
       /* =========================
          CHECK USER TASKS
       ========================= */
@@ -826,7 +841,6 @@ app.post("/api/send-reminders", async (req, res) => {
           continue;
         }
 
-
         /* =========================
            CHECK IF TASK IS DUE
         ========================= */
@@ -842,12 +856,10 @@ app.post("/api/send-reminders", async (req, res) => {
           continue;
         }
 
-
         const title =
           task.title ||
           task.text ||
           "You have a task due.";
-
 
         /* =========================
            SEND NOTIFICATION
@@ -890,7 +902,6 @@ app.post("/api/send-reminders", async (req, res) => {
             }
           });
 
-
           /* =========================
              MARK AS SENT
           ========================= */
@@ -931,7 +942,6 @@ app.post("/api/send-reminders", async (req, res) => {
         }
       }
 
-
       /* =========================
          SAVE UPDATED TASKS
       ========================= */
@@ -950,7 +960,6 @@ app.post("/api/send-reminders", async (req, res) => {
         );
       }
     }
-
 
     /* =========================
        RESPONSE
@@ -982,7 +991,6 @@ app.post("/api/send-reminders", async (req, res) => {
   }
 });
 
-
 /* =========================
    WEBSITE FALLBACK
 ========================= */
@@ -996,7 +1004,6 @@ app.use((req, res) => {
     )
   );
 });
-
 
 /* =========================
    START SERVER
@@ -1015,6 +1022,5 @@ if (require.main === module) {
     }
   );
 }
-
 
 module.exports = app;

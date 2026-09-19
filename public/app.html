@@ -614,6 +614,27 @@ button{
   font-weight:700;
 }
 
+/* ================= UPGRADE ================= */
+.upgrade-header-btn{background:rgba(255,255,255,.20);border-color:rgba(255,255,255,.38);font-weight:800}
+.upgrade-header-btn:hover{background:rgba(255,255,255,.30)}
+.upgrade-menu-item{background:linear-gradient(135deg,rgba(99,91,255,.08),rgba(124,58,237,.06));border-color:rgba(99,91,255,.12);color:var(--primary);font-weight:750}
+.upgrade-menu-item:hover{background:rgba(99,91,255,.13);border-color:rgba(99,91,255,.22)}
+.upgrade-modal{position:fixed;inset:0;z-index:3000;display:grid;place-items:center;padding:20px}
+.upgrade-modal-overlay{position:absolute;inset:0;background:rgba(15,23,42,.55);backdrop-filter:blur(5px)}
+.upgrade-modal-card{position:relative;width:min(560px,100%);background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:26px;padding:28px;box-shadow:0 30px 80px rgba(15,23,42,.25);animation:upgradeIn .22s ease}
+@keyframes upgradeIn{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+.upgrade-modal-top{display:flex;justify-content:space-between;align-items:flex-start;gap:15px}
+.upgrade-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(99,91,255,.10);color:var(--primary);border:1px solid rgba(99,91,255,.15);padding:6px 10px;border-radius:999px;font-size:12px;font-weight:800}
+.upgrade-modal-card h2{margin-top:12px;font-size:27px;letter-spacing:-.5px}
+.upgrade-modal-card p{color:var(--muted);line-height:1.6;margin-top:7px}
+.upgrade-close{width:38px;height:38px;border:1px solid var(--border);background:var(--surface-2);color:var(--text);border-radius:11px}
+.upgrade-plan{margin-top:20px;padding:20px;border:1px solid rgba(99,91,255,.20);background:linear-gradient(135deg,rgba(99,91,255,.08),rgba(124,58,237,.05));border-radius:20px}
+.upgrade-price{display:flex;align-items:baseline;gap:5px}.upgrade-price strong{font-size:34px}.upgrade-price span{color:var(--muted);font-size:13px}
+.upgrade-features{display:grid;gap:9px;margin-top:16px}.upgrade-feature{display:flex;gap:9px;align-items:flex-start;font-size:14px}.upgrade-feature span:first-child{color:var(--success);font-weight:800}
+.upgrade-cta{width:100%;border:0;margin-top:18px;background:var(--primary);color:white;padding:13px 16px;border-radius:13px;font-weight:800;font-size:14px}.upgrade-cta:hover{background:var(--primary-dark)}
+.upgrade-note{text-align:center;font-size:12px!important;margin-top:10px!important}
+@media(max-width:600px){.upgrade-header-btn{padding:9px 10px;font-size:12px}.upgrade-modal-card{padding:21px;border-radius:21px}}
+
 /* ================= NOTIFICATIONS ================= */
 
 .notification-card{
@@ -1480,6 +1501,15 @@ body.dark .footer{border-color:var(--dash-line)!important;}
       </button>
 
       <button
+        id="upgradeHeaderButton"
+        class="header-btn upgrade-header-btn"
+        type="button"
+        onclick="openUpgradeModal()"
+      >
+        ✨ Upgrade
+      </button>
+
+      <button
         id="menuButton"
         class="header-btn"
         type="button"
@@ -1836,6 +1866,31 @@ body.dark .footer{border-color:var(--dash-line)!important;}
 </section>
 
 
+<!-- ================= UPGRADE MODAL ================= -->
+<div id="upgradeModal" class="upgrade-modal hidden" aria-hidden="true">
+  <div class="upgrade-modal-overlay" onclick="closeUpgradeModal()"></div>
+  <div class="upgrade-modal-card" role="dialog" aria-modal="true" aria-labelledby="upgradeTitle">
+    <div class="upgrade-modal-top">
+      <div>
+        <div class="upgrade-badge">✨ PRO</div>
+        <h2 id="upgradeTitle">Upgrade Life Admin AI</h2>
+        <p>Get more from your personal AI productivity assistant.</p>
+      </div>
+      <button class="upgrade-close" type="button" aria-label="Close upgrade" onclick="closeUpgradeModal()">✕</button>
+    </div>
+    <div class="upgrade-plan">
+      <div class="upgrade-price"><strong>$4</strong><span>/ month</span></div>
+      <div class="upgrade-features">
+        <div class="upgrade-feature"><span>✓</span><span>Higher AI usage limits</span></div>
+        <div class="upgrade-feature"><span>✓</span><span>More room for your daily tasks</span></div>
+        <div class="upgrade-feature"><span>✓</span><span>Premium Life Admin AI experience</span></div>
+      </div>
+      <button class="upgrade-cta" type="button" onclick="startUpgrade()">Upgrade to Pro</button>
+      <p class="upgrade-note">Secure payment setup will be connected next.</p>
+    </div>
+  </div>
+</div>
+
 <div class="footer">
   Life Admin AI ✦ Your productivity, simplified.
 </div>
@@ -1959,6 +2014,16 @@ body.dark .footer{border-color:var(--dash-line)!important;}
       >
         <span class="menu-icon">🕘</span>
         <span>History</span>
+      </button>
+
+
+      <button
+        class="menu-item upgrade-menu-item"
+        type="button"
+        onclick="openUpgradeFromMenu()"
+      >
+        <span class="menu-icon">✨</span>
+        <span>Upgrade to Pro</span>
       </button>
 
 
@@ -4610,6 +4675,15 @@ menuOverlay.addEventListener(
 
 
 /* ==========================================
+   UPGRADE
+========================================== */
+function openUpgradeModal(){const modal=document.getElementById("upgradeModal");if(!modal)return;modal.classList.remove("hidden");modal.setAttribute("aria-hidden","false")}
+function closeUpgradeModal(){const modal=document.getElementById("upgradeModal");if(!modal)return;modal.classList.add("hidden");modal.setAttribute("aria-hidden","true")}
+function openUpgradeFromMenu(){closeMenu();openUpgradeModal()}
+function startUpgrade(){showAIResponse(`<div class="response"><strong>Pro is coming next.</strong><br>Payment checkout will be connected here before users are charged.</div>`);closeUpgradeModal()}
+
+
+/* ==========================================
    MENU NAVIGATION
 ========================================== */
 
@@ -4908,6 +4982,8 @@ updateThemeButton();
 renderTasks();
 
 updateStats();
+
+document.addEventListener("keydown",event=>{if(event.key==="Escape"){closeUpgradeModal()}});
 
 </script>
 
